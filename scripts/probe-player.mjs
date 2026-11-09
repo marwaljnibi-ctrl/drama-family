@@ -18,6 +18,20 @@ console.log('VISIBLE TEXT:', (await page.innerText('body')).replace(/\s+/g, ' ')
 console.log('PLAYER-ISH:', await page.$$eval('[class*=server],[class*=player],[class*=watch],[class*=embed],[id*=server],[id*=player],[id*=watch],[data-server],[onclick]', (els) => els.slice(0, 14).map((e) => e.tagName + '#' + e.id + '.' + String(e.className).slice(0, 40) + ' | ' + (e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40) + ' | ' + [...e.attributes].filter((a) => /^(data-|onclick|href)/.test(a.name)).map((a) => a.name + '=' + a.value.slice(0, 50)).join(','))));
 console.log('EXTERNAL LINKS:', await page.$$eval('a[href]', (as) => [...new Set(as.map((a) => a.href.split('?')[0]).filter((h) => !/qesset\.net/.test(h)))].slice(0, 15)));
 console.log('FRAMES initial:', await iframes());
+// ضغطة تشغيل كما يفعل المستخدم، مع تسجيل النوافذ المنبثقة وما يظهر بعدها (بلا تجاوز أي تحقق)
+const popups = [];
+ctx.on('page', (p) => popups.push(strip(p.url())));
+for (const sel of ['.player-button-area', '.player-overlay', '.modern-player-container']) {
+  const el = page.locator(sel).first();
+  if (await el.count()) { await el.click({ timeout: 4000, force: true }).catch((e) => console.log('click fail', sel, String(e).slice(0, 80))); console.log('clicked', sel); break; }
+}
+await page.waitForTimeout(8000);
+await page.screenshot({ path: 'probe-shot2.png' });
+console.log('POPUPS:', popups, 'pages:', ctx.pages().map((p) => strip(p.url())));
+console.log('AFTER CLICK FRAMES:', page.frames().map((f) => strip(f.url())).filter((u) => u && u !== 'about:blank'));
+console.log('AFTER CLICK TEXT:', (await page.innerText('body')).replace(/\s+/g, ' ').slice(0, 300));
+console.log('AFTER CLICK BUTTONS:', await page.$$eval('.modern-player-container *, [class*=server] *, [class*=tab] *', (els) => els.filter((e) => e.children.length === 0 && (e.textContent || '').trim()).slice(0, 20).map((e) => e.tagName + '.' + String(e.className).slice(0, 25) + ':' + e.textContent.trim().slice(0, 20))));
+console.log('MEDIA REQ:', seen.slice(0, 25));
 // أزرار السيرفرات
 const cand = await page.$$eval('a,li,button,div,span', (els) => els.filter((e) => /^(arab\s*hd|turk|express|ok)$/i.test((e.textContent || '').trim())).slice(0, 12).map((e) => e.tagName + '|' + e.className + '|' + (e.textContent || '').trim() + '|' + [...e.attributes].map((a) => a.name + '=' + a.value.slice(0, 30)).join(',')));
 console.log('SERVER BUTTONS:', cand);

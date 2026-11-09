@@ -14,4 +14,4 @@ jobs:
       - run: node scripts/probe-player.mjs
         env: { EP: '${{ github.event.inputs.ep }}' }
       - uses: actions/upload-artifact@v4
-        with: { name: shot, path: probe-shot.png }
+        with: { name: shot, path: probe-shot*.png }
