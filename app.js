@@ -186,7 +186,13 @@ async function vWatch(showId, epId) {
       const draw = () => {
         const [k, id] = sv[cur];
         pl.innerHTML = `<iframe src="${esc(EMB[k][1](id))}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-        act.innerHTML = sv.map(([kk], i) => `<button data-i="${i}" class="${i === cur ? 'pri' : ''}">${EMB[kk][0]}</button>`).join('') + (p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>');
+        act.innerHTML = sv.map(([kk], i) => `<button data-i="${i}" class="${i === cur ? 'pri' : ''}">${EMB[kk][0]}</button>`).join('') + (p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>') + '<button id="dl2">⬇ تنزيل (ANDM)</button>';
+        // تجربة: تنزيل عبر تطبيق خارجي (ANDM) يثبّته المستخدم بنفسه. ننسخ رابط الحلقة والتطبيق يتولى التنزيل. لم يُختبر أنه ينجح مع هذه المشغّلات.
+        $('#dl2').onclick = async () => {
+          const link = EMB[k][1](id);
+          let copied = false; try { await navigator.clipboard.writeText(link); copied = true; } catch {}
+          msg.innerHTML = `<div class="note"><b>${copied ? 'نُسخ رابط الحلقة ✓' : 'انسخ هذا الرابط:'}</b>${copied ? '' : `<br><input class="search" readonly value="${esc(link)}" onfocus="this.select()">`}<br>١) ثبّت تطبيق ANDM مجانًا: <a href="https://apps.apple.com/app/id1216987763" target="_blank" rel="noopener" style="color:var(--acc)">فتح في App Store</a><br>٢) افتح ANDM والصق الرابط في متصفحه الداخلي، ثم اضغط التنزيل إذا ظهر لك الفيديو.<br><small>تجربة: قد لا يتمكن ANDM من تنزيل كل الحلقات.</small></div>`;
+        };
         act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; try { localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
         const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
         const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
