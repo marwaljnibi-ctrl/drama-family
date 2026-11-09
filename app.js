@@ -178,12 +178,13 @@ async function vWatch(showId, epId) {
     if (!(ep.v && ep.v.type === 'mp4') && !meta) msg.innerHTML = '<div class="note">التحميل غير متاح لهذه الحلقة: المصدر يبثها بصيغة لا تُحفظ على الجهاز.</div>';
   } else {
     // لا مصدر مباشر: صفحة الحلقة في المصدر. لا يمكن قراءة ثانية التوقف من مشغّل خارجي.
-    pl.innerHTML = `<iframe src="${esc(ep.url)}" allowfullscreen allow="fullscreen; autoplay; picture-in-picture" referrerpolicy="no-referrer"></iframe>`;
-    if (!p0) await progress.save(showId, ep, { done: false });
-    act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">فتح في صفحة المصدر</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}`;
+    // المصدر يمنع عرض صفحته داخل تطبيق آخر، فنفتح الحلقة مباشرة بزر واحد.
+    pl.innerHTML = `<a href="${esc(ep.url)}" target="_blank" rel="noopener" id="go" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;overflow:hidden;background:#000">${(show.img || show.poster) ? `<img src="${esc(show.img || show.poster)}" referrerpolicy="no-referrer" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">` : ''}<span style="position:relative;font-size:64px;line-height:1">▶</span></a>`;
+    $('#go').onclick = () => { progress.save(showId, ep, { done: false }); };
+    act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">▶ تشغيل الحلقة</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}`;
     const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
     const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
-    msg.innerHTML = '<div class="note">هذه الحلقة تُعرض من مشغّل المصدر الخارجي: يحفظ التطبيق أنك فتحتها، لكنه لا يستطيع قراءة الدقيقة التي توقفت عندها، ولا تنزيلها. اضغط «تمت المشاهدة» عند الانتهاء. إن لم تظهر الحلقة بالأعلى فاستخدم «فتح في صفحة المصدر».</div>';
+    msg.innerHTML = '<div class="note">تُفتح الحلقة في صفحة المصدر. يحفظ التطبيق أنك فتحتها وآخر حلقة وصلت إليها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيلها. اضغط «تمت المشاهدة» عند الانتهاء.</div>';
   }
 }
 
