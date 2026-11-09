@@ -1,0 +1,25 @@
+name: probe
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: probe episode page structure
+        run: |
+          node -e '
+          const UA="DramaFamilyBot/1.0 (+personal family PWA; low-rate)";
+          const g=async u=>{const r=await fetch(u,{headers:{"user-agent":UA}});return [r.status,await r.text()]};
+          (async()=>{
+            const [s,h]=await g("https://qesset.net/clarus/uzak-sehir-episode-70/");
+            console.log("EP status",s,"len",h.length);
+            const ctx=(t,re,n)=>[...t.matchAll(re)].slice(0,n).map(m=>t.slice(Math.max(0,m.index-150),m.index+250).replace(/\s+/g," "));
+            console.log("SERVER CTX:",JSON.stringify(ctx(h,/server|getEmbed|data-id|embed/gi,6),null,1));
+            console.log("IFRAMES:",[...h.matchAll(/<iframe[^>]+>/gi)].map(m=>m[0].slice(0,200)));
+            const w=h.match(/href="([^"]*\/tvshow\/watch[^"]*)"/);console.log("WATCH LINK:",w&&w[1]);
+            const [s2,j]=await g("https://qesset.net/wp-content/themes/vo_2025/assets/js/new-core.js");
+            console.log("CORE",s2,j.replace(/\s+/g," ").slice(0,2500));
+            const [s3,p]=await g("https://qesset.net/wp-content/uploads/2020/05/Sen-anla-large.jpg");
+            console.log("POSTER no-referer status",s3,"bytes",p.length);
+          })()'
