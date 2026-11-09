@@ -48,6 +48,34 @@ function parseEps(html) {
 }
 const ogImage = (h) => (h.match(/property="og:image"[^>]+content="([^"]+)"/) || [])[1];
 
+// ينزّل الملصقات إلى data/posters (مصغّرة إن توفر sharp) لأن المصدر قد يمنع عرض صوره في موقع آخر.
+async function localizePosters(shows) {
+  const { createHash } = await import('node:crypto');
+  let sharp = null; try { sharp = (await import('sharp')).default; } catch {}
+  mkdirSync('data/posters', { recursive: true });
+  const ext = sharp ? 'webp' : 'jpg';
+  let got = 0, fail = 0;
+  const queue = shows.filter((s) => s.poster);
+  const work = async () => {
+    for (let s; (s = queue.shift()); ) {
+      const name = createHash('sha1').update(s.id).digest('hex').slice(0, 12) + '.' + ext;
+      const path = 'data/posters/' + name;
+      s.img = path;
+      if (existsSync(path)) continue;
+      try {
+        const r = await fetch(s.poster, { headers: { 'user-agent': UA, referer: BASE + '/' } });
+        if (!r.ok) throw new Error(String(r.status));
+        let buf = Buffer.from(await r.arrayBuffer());
+        if (sharp) buf = await sharp(buf).resize({ width: 300, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer();
+        writeFileSync(path, buf); got++;
+      } catch (e) { fail++; delete s.img; }
+      await sleep(150);
+    }
+  };
+  await Promise.all([work(), work(), work()]);
+  console.log(`posters: +${got} new, ${fail} failed, sharp=${!!sharp}`);
+}
+
 async function main() {
   mkdirSync('data', { recursive: true });
   const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { shows: [] };
@@ -82,6 +110,7 @@ async function main() {
   // الأحدث: من صفحة «آخر الحلقات» بترتيبها، وإلا بآخر ts
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
+  await localizePosters(shows);
   const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
   const before = JSON.stringify({ s: prev.shows, l: prev.latest });
   if (before === JSON.stringify({ s: shows, l: latest })) { console.log('no changes'); return; }
