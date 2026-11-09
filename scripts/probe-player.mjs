@@ -51,4 +51,17 @@ const hosts = new Set(out.flatMap((o) => o.frames || []).map((u) => { try { retu
 for (const h of hosts) {
   try { const r = await fetch(h, { redirect: 'manual' }); console.log('HOST', h, r.status, 'xfo=', r.headers.get('x-frame-options'), 'csp=', (r.headers.get('content-security-policy') || '').slice(0, 160)); } catch (e) { console.log('HOST', h, 'ERR', e.message); }
 }
+
+// تفاصيل صفحة المشاهدة: الرابط الكامل، طلبات XHR، وأي معرّفات للسيرفرات
+const wp = ctx.pages().find((p) => /qesen\.net\/watch/.test(p.url())) || page;
+console.log("WATCH URL FULL:", wp.url().slice(0, 300));
+console.log("SERVER LIST HTML:", (await wp.evaluate(() => { const e = [...document.querySelectorAll("li,div,ul")].find((x) => /Arab HD/.test(x.textContent) && /Red HD/.test(x.textContent) && x.querySelectorAll("*").length < 60); return e ? e.outerHTML.replace(/\s+/g, " ").slice(0, 1500) : "none"; })));
+const reqs = [];
+wp.on("request", (r) => { if (/xhr|fetch/.test(r.resourceType()) && !/google|jwp|analytics/.test(r.url())) reqs.push(r.method() + " " + r.url().slice(0, 220)); });
+await wp.reload({ waitUntil: "domcontentloaded" }).catch(() => {}); await wp.waitForTimeout(6000);
+console.log("XHR on watch page:", reqs);
+console.log("WATCH HTML has turnstile widget:", /cf-turnstile|data-sitekey/i.test(await wp.content()));
+for (const u of ["https://arabveturk.com/embed-p2y78po07xw1.html", "https://arabhd.onl/embed-efqcj4z4mm0p.html"]) {
+  try { const r = await fetch(u, { headers: { referer: "https://marwaljnibi-ctrl.github.io/" } }); console.log("EMBED", u, r.status, "xfo=", r.headers.get("x-frame-options"), "csp=", (r.headers.get("content-security-policy") || "").slice(0, 200)); } catch (e) { console.log("EMBED", u, "ERR", e.message); }
+}
 await b.close();
