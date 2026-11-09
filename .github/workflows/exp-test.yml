@@ -19,3 +19,12 @@ jobs:
           node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
           sleep 2
           node scripts/test-import.mjs
+  express-research:
+    if: contains(github.event.head_commit.message, '[express]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
+      - run: node scripts/research-express.mjs
