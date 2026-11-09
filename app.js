@@ -138,6 +138,29 @@ async function downloadEp(show, ep, onProgress) {
   await downloads.save(key, new Blob(chunks, { type: 'video/mp4' }), { showId: show.id, epId: ep.id, title: show.title, n: ep.n });
 }
 
+// ---------- استيراد حلقة من تطبيق الملفات (تجريبي) ----------
+// الملف يُربط بالمسلسل والحلقة المفتوحة، ويُحفظ على الجهاز (IndexedDB)، ثم يعمل بمشغّل HTML5 مع الاستكمال وبلا إنترنت.
+const epNumFromName = (n) => { const m = String(n).replace(/\.[^.]+$/, '').match(/(\d{1,4})(?!.*\d)/); return m ? +m[1] : null; };
+async function importEp(show, ep, file) {
+  if (!/^video\//.test(file.type) && !/\.(mp4|m4v|mov)$/i.test(file.name)) throw new Error('اختر ملف فيديو (mp4)');
+  const n = epNumFromName(file.name);
+  if (n && n !== +ep.n && !confirm(`اسم الملف يشير إلى الحلقة ${n} وأنت في الحلقة ${ep.n}. هل تريد ربطه بالحلقة ${ep.n}؟`)) throw new Error('أُلغي الاستيراد');
+  if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); if (e.quota && e.quota - e.usage < file.size * 1.1) throw new Error('المساحة غير كافية لهذا الملف (' + mb(file.size) + ')'); }
+  await persistStorage();
+  const key = show.id + '|' + ep.id;
+  toast('جارٍ حفظ الملف…');
+  const blob = file.slice(0, file.size, file.type || 'video/mp4'); // iOS يحتاج نوع video/mp4 للتشغيل
+  await downloads.save(key, blob, { showId: show.id, epId: ep.id, title: show.title, n: ep.n, fname: file.name, imported: true });
+  const back = await downloads.getBlob(key); // تحقق أن ما حُفظ هو الملف كاملًا
+  if (!back || back.size !== file.size) { await downloads.remove(key); throw new Error('فشل التحقق من الملف المحفوظ'); }
+}
+function addImport(container, show, ep, onDone) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'video/mp4,video/*,.mp4,.m4v,.mov'; inp.hidden = true; inp.id = 'imp';
+  const btn = document.createElement('button'); btn.id = 'impbtn'; btn.textContent = '📥 استيراد من الملفات'; btn.onclick = () => inp.click();
+  inp.onchange = async () => { const f = inp.files && inp.files[0]; if (!f) return; try { await importEp(show, ep, f); toast('تم حفظ الحلقة'); onDone(); } catch (e) { toast(e.message || 'فشل الاستيراد'); } finally { inp.value = ''; } };
+  container.append(btn, inp);
+}
+
 async function vWatch(showId, epId) {
   const show = D.byId.get(showId), ep = show && findEp(show, epId);
   if (!ep) return (view.innerHTML = '<div class="empty">الحلقة غير موجودة.</div>');
@@ -201,6 +224,7 @@ async function vWatch(showId, epId) {
         act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; nosb = false; try { if (sv[cur][0] !== 'o') localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
         const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
         const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
+        addImport(act, show, ep, () => route());
       };
       if (!p0) await progress.save(showId, ep, { done: false });
       draw();
@@ -212,6 +236,7 @@ async function vWatch(showId, epId) {
     act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">▶ تشغيل الحلقة</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}${exBtn}`;
     const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
     const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
+    addImport(act, show, ep, () => route());
     msg.innerHTML = '<div class="note">تُفتح الحلقة في صفحة المصدر. يحفظ التطبيق أنك فتحتها وآخر حلقة وصلت إليها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيلها. اضغط «تمت المشاهدة» عند الانتهاء.</div>';
   }
 }

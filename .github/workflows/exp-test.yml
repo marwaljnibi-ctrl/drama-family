@@ -1,0 +1,21 @@
+name: exp-test
+on:
+  push: { branches: ['exp/**'] }
+  workflow_dispatch: {}
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: unit tests
+        run: node --test scripts/test.mjs
+      - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
+      - name: make test clip (H.264+AAC, 90s)
+        run: mkdir -p test && ffmpeg -loglevel error -y -f lavfi -i testsrc=size=640x360:rate=24 -f lavfi -i sine=frequency=440 -t 90 -c:v libx264 -pix_fmt yuv420p -preset ultrafast -c:a aac -movflags +faststart test/clip.mp4
+      - name: import e2e
+        run: |
+          node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
+          sleep 2
+          node scripts/test-import.mjs
