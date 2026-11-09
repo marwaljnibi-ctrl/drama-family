@@ -24,7 +24,7 @@ async function route() {
     try { D = await loadData(); } catch { view.innerHTML = '<div class="empty">تعذّر تحميل قائمة المسلسلات.<br>تأكد من الاتصال ثم أعد المحاولة.</div>'; return; }
   }
   const R = { new: vNew, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
-  titleEl.textContent = { new: 'الحلقات الجديدة', shows: 'قائمة المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات' }[name] || 'دراما العائلة';
+  titleEl.textContent = { new: 'الحلقات الجديدة', shows: 'قائمة المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات' }[name] || 'Dizi';
   await (R[name] || vNew)();
 }
 backBtn.onclick = () => history.back();
