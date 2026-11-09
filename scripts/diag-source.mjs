@@ -2,9 +2,11 @@
 import { chromium } from 'playwright';
 import { parseServers } from './lib/qesset.mjs';
 const UA = 'DramaFamilyBot/1.0 (+personal family PWA; low-rate)';
-const EP = 'https://qesset.net/clarus/karadeniz-episode-64/';
-const html = await (await fetch(EP, { headers: { 'user-agent': UA } })).text();
-const sv = parseServers(html) || [];
+import { readFileSync } from 'node:fs';
+const d = JSON.parse(readFileSync('data/shows.json', 'utf8'));
+const hit = d.shows.flatMap((s) => s.eps.map((e) => ({ s, e }))).find(({ e }) => (e.sv || []).some((x) => x[0] === 'e'));
+console.log('EPISODE', hit.e.id);
+const sv = hit.e.sv;
 console.log('SERVERS', JSON.stringify(sv.map(([k, id]) => [k, k === 'e' ? id : id.slice(0, 4) + '…'])));
 const ex = sv.find((x) => x[0] === 'e')?.[1];
 if (!ex) { console.log('NO EXPRESS LINK for this episode'); process.exit(0); }
