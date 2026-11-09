@@ -48,6 +48,34 @@ function parseEps(html) {
 }
 const ogImage = (h) => (h.match(/property="og:image"[^>]+content="([^"]+)"/) || [])[1];
 
+// صفحة الحلقة تحمل رابط «تشغيل» إلى qesen.net/watch/?post=<base64 JSON> يضم قائمة السيرفرات ومعرّفاتها (بيانات عامة، بلا أي تحقق).
+// نحتفظ فقط بالمضيفين المختبرين: a=arabhd.onl, t=arabveturk.com, o=ok.ru
+const SV_KEY = { 'Arab HD': 'a', estream: 't', turk: 't', ok: 'o' };
+function parseServers(html) {
+  const m = html.match(/qesen\.net\/watch\/?\?post=([^"'&\s<]+)/);
+  if (!m) return null;
+  try {
+    const j = JSON.parse(Buffer.from(decodeURIComponent(m[1]), 'base64').toString('utf8'));
+    const sv = (j.servers || []).map((s) => [SV_KEY[s.name], String(s.id || '')]).filter(([k, id]) => k && /^[\w-]{4,40}$/.test(id));
+    return sv.length ? sv : [];
+  } catch { return null; }
+}
+// يحلّ معرّفات السيرفرات للحلقات غير المحلولة: الأحدث أولًا في كل مسلسل، بحد أقصى لكل تشغيل.
+async function resolveServers(shows) {
+  const limit = +process.env.SYNC_SERVERS_PER_RUN || 900;
+  const todo = [];
+  shows.forEach((s) => s.eps.forEach((e, i) => { if (!e.sv) todo.push({ s, e, rank: i }); }));
+  todo.sort((a, b) => a.rank - b.rank);
+  let ok = 0, empty = 0, fail = 0;
+  for (const { e } of todo.slice(0, limit)) {
+    try {
+      const sv = parseServers(await get(e.url));
+      if (sv && sv.length) { e.sv = sv; ok++; } else { e.sv = []; empty++; }
+    } catch (err) { if (err instanceof Blocked) throw err; fail++; }
+  }
+  console.log(`servers: +${ok} resolved, ${empty} without supported servers, ${fail} failed, ${Math.max(0, todo.length - limit)} still pending`);
+}
+
 // ينزّل الملصقات إلى data/posters (مصغّرة إن توفر sharp) لأن المصدر قد يمنع عرض صوره في موقع آخر.
 async function localizePosters(shows) {
   const { createHash } = await import('node:crypto');
@@ -102,7 +130,8 @@ async function main() {
     const eps = parseEps(html);
     const old = byId.get(s.id);
     const oldTs = new Map((old?.eps || []).map((e) => [e.id, e.ts]));
-    for (const e of eps) e.ts = oldTs.get(e.id) || now;
+    const oldSv = new Map((old?.eps || []).map((e) => [e.id, e.sv]));
+    for (const e of eps) { e.ts = oldTs.get(e.id) || now; if (oldSv.get(e.id)) e.sv = oldSv.get(e.id); }
     byId.set(s.id, { ...s, poster: s.poster || ogImage(html) || old?.poster || '', eps });
   }
   for (const s of found.values()) if (!byId.has(s.id)) byId.set(s.id, { ...s, eps: [] });
@@ -111,6 +140,7 @@ async function main() {
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
   await localizePosters(shows);
+  await resolveServers(shows);
   const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
   const before = JSON.stringify({ s: prev.shows, l: prev.latest });
   if (before === JSON.stringify({ s: shows, l: latest })) { console.log('no changes'); return; }

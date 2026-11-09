@@ -177,9 +177,27 @@ async function vWatch(showId, epId) {
     $('#rs').onclick = () => { v.currentTime = 0; setDone(false); };
     if (!(ep.v && ep.v.type === 'mp4') && !meta) msg.innerHTML = '<div class="note">التحميل غير متاح لهذه الحلقة: المصدر يبثها بصيغة لا تُحفظ على الجهاز.</div>';
   } else {
-    // لا مصدر مباشر: صفحة الحلقة في المصدر. لا يمكن قراءة ثانية التوقف من مشغّل خارجي.
-    // المصدر يمنع عرض صفحته داخل تطبيق آخر، فنفتح الحلقة مباشرة بزر واحد.
-    pl.innerHTML = `<a href="${esc(ep.url)}" target="_blank" rel="noopener" id="go" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;overflow:hidden;background:#000">${(show.img || show.poster) ? `<img src="${esc(show.img || show.poster)}" referrerpolicy="no-referrer" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">` : ''}<span style="position:relative;font-size:64px;line-height:1">▶</span></a>`;
+    // مشغّلات التضمين العامة (Arab HD / Turk / OK): تُعرض مباشرة داخل التطبيق بلا صفحة المصدر وإعلاناتها.
+    // اختُبرت من أصل github.io: تعمل داخل iframe بدون نوافذ منبثقة. لا يمكن قراءة ثانية التوقف من مشغّل خارجي.
+    const sv = (ep.sv || []).slice().sort((a, b) => 'ato'.indexOf(a[0]) - 'ato'.indexOf(b[0]));
+    const EMB = { a: ['Arab HD', (i) => `https://arabhd.onl/embed-${i}.html`], t: ['Turk', (i) => `https://arabveturk.com/embed-${i}.html`], o: ['OK', (i) => `https://ok.ru/videoembed/${i}`] };
+    if (sv.length) {
+      let cur = 0; try { const k = localStorage.getItem('df-sv'); const i = sv.findIndex((x) => x[0] === k); if (i >= 0) cur = i; } catch {}
+      const draw = () => {
+        const [k, id] = sv[cur];
+        pl.innerHTML = `<iframe src="${esc(EMB[k][1](id))}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+        act.innerHTML = sv.map(([kk], i) => `<button data-i="${i}" class="${i === cur ? 'pri' : ''}">${EMB[kk][0]}</button>`).join('') + (p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>');
+        act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; try { localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
+        const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
+        const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
+      };
+      if (!p0) await progress.save(showId, ep, { done: false });
+      draw();
+      msg.innerHTML = '<div class="note">إن لم يعمل المشغّل جرّب الآخر. التطبيق يحفظ آخر حلقة فتحتها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيل هذه الحلقة. اضغط «تمت المشاهدة» عند الانتهاء.</div>';
+      return;
+    }
+    // لا سيرفر معروف بعد لهذه الحلقة (لم يُحلّ في المزامنة): نفتح صفحة المصدر بزر واحد.
+    pl.innerHTML =`<a href="${esc(ep.url)}" target="_blank" rel="noopener" id="go" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;overflow:hidden;background:#000">${(show.img || show.poster) ? `<img src="${esc(show.img || show.poster)}" referrerpolicy="no-referrer" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">` : ''}<span style="position:relative;font-size:64px;line-height:1">▶</span></a>`;
     $('#go').onclick = () => { progress.save(showId, ep, { done: false }); };
     act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">▶ تشغيل الحلقة</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}`;
     const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
