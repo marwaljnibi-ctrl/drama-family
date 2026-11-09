@@ -64,7 +64,7 @@ T('delete-restores-embed', afterRm.metas === 0 && afterRm.iframe, JSON.stringify
 const rss = () => { try { return execSync("ps -eo rss=,args= | grep -i '[c]hrom' | awk '{s+=$1} END {print s+0}'").toString().trim() * 1024; } catch { return null; } };
 if (existsSync('test/big.mp4') && process.platform === 'linux') {
   const size = statSync('test/big.mp4').size;
-  await page.goto(EP(4)); await page.waitForSelector('#imp');
+  await page.goto(EP(4)); await page.waitForSelector('#imp', { state: 'attached' });
   const usage0 = await page.evaluate(async () => (await navigator.storage.estimate()).usage || 0);
   const base = rss(); let peak = base; const timer = setInterval(() => { const r = rss(); if (r > peak) peak = r; }, 150);
   await page.setInputFiles('#imp', 'test/big.mp4');
@@ -80,26 +80,26 @@ if (existsSync('test/big.mp4') && process.platform === 'linux') {
 // ===== نقص المساحة: رسالة واضحة، ولا يُحفظ شيء =====
 const toastHas = (txt, ms = 8000) => page.waitForFunction((t) => (document.getElementById('toast').textContent || '').includes(t), txt, { timeout: ms }).then(() => true).catch(() => false);
 const metaCount = () => page.evaluate(async () => (await (await import('./db.js')).downloads.meta()).length);
-await page.goto(EP(5)); await page.waitForSelector('#imp');
+await page.goto(EP(5)); await page.waitForSelector('#imp', { state: 'attached' });
 await page.evaluate(() => { navigator.storage.estimate = async () => ({ quota: 1000000, usage: 0 }); });
 await page.setInputFiles('#imp', 'test/Show 05.mp4');
 const lowOk = await toastHas('المساحة لا تكفي');
 T('low-space-clear-message-nothing-saved', lowOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
 
 // ===== فشل الحفظ بامتلاء الحصة (QuotaExceededError): رسالة واضحة وتنظيف =====
-await page.goto(EP(6)); await page.waitForSelector('#imp');
+await page.goto(EP(6)); await page.waitForSelector('#imp', { state: 'attached' });
 await page.evaluate(() => { IDBObjectStore.prototype.put = function () { throw new DOMException('quota', 'QuotaExceededError'); }; });
 await page.setInputFiles('#imp', 'test/Show 06.mp4');
 const quotaOk = await toastHas('ممتلئة');
-await page.reload(); await page.waitForSelector('#imp');
+await page.reload(); await page.waitForSelector('#imp', { state: 'attached' });
 T('quota-exceeded-clear-message', quotaOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
 
 // ===== إلغاء العملية (abort) لا يعلّق التطبيق =====
-await page.goto(EP(7)); await page.waitForSelector('#imp');
+await page.goto(EP(7)); await page.waitForSelector('#imp', { state: 'attached' });
 await page.evaluate(() => { const o = IDBObjectStore.prototype.put; IDBObjectStore.prototype.put = function (v, k) { const r = o.call(this, v, k); try { this.transaction.abort(); } catch {} return r; }; });
 await page.setInputFiles('#imp', 'test/Show 07.mp4');
 const abortOk = await toastHas('أُلغيت العملية', 8000);
-await page.reload(); await page.waitForSelector('#imp');
+await page.reload(); await page.waitForSelector('#imp', { state: 'attached' });
 T('aborted-transaction-does-not-hang', abortOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
 
 T('no-page-errors', errors.length === 0, errors.join(' | '));
