@@ -1,0 +1,22 @@
+name: sync-shows
+on:
+  schedule: [{ cron: '*/30 * * * *' }]
+  workflow_dispatch:
+    inputs:
+      full: { description: 'مزامنة كاملة (1)', required: false, default: '0' }
+permissions: { contents: write }
+concurrency: sync
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/sync-qesset.mjs
+        env: { SYNC_FULL: '${{ github.event.inputs.full }}' }
+      - name: Commit changes
+        run: |
+          git config user.name "sync-bot"; git config user.email "sync-bot@users.noreply.github.com"
+          git add data/shows.json
+          git diff --cached --quiet || (git commit -m "sync: update shows" && git push)
