@@ -10,13 +10,13 @@ function png(n) {
   for (let y = 0; y < n; y++) {
     raw[y * (n * 4 + 1)] = 0;
     for (let x = 0; x < n; x++) {
-      let rgb = [20, 17, 15];
+      let rgb = [17, 17, 17];
       const d = Math.hypot(x - cx, y - cx);
       if (d < R) {
-        rgb = [224, 164, 88];
+        rgb = [255, 255, 255];
         // مثلث تشغيل يشير لليمين
         const tx = (x - cx) / R, ty = (y - cx) / R;
-        if (tx > -0.28 && tx < 0.45 && Math.abs(ty) < (0.45 - tx) * 0.9 + 0.0 && Math.abs(ty) < 0.5 - (tx + 0.28) * 0.69) rgb = [20, 17, 15];
+        if (tx > -0.28 && tx < 0.45 && Math.abs(ty) < (0.45 - tx) * 0.9 + 0.0 && Math.abs(ty) < 0.5 - (tx + 0.28) * 0.69) rgb = [17, 17, 17];
       }
       const o = y * (n * 4 + 1) + 1 + x * 4; raw[o] = rgb[0]; raw[o + 1] = rgb[1]; raw[o + 2] = rgb[2]; raw[o + 3] = 255;
     }

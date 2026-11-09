@@ -40,7 +40,8 @@ async function vNew() {
   const items = latestEpisodes(D);
   view.innerHTML = demoBanner() + (items.length ? `<div class="grid">${items.map(({ show, ep }) => {
     const p = prog.get(show.id + '|' + ep.id);
-    return `<a class="card" href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}<div class="t">${esc(show.title)}</div><div class="s">حلقة ${esc(ep.n)}${p && p.done ? ' ✓' : ''}</div></a>`;
+    const isNew = ep.ts && Date.now() - ep.ts < 3 * 864e5 && !(p && p.done);
+    return `<a class="card" href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}${isNew ? '<span class="badge">جديد</span>' : ''}<div class="t">${esc(show.title)}</div><div class="s">حلقة ${esc(ep.n)}${p && p.done ? ' ✓' : ''}</div></a>`;
   }).join('')}</div>` : '<div class="empty">لا حلقات جديدة.</div>');
 }
 
@@ -116,7 +117,7 @@ async function vShow(id) {
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'استكمال حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
     <div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>
-    <div class="note">✓ مكتملة · إطار أصفر: بدأتها ولم تكتمل · إطار ذهبي: آخر حلقة وصلت إليها</div>`;
+    <div class="note">✓ باهتة: مكتملة · إطار أسود: بدأتها ولم تكتمل · مظللة بالأسود: آخر حلقة وصلت إليها</div>`;
   $('#fav').onclick = async (e) => { const on = await favs.toggle(id); e.target.textContent = on ? '♥ في المفضلة' : '♡ أضف للمفضلة'; };
   const da = $('#dlall');
   if (da) da.onclick = async () => { let n = 0; for (const e of dlAble) { if (!dl.has(id + '|' + e.id)) { try { await downloadEp(show, e, (m) => (da.textContent = m)); n++; } catch (err) { toast('توقف التحميل: ' + err.message); break; } } } da.textContent = 'تحميل الكل'; if (n) vShow(id); };
@@ -217,3 +218,11 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catc
 persistStorage();
 route();
 setInterval(async () => { if (document.visibilityState !== 'visible') return; try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(new|shows)?$/.test(location.hash) || !location.hash) route(); } } catch {} }, 15 * 60 * 1000);
+
+// الأرقام العربية (١٢٣) في كل نص معروض، بلا المساس بالروابط أو القيم.
+{
+  const AR = '٠١٢٣٤٥٦٧٨٩';
+  const conv = (n) => { if (n.nodeType === 3) { if (/\d/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/\d/g, (d) => AR[d]); } else if (n.nodeType === 1 && !/^(SCRIPT|STYLE|IFRAME|INPUT|TEXTAREA)$/.test(n.tagName)) n.childNodes.forEach(conv); };
+  const mo = new MutationObserver((ms) => { mo.disconnect(); ms.forEach((m) => (m.type === 'characterData' ? conv(m.target) : m.addedNodes.forEach(conv))); mo.observe(document.body, { childList: true, subtree: true, characterData: true }); });
+  conv(document.body); mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+}
