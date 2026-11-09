@@ -12,10 +12,10 @@ jobs:
           const UA="DramaFamilyBot/1.0 (+personal family PWA; low-rate)";
           const g=async u=>{const r=await fetch(u,{headers:{"user-agent":UA}});return [r.status,await r.text()]};
           (async()=>{
-            const [s,h]=await g("https://qesset.net/clarus/uzak-sehir-episode-70/");
+            const [s,h]=await g("https://qesset.net/tvshow/watch-uzak-sehir");
             console.log("EP status",s,"len",h.length);
             const ctx=(t,re,n)=>[...t.matchAll(re)].slice(0,n).map(m=>t.slice(Math.max(0,m.index-150),m.index+250).replace(/\s+/g," "));
-            console.log("SERVER CTX:",JSON.stringify(ctx(h,/server|getEmbed|data-id|embed/gi,6),null,1));
+            console.log("SERVER CTX:",JSON.stringify(ctx(h,/data-server|serverID|getEmbed|data-id|iframe|.m3u8|.mp4/gi,10),null,1));
             console.log("IFRAMES:",[...h.matchAll(/<iframe[^>]+>/gi)].map(m=>m[0].slice(0,200)));
             const w=h.match(/href="([^"]*\/tvshow\/watch[^"]*)"/);console.log("WATCH LINK:",w&&w[1]);
             const [s2,j]=await g("https://qesset.net/wp-content/themes/vo_2025/assets/js/new-core.js");
