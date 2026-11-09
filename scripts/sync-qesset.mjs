@@ -1,0 +1,91 @@
+// مزامنة فهرس qesset.net إلى data/shows.json. تُشغَّل بـ GitHub Actions (مجانًا) أو يدويًا:  node scripts/sync-qesset.mjs
+// - تحترم robots.txt (الزواحف العامة مسموحة، وتعرّف بنفسها بوضوح).
+// - لا تتجاوز أي حماية: إن أعاد الموقع 403/تحدّي Cloudflare يتوقف السكربت ويترك الفهرس السابق كما هو.
+// - ضع SYNC_FULL=1 للمزامنة الكاملة، وإلا تُفحص صفحة «آخر الحلقات» فقط ثم المسلسلات المتأثرة.
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+const BASE = 'https://qesset.net';
+const UA = 'DramaFamilyBot/1.0 (+personal family PWA; low-rate; respects robots.txt)';
+const OUT = 'data/shows.json';
+const FULL = process.env.SYNC_FULL === '1';
+const DELAY = +process.env.SYNC_DELAY_MS || 700;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+class Blocked extends Error {}
+
+async function get(path) {
+  const r = await fetch(path.startsWith('http') ? path : BASE + path, { headers: { 'user-agent': UA, 'accept-language': 'ar' }, redirect: 'follow' });
+  if (r.status === 403 || r.status === 429 || r.status === 503) throw new Blocked(`${path} -> ${r.status}`);
+  if (!r.ok) throw new Error(`${path} -> ${r.status}`);
+  const t = await r.text();
+  if (/cf-challenge|Just a moment|challenge-platform/i.test(t.slice(0, 4000))) throw new Blocked(`${path} -> challenge`);
+  await sleep(DELAY);
+  return t;
+}
+const dec = (s) => s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+const abs = (u) => (u ? new URL(u, BASE).href : '');
+const slugOf = (u) => decodeURIComponent(new URL(u, BASE).pathname.replace(/\/$/, '').split('/').pop());
+
+// بطاقة مسلسل في /discover/: <div class="block-post"><a href="/yeni-show/slug/"> … url(poster) … <div class="title">
+function parseShows(html) {
+  const out = [];
+  for (const m of html.matchAll(/<a[^>]+href="([^"]*\/yeni-show\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
+    const url = abs(m[1]), body = m[2];
+    const img = (body.match(/url\(['"]?([^'")]+)['"]?\)/) || body.match(/<img[^>]+(?:data-src|src)="([^"]+)"/) || [])[1];
+    const title = dec((body.match(/class="title"[^>]*>([\s\S]*?)<\/div>/) || [])[1]?.replace(/<[^>]+>/g, '') || '');
+    if (title) out.push({ id: slugOf(url), title, poster: abs(img), url });
+  }
+  return out;
+}
+// صفحة المسلسل: روابط الحلقات /clarus/<slug>-episode-N/
+function parseEps(html) {
+  const seen = new Map();
+  for (const m of html.matchAll(/<a[^>]+href="([^"]*\/clarus\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
+    const url = abs(m[1]); const id = slugOf(url);
+    const num = id.match(/episode-(\d+)/)?.[1] || dec(m[2].replace(/<[^>]+>/g, '')).match(/\d+/)?.[0];
+    if (!num || seen.has(id)) continue;
+    seen.set(id, { id, n: +num, title: dec(m[2].replace(/<[^>]+>/g, '')).slice(0, 80), url });
+  }
+  return [...seen.values()].sort((a, b) => b.n - a.n);
+}
+const ogImage = (h) => (h.match(/property="og:image"[^>]+content="([^"]+)"/) || [])[1];
+
+async function main() {
+  mkdirSync('data', { recursive: true });
+  const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { shows: [] };
+  const byId = new Map(prev.shows.map((s) => [s.id, s]));
+  const now = Date.now();
+  // 1) اكتشاف المسلسلات
+  let pages = 1;
+  const first = await get('/discover/');
+  const pm = [...first.matchAll(/\/discover\/page\/(\d+)\//g)].map((x) => +x[1]);
+  if (pm.length) pages = Math.max(...pm);
+  const maxPages = FULL || !prev.shows.length ? pages : Math.min(pages, 2);
+  const found = new Map(parseShows(first).map((s) => [s.id, s]));
+  for (let p = 2; p <= maxPages; p++) for (const s of parseShows(await get(`/discover/page/${p}/`))) found.set(s.id, s);
+  // 2) الحلقات الجديدة
+  const latestHtml = await get('/son-bolumler/').catch((e) => { if (e instanceof Blocked) throw e; return ''; });
+  const latestPairs = [...latestHtml.matchAll(/href="([^"]*\/clarus\/([^"\/]+?)-episode-(\d+)\/?)"/g)].map((m) => ({ slug: m[2], n: +m[3], url: abs(m[1]), id: slugOf(m[1]) }));
+  // 3) تحديث المسلسلات: الكل في المزامنة الكاملة، وإلا الجديدة + أي مسلسل ظهرت له حلقة غير معروفة
+  const known = new Set(prev.shows.flatMap((s) => s.eps.map((e) => e.id)));
+  const needNewEp = new Set(latestPairs.filter((x) => !known.has(x.id)).map((x) => x.slug));
+  const todo = [...found.values()].filter((s) => FULL || !byId.has(s.id) || [...needNewEp].some((sl) => sl && (s.id.includes(sl.split('-')[0]) )));
+  const targets = FULL ? [...found.values()] : todo;
+  for (const s of targets) {
+    const html = await get(s.url);
+    const eps = parseEps(html);
+    const old = byId.get(s.id);
+    const oldTs = new Map((old?.eps || []).map((e) => [e.id, e.ts]));
+    for (const e of eps) e.ts = oldTs.get(e.id) || now;
+    byId.set(s.id, { ...s, poster: s.poster || ogImage(html) || old?.poster || '', eps });
+  }
+  for (const s of found.values()) if (!byId.has(s.id)) byId.set(s.id, { ...s, eps: [] });
+  const shows = [...byId.values()].filter((s) => s.eps.length).sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+  // الأحدث: من صفحة «آخر الحلقات» بترتيبها، وإلا بآخر ts
+  const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
+  const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
+  const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
+  const before = JSON.stringify({ s: prev.shows, l: prev.latest });
+  if (before === JSON.stringify({ s: shows, l: latest })) { console.log('no changes'); return; }
+  writeFileSync(OUT, JSON.stringify(json));
+  console.log(`ok: ${shows.length} shows, ${shows.reduce((n, s) => n + s.eps.length, 0)} eps, ${latest.length} latest`);
+}
+main().catch((e) => { if (e instanceof Blocked) { console.error('BLOCKED by source, kept previous data:', e.message); process.exit(0); } console.error(e); process.exit(1); });
