@@ -13,7 +13,7 @@ jobs:
         run: node --test scripts/test.mjs
       - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
       - name: make test clip (H.264+AAC, 90s)
-        run: mkdir -p test && ffmpeg -loglevel error -y -f lavfi -i testsrc=size=640x360:rate=24 -f lavfi -i sine=frequency=440 -t 90 -c:v libx264 -pix_fmt yuv420p -preset ultrafast -c:a aac -movflags +faststart test/clip.mp4
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && mkdir -p test && ffmpeg -loglevel error -y -f lavfi -i testsrc=size=640x360:rate=24 -f lavfi -i sine=frequency=440 -t 90 -c:v libx264 -pix_fmt yuv420p -preset ultrafast -c:a aac -movflags +faststart test/clip.mp4
       - name: import e2e
         run: |
           node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
