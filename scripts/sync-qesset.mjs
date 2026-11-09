@@ -3,6 +3,7 @@
 // - لا تتجاوز أي حماية: إن أعاد الموقع 403/تحدّي Cloudflare يتوقف السكربت ويترك الفهرس السابق كما هو.
 // - ضع SYNC_FULL=1 للمزامنة الكاملة، وإلا تُفحص صفحة «آخر الحلقات» فقط ثم المسلسلات المتأثرة.
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { parseServers, buildKeyMap, parseLatest, resolveShowOf, epKey as slugKey, SV_VERSION } from './lib/qesset.mjs';
 const BASE = 'https://qesset.net';
 const UA = 'DramaFamilyBot/1.0 (+personal family PWA; low-rate; respects robots.txt)';
 const OUT = 'data/shows.json';
@@ -48,29 +49,18 @@ function parseEps(html) {
 }
 const ogImage = (h) => (h.match(/property="og:image"[^>]+content="([^"]+)"/) || [])[1];
 
-// صفحة الحلقة تحمل رابط «تشغيل» إلى qesen.net/watch/?post=<base64 JSON> يضم قائمة السيرفرات ومعرّفاتها (بيانات عامة، بلا أي تحقق).
-// نحتفظ فقط بالمضيفين المختبرين: a=arabhd.onl, t=arabveturk.com, o=ok.ru
-const SV_KEY = { 'Arab HD': 'a', estream: 't', turk: 't', ok: 'o' };
-function parseServers(html) {
-  const m = html.match(/qesen\.net\/watch\/?\?post=([^"'&\s<]+)/);
-  if (!m) return null;
-  try {
-    const j = JSON.parse(Buffer.from(decodeURIComponent(m[1]), 'base64').toString('utf8'));
-    const sv = (j.servers || []).map((s) => [SV_KEY[s.name], String(s.id || '')]).filter(([k, id]) => k && /^[\w-]{4,40}$/.test(id));
-    return sv.length ? sv : [];
-  } catch { return null; }
-}
 // يحلّ معرّفات السيرفرات للحلقات غير المحلولة: الأحدث أولًا في كل مسلسل، بحد أقصى لكل تشغيل.
 async function resolveServers(shows) {
   const limit = +process.env.SYNC_SERVERS_PER_RUN || 900;
   const todo = [];
-  shows.forEach((s) => s.eps.forEach((e, i) => { if (!e.sv) todo.push({ s, e, rank: i }); }));
+  shows.forEach((s) => s.eps.forEach((e, i) => { if (!e.sv || e.q !== SV_VERSION) todo.push({ s, e, rank: i }); }));
   todo.sort((a, b) => a.rank - b.rank);
   let ok = 0, empty = 0, fail = 0;
   for (const { e } of todo.slice(0, limit)) {
     try {
       const sv = parseServers(await get(e.url));
       if (sv && sv.length) { e.sv = sv; ok++; } else { e.sv = []; empty++; }
+      e.q = SV_VERSION;
     } catch (err) { if (err instanceof Blocked) throw err; fail++; }
   }
   console.log(`servers: +${ok} resolved, ${empty} without supported servers, ${fail} failed, ${Math.max(0, todo.length - limit)} still pending`);
@@ -109,30 +99,39 @@ async function main() {
   const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { shows: [] };
   const byId = new Map(prev.shows.map((s) => [s.id, s]));
   const now = Date.now();
-  // 1) اكتشاف المسلسلات
+  // 1) «آخر الحلقات» أولًا: نربط كل حلقة جديدة بمسلسلها (بمفتاح الحلقة، وإلا بروابط الحلقات الأخرى في صفحتها).
+  const latestHtml = await get('/son-bolumler/').catch((e) => { if (e instanceof Blocked) throw e; return ''; });
+  const latestPairs = parseLatest(latestHtml, abs, slugOf);
+  const known = new Set(prev.shows.flatMap((s) => s.eps.map((e) => e.id)));
+  const idToShowPrev = new Map(prev.shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
+  const keyMap = buildKeyMap(prev.shows);
+  const affected = new Set(); let unknownShow = 0;
+  for (const x of latestPairs.filter((p) => !known.has(p.id))) {
+    let sib = [];
+    if (!keyMap.get(slugKey(x.id))) { try { sib = [...(await get(x.url)).matchAll(/href="([^"]*\/clarus\/[^"?#]+)/g)].map((m) => slugOf(abs(m[1]))); } catch (e) { if (e instanceof Blocked) throw e; } }
+    const sid = resolveShowOf(x.id, keyMap, idToShowPrev, sib);
+    if (sid) affected.add(sid); else unknownShow++;
+  }
+  // 2) اكتشاف المسلسلات: كل الصفحات في المزامنة الكاملة أو عند وجود حلقة لمسلسل غير معروف، وإلا أول صفحتين.
   let pages = 1;
   const first = await get('/discover/');
   const pm = [...first.matchAll(/\/discover\/page\/(\d+)\//g)].map((x) => +x[1]);
   if (pm.length) pages = Math.max(...pm);
-  const maxPages = FULL || !prev.shows.length ? pages : Math.min(pages, 2);
+  const maxPages = FULL || !prev.shows.length ? pages : Math.min(pages, unknownShow ? 6 : 2);
   const found = new Map(parseShows(first).map((s) => [s.id, s]));
   for (let p = 2; p <= maxPages; p++) for (const s of parseShows(await get(`/discover/page/${p}/`))) found.set(s.id, s);
-  // 2) الحلقات الجديدة
-  const latestHtml = await get('/son-bolumler/').catch((e) => { if (e instanceof Blocked) throw e; return ''; });
-  const latestPairs = [...latestHtml.matchAll(/href="([^"]*\/clarus\/([^"\/]+?)-episode-(\d+)\/?)"/g)].map((m) => ({ slug: m[2], n: +m[3], url: abs(m[1]), id: slugOf(m[1]) }));
-  // 3) تحديث المسلسلات: الكل في المزامنة الكاملة، وإلا الجديدة + أي مسلسل ظهرت له حلقة غير معروفة
-  const known = new Set(prev.shows.flatMap((s) => s.eps.map((e) => e.id)));
-  const needNewEp = new Set(latestPairs.filter((x) => !known.has(x.id)).map((x) => x.slug));
-  const todo = [...found.values()].filter((s) => FULL || !byId.has(s.id) || [...needNewEp].some((sl) => sl && (s.id.includes(sl.split('-')[0]) )));
-  const targets = FULL ? [...found.values()] : todo;
+  // 3) نحدّث: الكل (كاملة)، وإلا المسلسلات الجديدة + المتأثرة بحلقات جديدة.
+  const targets = FULL ? [...found.values()] : [...found.values(), ...[...affected].map((id) => byId.get(id)).filter(Boolean)].filter((s, i, arr) => (FULL || !byId.has(s.id) || affected.has(s.id)) && arr.findIndex((x) => x.id === s.id) === i);
+  console.log(`index: ${latestPairs.length} latest, ${[...latestPairs].filter((p) => !known.has(p.id)).length} new eps, ${affected.size} affected shows, ${unknownShow} unmapped, ${targets.length} to refresh, pages=${maxPages}`);
   for (const s of targets) {
     const html = await get(s.url);
     const eps = parseEps(html);
     const old = byId.get(s.id);
+    if (!eps.length && old && old.eps.length) { console.log('keep old episodes (empty parse):', s.id); continue; }
     const oldTs = new Map((old?.eps || []).map((e) => [e.id, e.ts]));
-    const oldSv = new Map((old?.eps || []).map((e) => [e.id, e.sv]));
-    for (const e of eps) { e.ts = oldTs.get(e.id) || now; if (oldSv.get(e.id)) e.sv = oldSv.get(e.id); }
-    byId.set(s.id, { ...s, poster: s.poster || ogImage(html) || old?.poster || '', eps });
+    const oldSv = new Map((old?.eps || []).map((e) => [e.id, [e.sv, e.q]]));
+    for (const e of eps) { e.ts = oldTs.get(e.id) || now; const o = oldSv.get(e.id); if (o && o[0]) { e.sv = o[0]; if (o[1]) e.q = o[1]; } }
+    byId.set(s.id, { ...(old || {}), ...s, poster: s.poster || ogImage(html) || old?.poster || '', img: old?.img, eps });
   }
   for (const s of found.values()) if (!byId.has(s.id)) byId.set(s.id, { ...s, eps: [] });
   const shows = [...byId.values()].filter((s) => s.eps.length).sort((a, b) => a.title.localeCompare(b.title, 'ar'));

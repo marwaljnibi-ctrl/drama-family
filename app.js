@@ -180,33 +180,31 @@ async function vWatch(showId, epId) {
   } else {
     // مشغّلات التضمين العامة (Arab HD / Turk / OK): تُعرض مباشرة داخل التطبيق بلا صفحة المصدر وإعلاناتها.
     // اختُبرت من أصل github.io: تعمل داخل iframe بدون نوافذ منبثقة. لا يمكن قراءة ثانية التوقف من مشغّل خارجي.
-    const sv = (ep.sv || []).slice().sort((a, b) => 'ato'.indexOf(a[0]) - 'ato'.indexOf(b[0]));
     const EMB = { a: ['Arab HD', (i) => `https://arabhd.onl/embed-${i}.html`], t: ['Turk', (i) => `https://arabveturk.com/embed-${i}.html`], o: ['OK', (i) => `https://ok.ru/videoembed/${i}`] };
+    const sv = (ep.sv || []).filter((x) => EMB[x[0]]).sort((x, y) => 'ato'.indexOf(x[0]) - 'ato'.indexOf(y[0]));
+    // Express = رابط عام لملف على cloud.mail.ru: لا يُضمَّن. يُفتح للتنزيل عبر Safari (يحفظه في تطبيق الملفات).
+    const exLink = ((ep.sv || []).find((x) => x[0] === 'e') || [])[1];
+    const exBtn = exLink ? `<a style="flex:1;min-width:120px" href="${esc(exLink)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل (Express)</button></a>` : '';
+    const exNote = exLink ? ' زر «تنزيل (Express)» يفتح صفحة الملف العامة على cloud.mail.ru، وتنزّله منها عبر Safari إلى تطبيق الملفات.' : '';
     if (sv.length) {
       let cur = 0; try { const k = localStorage.getItem('df-sv'); const i = sv.findIndex((x) => x[0] === k); if (i >= 0) cur = i; } catch {}
       const draw = () => {
         const [k, id] = sv[cur];
         pl.innerHTML = `<iframe src="${esc(EMB[k][1](id))}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-        act.innerHTML = sv.map(([kk], i) => `<button data-i="${i}" class="${i === cur ? 'pri' : ''}">${EMB[kk][0]}</button>`).join('') + (p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>') + '<button id="dl2">⬇ تنزيل (ANDM)</button>';
-        // تجربة: تنزيل عبر تطبيق خارجي (ANDM) يثبّته المستخدم بنفسه. ننسخ رابط الحلقة والتطبيق يتولى التنزيل. لم يُختبر أنه ينجح مع هذه المشغّلات.
-        $('#dl2').onclick = async () => {
-          const link = EMB[k][1](id);
-          let copied = false; try { await navigator.clipboard.writeText(link); copied = true; } catch {}
-          msg.innerHTML = `<div class="note"><b>${copied ? 'نُسخ رابط الحلقة ✓' : 'انسخ هذا الرابط:'}</b>${copied ? '' : `<br><input class="search" readonly value="${esc(link)}" onfocus="this.select()">`}<br>١) ثبّت تطبيق ANDM مجانًا: <a href="https://apps.apple.com/app/id1216987763" target="_blank" rel="noopener" style="color:var(--acc)">فتح في App Store</a><br>٢) افتح ANDM والصق الرابط في متصفحه الداخلي، ثم اضغط التنزيل إذا ظهر لك الفيديو.<br><small>تجربة: قد لا يتمكن ANDM من تنزيل كل الحلقات.</small></div>`;
-        };
+        act.innerHTML = sv.map(([kk], i) => `<button data-i="${i}" class="${i === cur ? 'pri' : ''}">${EMB[kk][0]}</button>`).join('') + (p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>') + exBtn;
         act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; try { localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
         const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
         const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
       };
       if (!p0) await progress.save(showId, ep, { done: false });
       draw();
-      msg.innerHTML = '<div class="note">إن لم يعمل المشغّل جرّب الآخر. التطبيق يحفظ آخر حلقة فتحتها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيل هذه الحلقة. اضغط «تمت المشاهدة» عند الانتهاء.</div>';
+      msg.innerHTML = '<div class="note">إن لم يعمل المشغّل جرّب الآخر. التطبيق يحفظ آخر حلقة فتحتها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيل الحلقة من المشغّل نفسه. اضغط «تمت المشاهدة» عند الانتهاء.' + exNote + '</div>';
       return;
     }
     // لا سيرفر معروف بعد لهذه الحلقة (لم يُحلّ في المزامنة): نفتح صفحة المصدر بزر واحد.
     pl.innerHTML =`<a href="${esc(ep.url)}" target="_blank" rel="noopener" id="go" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;overflow:hidden;background:#000">${(show.img || show.poster) ? `<img src="${esc(show.img || show.poster)}" referrerpolicy="no-referrer" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">` : ''}<span style="position:relative;font-size:64px;line-height:1">▶</span></a>`;
     $('#go').onclick = () => { progress.save(showId, ep, { done: false }); };
-    act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">▶ تشغيل الحلقة</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}`;
+    act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">▶ تشغيل الحلقة</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}${exBtn}`;
     const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
     const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
     msg.innerHTML = '<div class="note">تُفتح الحلقة في صفحة المصدر. يحفظ التطبيق أنك فتحتها وآخر حلقة وصلت إليها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيلها. اضغط «تمت المشاهدة» عند الانتهاء.</div>';
