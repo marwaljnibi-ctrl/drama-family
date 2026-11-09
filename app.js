@@ -7,7 +7,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const fmt = (t) => { t = Math.floor(t || 0); const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
 const mb = (b) => (b / 1048576).toFixed(0) + ' MB';
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 3200); }
-const poster = (s, cls = '') => s.poster ? `<img class="${cls}" loading="lazy" src="${esc(s.poster)}" alt="">` : `<div class="ph ${cls}"></div>`;
+const poster = (s, cls = '') => s.poster ? `<img class="${cls}" loading="lazy" referrerpolicy="no-referrer" src="${esc(s.poster)}" alt="">` : `<div class="ph ${cls}"></div>`;
 
 let D;
 let cleanup = null;
