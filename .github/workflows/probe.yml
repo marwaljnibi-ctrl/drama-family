@@ -2,7 +2,7 @@ name: probe
 on:
   workflow_dispatch:
     inputs:
-      ep: { description: 'episode url', required: false, default: 'https://qesset.net/clarus/uzak-sehir-episode-70/' }
+      script: { description: 'script file', required: false, default: 'probe-player.mjs' }
 jobs:
   probe:
     runs-on: ubuntu-latest
@@ -11,7 +11,6 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
-      - run: node scripts/probe-player.mjs
-        env: { EP: '${{ github.event.inputs.ep }}' }
+      - run: node scripts/${{ github.event.inputs.script }}
       - uses: actions/upload-artifact@v4
-        with: { name: shot, path: probe-shot*.png }
+        with: { name: shot, path: probe-*.png }
