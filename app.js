@@ -145,14 +145,26 @@ async function importEp(show, ep, file) {
   if (!/^video\//.test(file.type) && !/\.(mp4|m4v|mov)$/i.test(file.name)) throw new Error('اختر ملف فيديو (mp4)');
   const n = epNumFromName(file.name);
   if (n && n !== +ep.n && !confirm(`اسم الملف يشير إلى الحلقة ${n} وأنت في الحلقة ${ep.n}. هل تريد ربطه بالحلقة ${ep.n}؟`)) throw new Error('أُلغي الاستيراد');
-  if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); if (e.quota && e.quota - e.usage < file.size * 1.1) throw new Error('المساحة غير كافية لهذا الملف (' + mb(file.size) + ')'); }
+  // 1) المساحة: نقارن حجم الملف بالمتاح قبل أي كتابة. التقدير قد يكون تقريبيًا على iOS، لذا نعالج فشل الحفظ أيضًا (أدناه).
+  let free = null;
+  if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); if (e.quota) free = Math.max(0, e.quota - (e.usage || 0)); }
+  if (free !== null && free < file.size * 1.05) throw new Error(`المساحة لا تكفي: الملف ${mb(file.size)} والمتاح نحو ${mb(free)}. احذف حلقات محفوظة أو حرّر مساحة في الجهاز ثم أعد المحاولة.`);
   await persistStorage();
+  toast(`جارٍ حفظ الملف (${mb(file.size)})… لا تغلق التطبيق`);
   const key = show.id + '|' + ep.id;
-  toast('جارٍ حفظ الملف…');
-  const blob = file.slice(0, file.size, file.type || 'video/mp4'); // iOS يحتاج نوع video/mp4 للتشغيل
-  await downloads.save(key, blob, { showId: show.id, epId: ep.id, title: show.title, n: ep.n, fname: file.name, imported: true });
-  const back = await downloads.getBlob(key); // تحقق أن ما حُفظ هو الملف كاملًا
-  if (!back || back.size !== file.size) { await downloads.remove(key); throw new Error('فشل التحقق من الملف المحفوظ'); }
+  // 2) نمرّر ملف المستخدم نفسه إلى IndexedDB دون قراءته في ذاكرة الصفحة ودون slice/arrayBuffer: المتصفح ينقله من الملف إلى التخزين مباشرة.
+  //    (slice فقط إن كان نوع الملف فارغًا، وهو مجرد مؤشر بلا نسخ.)
+  const blob = file.type ? file : file.slice(0, file.size, 'video/mp4');
+  try {
+    await downloads.save(key, blob, { showId: show.id, epId: ep.id, title: show.title, n: ep.n, fname: file.name, imported: true });
+    const back = await downloads.getBlob(key); // مؤشر فقط: نتحقق من الحجم دون قراءة المحتوى
+    if (!back || back.size !== file.size) throw new Error('حجم الملف المحفوظ لا يطابق الأصل');
+  } catch (e) {
+    try { await downloads.remove(key); } catch {} // لا نترك ملفًا ناقصًا
+    if (e && (e.name === 'QuotaExceededError' || /quota/i.test(e.message || ''))) throw new Error('فشل الحفظ: مساحة التخزين المخصصة للتطبيق ممتلئة. احذف حلقات محفوظة أو حرّر مساحة في الجهاز ثم أعد المحاولة.');
+    if (e && e.name === 'AbortError') throw new Error('فشل الحفظ: أُلغيت العملية (غالبًا بسبب نقص المساحة). لم يُحفظ أي شيء.');
+    throw new Error('فشل حفظ الملف: ' + ((e && (e.message || e.name)) || 'خطأ غير معروف'));
+  }
 }
 function addImport(container, show, ep, onDone) {
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'video/mp4,video/*,.mp4,.m4v,.mov'; inp.hidden = true; inp.id = 'imp';
@@ -181,6 +193,7 @@ async function vWatch(showId, epId) {
     if (meta) { const b = await downloads.getBlob(key); if (b) { blobUrl = URL.createObjectURL(b); src = blobUrl; } }
     pl.innerHTML = '<video id="v" controls playsinline webkit-playsinline preload="metadata"></video>';
     const v = $('#v');
+    v.addEventListener('error', () => { if (blobUrl) msg.innerHTML = '<div class="note">تعذّر تشغيل الملف المحفوظ (قد تكون صيغته غير مدعومة على هذا الجهاز). يمكنك حذفه واستيراد ملف آخر.</div>'; });
     if (ep.v && ep.v.type === 'hls' && !blobUrl) {
       if (v.canPlayType('application/vnd.apple.mpegurl')) v.src = ep.v.src;
       else { const m = await import('https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.mjs'); const h = new m.default(); h.loadSource(ep.v.src); h.attachMedia(v); }

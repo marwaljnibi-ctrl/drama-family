@@ -25,6 +25,8 @@ async function tx(store, mode, fn) {
     const out = fn(s);
     t.oncomplete = () => res(out && 'result' in out ? out.result : out);
     t.onerror = () => rej(t.error);
+    // امتلاء التخزين قد يظهر كإلغاء للعملية (abort) بلا حدث error: نرفضه بدل التعليق بصمت.
+    t.onabort = () => rej(t.error || new DOMException('Transaction aborted', 'AbortError'));
   });
 }
 const all = (s) => tx(s, 'readonly', (st) => st.getAll());

@@ -1,10 +1,11 @@
 // اختبار نهاية لنهاية (Chromium) لميزة استيراد حلقة من الملفات: ربط، حفظ، استكمال، بلا إنترنت، حذف، وعدم المساس بمشغّلات Arab HD/Turk.
 // يتطلب: خادم على 8123، وملف test/clip.mp4 (H.264+AAC، 90 ثانية). النتائج: سطر "T <اسم> PASS|FAIL <تفصيل>".
 import { chromium } from 'playwright';
-import { copyFileSync } from 'node:fs';
-const BASE = 'http://localhost:8123/';
+import { copyFileSync, existsSync, statSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+const BASE = process.env.BASE || 'http://localhost:8123/';
 const EP = (n) => `${BASE}?demo=1#/watch/demo-b/demo-b-episode-${n}`;
-copyFileSync('test/clip.mp4', 'test/Show 03.mp4'); copyFileSync('test/clip.mp4', 'test/Brother 22.mp4');
+copyFileSync('test/clip.mp4', 'test/Show 03.mp4'); copyFileSync('test/clip.mp4', 'test/Brother 22.mp4'); copyFileSync('test/clip.mp4', 'test/Show 05.mp4'); copyFileSync('test/clip.mp4', 'test/Show 06.mp4'); copyFileSync('test/clip.mp4', 'test/Show 07.mp4');
 const out = []; const T = (name, ok, d = '') => { out.push(ok); console.log('T', name, ok ? 'PASS' : 'FAIL', d); };
 const b = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
@@ -57,6 +58,49 @@ T('other-episode-unaffected', other.iframe && other.noVideo, JSON.stringify(othe
 await page.goto(EP(3)); await waitVideo(); await page.click('#rm'); await page.waitForSelector('#pl iframe', { timeout: 8000 }).catch(() => {});
 const afterRm = await page.evaluate(async () => { const db = await import('./db.js'); return { metas: (await db.downloads.meta()).length, iframe: !!document.querySelector('#pl iframe') }; });
 T('delete-restores-embed', afterRm.metas === 0 && afterRm.iframe, JSON.stringify(afterRm));
+
+
+// ===== ملف كبير: لا يُحمَّل في الذاكرة ولا نسخ زائدة (Linux فقط: نقيس RSS لعمليات Chromium) =====
+const rss = () => { try { return execSync("ps -eo rss=,args= | grep -i '[c]hrom' | awk '{s+=$1} END {print s+0}'").toString().trim() * 1024; } catch { return null; } };
+if (existsSync('test/big.mp4') && process.platform === 'linux') {
+  const size = statSync('test/big.mp4').size;
+  await page.goto(EP(4)); await page.waitForSelector('#imp');
+  const usage0 = await page.evaluate(async () => (await navigator.storage.estimate()).usage || 0);
+  const base = rss(); let peak = base; const timer = setInterval(() => { const r = rss(); if (r > peak) peak = r; }, 150);
+  await page.setInputFiles('#imp', 'test/big.mp4');
+  await page.waitForFunction(async () => { const db = await import('./db.js'); return (await db.downloads.meta()).some((m) => m.key.endsWith('episode-4')); }, null, { timeout: 180000 }).catch(() => {});
+  clearInterval(timer);
+  const res = await page.evaluate(async () => { const db = await import('./db.js'); const m = (await db.downloads.meta()).find((x) => x.key.endsWith('episode-4')); return { size: m && m.size, usage: (await navigator.storage.estimate()).usage || 0 }; });
+  const MB = 1048576, delta = (peak - base) / MB, usageGrowth = (res.usage - usage0) / size;
+  T('large-import-not-in-ram', res.size === size && delta < size / MB * 0.5, JSON.stringify({ fileMB: Math.round(size / MB), savedMatches: res.size === size, peakRssGrowthMB: Math.round(delta) }));
+  T('large-import-no-extra-copy', usageGrowth < 1.3, 'storage usage growth x' + usageGrowth.toFixed(2) + ' of file size');
+  await page.evaluate(async () => { const db = await import('./db.js'); await db.downloads.remove((await db.downloads.meta()).find((x) => x.key.endsWith('episode-4')).key); });
+} else console.log('T large-import SKIPPED (no test/big.mp4 or not linux)');
+
+// ===== نقص المساحة: رسالة واضحة، ولا يُحفظ شيء =====
+const toastHas = (txt, ms = 8000) => page.waitForFunction((t) => (document.getElementById('toast').textContent || '').includes(t), txt, { timeout: ms }).then(() => true).catch(() => false);
+const metaCount = () => page.evaluate(async () => (await (await import('./db.js')).downloads.meta()).length);
+await page.goto(EP(5)); await page.waitForSelector('#imp');
+await page.evaluate(() => { navigator.storage.estimate = async () => ({ quota: 1000000, usage: 0 }); });
+await page.setInputFiles('#imp', 'test/Show 05.mp4');
+const lowOk = await toastHas('المساحة لا تكفي');
+T('low-space-clear-message-nothing-saved', lowOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
+
+// ===== فشل الحفظ بامتلاء الحصة (QuotaExceededError): رسالة واضحة وتنظيف =====
+await page.goto(EP(6)); await page.waitForSelector('#imp');
+await page.evaluate(() => { IDBObjectStore.prototype.put = function () { throw new DOMException('quota', 'QuotaExceededError'); }; });
+await page.setInputFiles('#imp', 'test/Show 06.mp4');
+const quotaOk = await toastHas('ممتلئة');
+await page.reload(); await page.waitForSelector('#imp');
+T('quota-exceeded-clear-message', quotaOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
+
+// ===== إلغاء العملية (abort) لا يعلّق التطبيق =====
+await page.goto(EP(7)); await page.waitForSelector('#imp');
+await page.evaluate(() => { const o = IDBObjectStore.prototype.put; IDBObjectStore.prototype.put = function (v, k) { const r = o.call(this, v, k); try { this.transaction.abort(); } catch {} return r; }; });
+await page.setInputFiles('#imp', 'test/Show 07.mp4');
+const abortOk = await toastHas('أُلغيت العملية', 8000);
+await page.reload(); await page.waitForSelector('#imp');
+T('aborted-transaction-does-not-hang', abortOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
 
 T('no-page-errors', errors.length === 0, errors.join(' | '));
 await b.close();
