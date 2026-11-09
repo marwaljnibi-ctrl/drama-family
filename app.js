@@ -117,7 +117,7 @@ async function vShow(id) {
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'استكمال حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
     <div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>
-    <div class="note">✓ باهتة: مكتملة · إطار أسود: بدأتها ولم تكتمل · مظللة بالأسود: آخر حلقة وصلت إليها</div>`;
+    <div class="note">✓ باهتة: مكتملة · إطار عنابي: بدأتها ولم تكتمل · عنابي ممتلئ: آخر حلقة وصلت إليها</div>`;
   $('#fav').onclick = async (e) => { const on = await favs.toggle(id); e.target.textContent = on ? '♥ في المفضلة' : '♡ أضف للمفضلة'; };
   const da = $('#dlall');
   if (da) da.onclick = async () => { let n = 0; for (const e of dlAble) { if (!dl.has(id + '|' + e.id)) { try { await downloadEp(show, e, (m) => (da.textContent = m)); n++; } catch (err) { toast('توقف التحميل: ' + err.message); break; } } } da.textContent = 'تحميل الكل'; if (n) vShow(id); };
@@ -217,7 +217,12 @@ async function vWatch(showId, epId) {
 }
 
 // ---------- تشغيل وتحديث دوري ----------
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator) {
+  // عند وصول نسخة جديدة نعيد التحميل مرة واحدة ليظهر التحديث فورًا (لا نقطع مشاهدة حلقة).
+  const hadController = !!navigator.serviceWorker.controller; let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded && !/^#\/watch/.test(location.hash)) { reloaded = true; location.reload(); } });
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 persistStorage();
 route();
 setInterval(async () => { if (document.visibilityState !== 'visible') return; try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(new|shows)?$/.test(location.hash) || !location.hash) route(); } } catch {} }, 15 * 60 * 1000);
