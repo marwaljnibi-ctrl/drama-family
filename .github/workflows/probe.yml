@@ -1,0 +1,15 @@
+name: probe
+on:
+  workflow_dispatch:
+    inputs:
+      ep: { description: 'episode url', required: false, default: 'https://qesset.net/clarus/uzak-sehir-episode-70/' }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
+      - run: node scripts/probe-player.mjs
+        env: { EP: '${{ github.event.inputs.ep }}' }
