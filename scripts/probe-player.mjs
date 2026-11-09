@@ -13,6 +13,10 @@ const html = await page.content();
 console.log('STATUS', res.status(), 'TITLE', (await page.title()).slice(0, 60));
 console.log('CHALLENGE?', /just a moment|cf-challenge|turnstile/i.test(html), 'turnstile frames:', page.frames().filter((f) => /challenges\.cloudflare/.test(f.url())).length);
 const iframes = async () => page.frames().map((f) => strip(f.url())).filter((u) => u && u !== 'about:blank' && !/qesset\.net|challenges\.cloudflare|googletagmanager|google/.test(u));
+await page.screenshot({ path: 'probe-shot.png', fullPage: false });
+console.log('VISIBLE TEXT:', (await page.innerText('body')).replace(/\s+/g, ' ').slice(0, 700));
+console.log('PLAYER-ISH:', await page.$$eval('[class*=server],[class*=player],[class*=watch],[class*=embed],[id*=server],[id*=player],[id*=watch],[data-server],[onclick]', (els) => els.slice(0, 14).map((e) => e.tagName + '#' + e.id + '.' + String(e.className).slice(0, 40) + ' | ' + (e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40) + ' | ' + [...e.attributes].filter((a) => /^(data-|onclick|href)/.test(a.name)).map((a) => a.name + '=' + a.value.slice(0, 50)).join(','))));
+console.log('EXTERNAL LINKS:', await page.$$eval('a[href]', (as) => [...new Set(as.map((a) => a.href.split('?')[0]).filter((h) => !/qesset\.net/.test(h)))].slice(0, 15)));
 console.log('FRAMES initial:', await iframes());
 // أزرار السيرفرات
 const cand = await page.$$eval('a,li,button,div,span', (els) => els.filter((e) => /^(arab\s*hd|turk|express|ok)$/i.test((e.textContent || '').trim())).slice(0, 12).map((e) => e.tagName + '|' + e.className + '|' + (e.textContent || '').trim() + '|' + [...e.attributes].map((a) => a.name + '=' + a.value.slice(0, 30)).join(',')));
