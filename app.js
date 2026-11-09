@@ -187,18 +187,23 @@ async function vWatch(showId, epId) {
     const exBtn = exLink ? `<a style="flex:1;min-width:120px" href="${esc(exLink)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل (Express)</button></a>` : '';
     const exNote = exLink ? ' زر «تنزيل (Express)» يفتح صفحة الملف العامة على cloud.mail.ru، وتنزّله منها عبر Safari إلى تطبيق الملفات.' : '';
     if (sv.length) {
-      let cur = 0; try { const k = localStorage.getItem('df-sv'); const i = sv.findIndex((x) => x[0] === k); if (i >= 0) cur = i; } catch {}
+      // الافتراضي: Arab HD ثم Turk. نتذكر اختيارك لهما فقط. OK يعتمد على المنطقة فلا يصير افتراضيًا أبدًا.
+      let cur = 0; try { const k = localStorage.getItem('df-sv'); const i = k === 'o' ? -1 : sv.findIndex((x) => x[0] === k); if (i >= 0) cur = i; } catch {}
+      let nosb = false; // خيار تجريبي لحل مشاكل بعض الأجهزة: تعطيل sandbox لهذا المشغّل
+      const SB = 'sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"';
       const draw = () => {
         const [k, id] = sv[cur];
-        pl.innerHTML = `<iframe src="${esc(EMB[k][1](id))}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+        const embUrl = EMB[k][1](id);
+        pl.innerHTML = `<iframe src="${esc(embUrl)}" ${nosb ? '' : SB} allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+        msg.innerHTML = `<div class="note">${k === 'o' ? 'OK لا يعمل في بعض الدول (يعرض «غير متاح للمنطقة»)، جرّب Arab HD أو Turk. ' : 'إن لم يعمل المشغّل جرّب الآخر. '}التطبيق يحفظ آخر حلقة فتحتها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيل الحلقة من المشغّل نفسه. اضغط «تمت المشاهدة» عند الانتهاء.${exNote}<br>المشغّل لا يعمل؟ <a href="#" id="nb">${nosb ? 'أعد الحماية' : 'جرّب بدون حماية'}</a> · <a href="${esc(embUrl)}" target="_blank" rel="noopener">افتح المشغّل في Safari</a></div>`;
+        $('#nb').onclick = (ev) => { ev.preventDefault(); nosb = !nosb; draw(); };
         act.innerHTML = sv.map(([kk], i) => `<button data-i="${i}" class="${i === cur ? 'pri' : ''}">${EMB[kk][0]}</button>`).join('') + (p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>') + exBtn;
-        act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; try { localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
+        act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; nosb = false; try { if (sv[cur][0] !== 'o') localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
         const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
         const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
       };
       if (!p0) await progress.save(showId, ep, { done: false });
       draw();
-      msg.innerHTML = '<div class="note">إن لم يعمل المشغّل جرّب الآخر. التطبيق يحفظ آخر حلقة فتحتها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيل الحلقة من المشغّل نفسه. اضغط «تمت المشاهدة» عند الانتهاء.' + exNote + '</div>';
       return;
     }
     // لا سيرفر معروف بعد لهذه الحلقة (لم يُحلّ في المزامنة): نفتح صفحة المصدر بزر واحد.
