@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Dizi lab — OPFS download</title>
+<style>body{font:15px/1.6 system-ui,sans-serif;margin:16px;background:#fff;color:#111}pre{background:#f4f4f2;padding:12px;border-radius:8px;white-space:pre-wrap;direction:ltr;text-align:left}button{background:#9E2B35;color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit}</style>
+</head>
+<body>
+<h1>مختبر تنزيل OPFS (تجربة فقط)</h1>
+<p>غير مربوط بتطبيق Dizi. يختبر التنزيل المتسلسل بقطع Range إلى OPFS، الانقطاع عند ٥٠٪ و٩٩٪، الاستكمال، والتحقق من الاكتمال. المصدر الافتراضي ملف اختبار من نفس الأصل.</p>
+<label>مصدر الاختبار: <input id="src" value="sample.mp4" size="40" dir="ltr"></label>
+<button id="run" type="button">تشغيل الاختبارات</button>
+<pre id="out"></pre>
+<script type="module">
+import { probe, download, verify, status, removeAll, createWriter } from './opfs-dl.js';
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += s + '\n'; };
+const sha = async (buf) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))].map((b) => b.toString(16).padStart(2, '0')).join('');
+async function opfsBytes(name) { const fh = await (await (await navigator.storage.getDirectory()).getDirectoryHandle('dizi-dl')).getFileHandle(name); return (await fh.getFile()).arrayBuffer(); }
+async function abortAt(url, name, frac, chunk) {
+  const ac = new AbortController(); let stoppedAt = 0;
+  try { await download(url, name, { chunk, signal: ac.signal, onProgress: (n, t) => { if (!ac.signal.aborted && n >= t * frac) { stoppedAt = n; ac.abort(); } } }); return { aborted: false }; }
+  catch (e) { return { aborted: e.name === 'AbortError', err: e.name + ': ' + e.message, stoppedAt }; }
+}
+window.runTests = async (srcUrl) => {
+  out.textContent = ''; const R = []; const T = (n, ok, d = '') => { R.push({ n, ok }); log(`T ${n} ${ok ? 'PASS' : 'FAIL'} ${d}`); };
+  const url = new URL(srcUrl || document.getElementById('src').value, location.href).href;
+  const NAME = 'lab-ep.mp4', CH = 64 << 10;
+  await removeAll(NAME);
+  const p = await probe(url).catch((e) => ({ err: e.message }));
+  T('probe-206-and-total', p.total > 0, JSON.stringify(p));
+  const srcHash = await sha(await (await fetch(url, { cache: 'no-store' })).arrayBuffer()); // للاختبار فقط (ملف صغير)
+
+  const a1 = await abortAt(url, NAME, 0.5, CH); const s1 = await status(NAME);
+  T('interrupt-50-keeps-partial-not-complete', a1.aborted && s1.meta && !s1.meta.complete && s1.size === s1.meta.written && s1.meta.written < p.total, JSON.stringify({ stoppedAt: a1.stoppedAt, written: s1.meta && s1.meta.written, size: s1.size, total: p.total }));
+  const v1 = await verify(NAME);
+  T('partial-rejected-by-verify', !v1.ok && v1.verifyError === 'WRITTEN_NE_TOTAL', v1.verifyError);
+
+  const r1 = await download(url, NAME, { chunk: CH }); const h1 = await sha(await opfsBytes(NAME));
+  T('resume-after-50-completes-verified', r1.ok && r1.complete && r1.resumedFrom > 0 && r1.resumedFrom < p.total && h1 === srcHash, JSON.stringify({ resumedFrom: r1.resumedFrom, boxes: r1.verified && r1.verified.boxes, seek: r1.verified && r1.verified.seek, sameHash: h1 === srcHash }));
+
+  await removeAll(NAME);
+  const a2 = await abortAt(url, NAME, 0.99, CH); const s2 = await status(NAME);
+  T('interrupt-99-keeps-partial-not-complete', a2.aborted && !s2.meta.complete && s2.meta.written < p.total, JSON.stringify({ stoppedAt: a2.stoppedAt, written: s2.meta.written, total: p.total }));
+  const r2 = await download(url, NAME, { chunk: CH }); const h2 = await sha(await opfsBytes(NAME));
+  T('resume-after-99-fetches-only-rest', r2.ok && p.total - r2.resumedFrom <= CH + Math.ceil(p.total * 0.01) && h2 === srcHash /* يُعاد فقط آخر قطعة غير معتمدة */, JSON.stringify({ resumedFrom: r2.resumedFrom, fetched: p.total - r2.resumedFrom, sameHash: h2 === srcHash }));
+
+  const r3 = await download(url, NAME, { chunk: CH });
+  T('completed-not-redownloaded', r3.complete && r3.resumedFrom === p.total, 'resumedFrom=' + r3.resumedFrom);
+
+  // تلف: نكسر نوع صندوق moov ثم نعيد التحقق → يجب أن يُرفض ويُلغى complete
+  const bytes = new Uint8Array(await opfsBytes(NAME)); let mo = -1; { let at = 0; const dv = new DataView(bytes.buffer); while (at < bytes.length) { const bs = dv.getUint32(at); const t = String.fromCharCode(...bytes.slice(at + 4, at + 8)); if (t === 'moov') { mo = at; break; } at += bs || bytes.length; } }
+  const W = createWriter(); await W.call('write', { name: NAME, at: mo + 4, buf: new TextEncoder().encode('xxxx').buffer }); await W.terminate();
+  const v2 = await verify(NAME); const s3 = await status(NAME);
+  T('corruption-detected-and-uncompleted', !v2.ok && !s3.meta.complete && /MP4_INVALID|MISSING_moov|SEEK/.test(v2.verifyError), v2.verifyError);
+
+  // بيانات وصفية كاذبة: written=total لكن الملف ناقص → يُرفض
+  await removeAll(NAME); await abortAt(url, NAME, 0.5, CH);
+  const W2 = createWriter(); const m = await W2.call('getJson', { name: NAME + '.json' }); m.written = m.total; await W2.call('putJson', { name: NAME + '.json', obj: m }); await W2.terminate();
+  const v3 = await verify(NAME);
+  T('lying-meta-rejected', !v3.ok && /SIZE_MISMATCH/.test(v3.verifyError), v3.verifyError);
+
+  await removeAll(NAME);
+  const pass = R.filter((x) => x.ok).length; log(`RESULT ${pass}/${R.length}`); return { pass, total: R.length, out: out.textContent };
+};
+document.getElementById('run').onclick = () => window.runTests();
+</script>
+</body>
+</html>
