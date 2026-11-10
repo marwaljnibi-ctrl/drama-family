@@ -7,6 +7,31 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const fmt = (t) => { t = Math.floor(t || 0); const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
 const mb = (b) => (b / 1048576).toFixed(0) + ' MB';
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 3200); }
+// ARAB_HD_RESUME_TEST: لوحة تشخيص مؤقتة، تظهر فقط عند التفعيل بـ ?arabtest=1 (وتُطفأ بـ ?arabtest=0). لا ترسل شيئًا للمشغّل.
+const arabTestOn = () => {
+  try { const q = new URLSearchParams(location.search).get('arabtest'); if (q === '1') localStorage.setItem('ARAB_HD_RESUME_TEST', '1'); if (q === '0') localStorage.removeItem('ARAB_HD_RESUME_TEST'); return localStorage.getItem('ARAB_HD_RESUME_TEST') === '1'; } catch { return false; }
+};
+let arabMsgH = null;
+function arabTestPanel(box, pl, epId, showId) {
+  const K = 'arabtest:' + epId; let S = {};
+  try { S = JSON.parse(localStorage.getItem(K) || '{}'); } catch {}
+  const prev = { opens: S.opens || 0, last: S.last || null };
+  S.opens = prev.opens + 1; S.last = new Date().toISOString(); S.msgs = 0; S.types = {}; S.obs = S.obs || [];
+  const nav = performance.getEntriesByType('navigation')[0];
+  const save = () => { try { localStorage.setItem(K, JSON.stringify(S)); } catch {} };
+  const safe = (x) => typeof x === 'string' ? (/^[\w.:-]{1,40}$/.test(x) ? x : 'string(len=' + x.length + ')') : x && typeof x === 'object' ? 'object{' + Object.keys(x).slice(0, 8).join(',') + '}' : typeof x;
+  box.innerHTML = `<div class="note" dir="ltr" style="direction:ltr;text-align:left"><b>ARAB_HD_RESUME_TEST</b><div id="at-st" style="white-space:pre-wrap;font:12px/1.6 monospace"></div></div>
+    <div class="actions"><button id="at-y">عاد للمكان</button><button id="at-n">بدأ من الصفر</button><button id="at-c">انسخ التقرير</button></div>`;
+  const draw = () => { const el = box.querySelector('#at-st'); if (el) el.textContent = `iOS: ${navigator.userAgent.replace(/.*OS ([\d_]+).*/, '$1')} | nav=${nav && nav.type}${S.bfc ? ' | bfcache=' + S.bfc : ''}\nepisode=${epId}\nopens(this ep)=${S.opens} | previous open=${prev.last || '-'}\niframe origin=https://arabhd.onl\npostMessage from iframe=${S.msgs} ${JSON.stringify(S.types)}\ncurrentTime read=${S.msgs ? 'see types' : 'no (no messages)'} | seek=not sent\nobservations=${S.obs.map((o) => (o.r ? 'resumed' : 'zero') + '@' + o.opens).join(', ') || '-'}`; };
+  if (arabMsgH) removeEventListener('message', arabMsgH);
+  arabMsgH = (e) => { const f = pl.querySelector('iframe'); if (f && e.source === f.contentWindow) { S.msgs++; const t = safe(e.data); S.types[t] = (S.types[t] || 0) + 1; save(); draw(); } };
+  addEventListener('message', arabMsgH);
+  addEventListener('pageshow', (e) => { if (e.persisted) { S.bfc = (S.bfc || 0) + 1; save(); draw(); } });
+  const obs = (r) => { S.obs.push({ r, opens: S.opens, at: new Date().toISOString(), nav: nav && nav.type }); save(); draw(); toast('سُجّلت الملاحظة'); };
+  box.querySelector('#at-y').onclick = () => obs(1); box.querySelector('#at-n').onclick = () => obs(0);
+  box.querySelector('#at-c').onclick = () => navigator.clipboard && navigator.clipboard.writeText(box.querySelector('#at-st').textContent).then(() => toast('نُسخ'));
+  save(); draw();
+}
 // الصور: النسخة الأوضح (img2، 600px) إن وُجدت، ثم القديمة، ثم رابط المصدر
 const poster = (s, cls = '') => { const src = asset(s.img2 || s.img) || s.poster; return src ? `<img class="${cls}" loading="lazy" referrerpolicy="no-referrer" src="${esc(src)}" alt="">` : `<div class="ph ${cls}"></div>`; };
 // قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
@@ -268,6 +293,7 @@ async function vWatch(showId, epId) {
   };
   const mountArab = () => {
     pl.innerHTML = `<iframe src="${esc(`https://arabhd.onl/embed-${arab}.html`)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
   };
   const drawSrv = () => {
     srv.innerHTML = SRC.map((s) => s.href
