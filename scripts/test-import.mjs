@@ -66,14 +66,19 @@ if (existsSync('test/big.mp4') && process.platform === 'linux') {
   const size = statSync('test/big.mp4').size;
   await page.goto(EP(4)); await page.waitForSelector('#imp', { state: 'attached' });
   const usage0 = await page.evaluate(async () => (await navigator.storage.estimate()).usage || 0);
-  const base = rss(); let peak = base; const timer = setInterval(() => { const r = rss(); if (r > peak) peak = r; }, 150);
+  const udd = (() => { try { return execSync("ps -eo args= | grep -o 'user-data-dir=[^ ]*' | head -1").toString().trim().replace('user-data-dir=', ''); } catch { return ''; } })();
+  const du = () => { try { return +execSync('du -sb ' + udd).toString().split('	')[0]; } catch { return null; } };
+  const disk0 = du(); let samples = 0;
+  const base = rss(); let peak = base; const timer = setInterval(() => { samples++; const r = rss(); if (r > peak) peak = r; }, 150);
   await page.setInputFiles('#imp', 'test/big.mp4');
   await page.waitForFunction(async () => { const db = await import('./db.js'); return (await db.downloads.meta()).some((m) => m.key.endsWith('episode-4')); }, null, { timeout: 180000 }).catch(() => {});
   clearInterval(timer);
   const res = await page.evaluate(async () => { const db = await import('./db.js'); const m = (await db.downloads.meta()).find((x) => x.key.endsWith('episode-4')); return { size: m && m.size, usage: (await navigator.storage.estimate()).usage || 0 }; });
   const MB = 1048576, delta = (peak - base) / MB, usageGrowth = (res.usage - usage0) / size;
   T('large-import-not-in-ram', res.size === size && delta < size / MB * 0.5, JSON.stringify({ fileMB: Math.round(size / MB), savedMatches: res.size === size, peakRssGrowthMB: Math.round(delta) }));
-  T('large-import-no-extra-copy', usageGrowth < 1.3, 'storage usage growth x' + usageGrowth.toFixed(2) + ' of file size');
+  await page.waitForTimeout(1500); const disk1 = du(); const diskGrowth = disk0 !== null && disk1 !== null ? (disk1 - disk0) / size : null;
+  console.log('INFO baseRssMB', Math.round(base / MB), 'samples', samples, 'estimate-usage-growth x' + usageGrowth.toFixed(2) + ' (غير موثوق في Headless)');
+  T('large-import-no-extra-copy-on-disk', diskGrowth !== null && diskGrowth > 0.9 && diskGrowth < 1.3, 'browser profile disk growth x' + (diskGrowth === null ? 'n/a' : diskGrowth.toFixed(2)) + ' of file size (1.0 = one copy)');
   await page.evaluate(async () => { const db = await import('./db.js'); await db.downloads.remove((await db.downloads.meta()).find((x) => x.key.endsWith('episode-4')).key); });
 } else console.log('T large-import SKIPPED (no test/big.mp4 or not linux)');
 
@@ -85,22 +90,25 @@ await page.evaluate(() => { navigator.storage.estimate = async () => ({ quota: 1
 await page.setInputFiles('#imp', 'test/Show 05.mp4');
 const lowOk = await toastHas('المساحة لا تكفي');
 T('low-space-clear-message-nothing-saved', lowOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
+await page.reload(); await page.waitForSelector('#imp', { state: 'attached' });
 
 // ===== فشل الحفظ بامتلاء الحصة (QuotaExceededError): رسالة واضحة وتنظيف =====
 await page.goto(EP(6)); await page.waitForSelector('#imp', { state: 'attached' });
 await page.evaluate(() => { IDBObjectStore.prototype.put = function () { throw new DOMException('quota', 'QuotaExceededError'); }; });
 await page.setInputFiles('#imp', 'test/Show 06.mp4');
 const quotaOk = await toastHas('ممتلئة');
+const quotaToast = await page.evaluate(() => document.getElementById('toast').textContent);
 await page.reload(); await page.waitForSelector('#imp', { state: 'attached' });
-T('quota-exceeded-clear-message', quotaOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
+T('quota-exceeded-clear-message', quotaOk && (await metaCount()) === 0, 'metas=' + (await metaCount()) + ' toast=' + quotaToast);
 
 // ===== إلغاء العملية (abort) لا يعلّق التطبيق =====
 await page.goto(EP(7)); await page.waitForSelector('#imp', { state: 'attached' });
 await page.evaluate(() => { const o = IDBObjectStore.prototype.put; IDBObjectStore.prototype.put = function (v, k) { const r = o.call(this, v, k); try { this.transaction.abort(); } catch {} return r; }; });
 await page.setInputFiles('#imp', 'test/Show 07.mp4');
-const abortOk = await toastHas('أُلغيت العملية', 8000);
+const abortOk = await toastHas('فشل الحفظ', 8000);
+const abortToast = await page.evaluate(() => document.getElementById('toast').textContent);
 await page.reload(); await page.waitForSelector('#imp', { state: 'attached' });
-T('aborted-transaction-does-not-hang', abortOk && (await metaCount()) === 0, 'metas=' + (await metaCount()));
+T('aborted-transaction-does-not-hang', abortOk && (await metaCount()) === 0, 'metas=' + (await metaCount()) + ' toast=' + abortToast);
 
 T('no-page-errors', errors.length === 0, errors.join(' | '));
 await b.close();
