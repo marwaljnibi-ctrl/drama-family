@@ -199,9 +199,18 @@ async function vWatch(showId, epId) {
       else { const m = await import('https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.mjs'); const h = new m.default(); h.loadSource(ep.v.src); h.attachMedia(v); }
     } else v.src = src;
     const startAt = p0 && !p0.done ? p0.time : 0;
-    v.addEventListener('loadedmetadata', () => { if (startAt > 3 && startAt < v.duration - 5) v.currentTime = startAt; });
+    // حارس الاستكمال: لا نحفظ التقدم قبل أن يُطبَّق الانتقال إلى ثانية الاستكمال، وإلا قد يُكتب 0 فوق التقدم القديم
+    // (مثلًا خروج سريع، أو متصفح يتجاهل currentTime قبل canplay). نعيد المحاولة عند canplay.
+    let armed = !(startAt > 3), tries = 0;
+    const applySeek = () => {
+      if (armed) return; tries++;
+      if (v.duration && startAt < v.duration - 5) { try { v.currentTime = startAt; } catch {} } else armed = true;
+    };
+    v.addEventListener('loadedmetadata', applySeek);
+    v.addEventListener('canplay', () => { if (!armed && Math.abs(v.currentTime - startAt) > 2) applySeek(); });
+    v.addEventListener('seeked', () => { if (!armed && Math.abs(v.currentTime - startAt) <= 2) armed = true; });
     let lastSave = 0;
-    const save = (force) => { if (!v.duration || isNaN(v.duration)) return; const now = Date.now(); if (!force && now - lastSave < 5000) return; lastSave = now; progress.save(showId, ep, { time: v.currentTime, duration: v.duration, done: p0 && p0.done && v.currentTime < v.duration * 0.9 ? false : (v.duration - v.currentTime < 20 || v.currentTime / v.duration > 0.95) }); };
+    const save = (force) => { if (!armed) { if (tries >= 2 && v.currentTime > 5) armed = true; else return; } if (!v.duration || isNaN(v.duration)) return; const now = Date.now(); if (!force && now - lastSave < 5000) return; lastSave = now; progress.save(showId, ep, { time: v.currentTime, duration: v.duration, done: p0 && p0.done && v.currentTime < v.duration * 0.9 ? false : (v.duration - v.currentTime < 20 || v.currentTime / v.duration > 0.95) }); };
     v.addEventListener('timeupdate', () => save(false));
     v.addEventListener('pause', () => save(true));
     v.addEventListener('ended', () => { progress.save(showId, ep, { time: v.duration, duration: v.duration, done: true }); toast('اكتملت الحلقة ✓'); });
