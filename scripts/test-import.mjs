@@ -50,6 +50,36 @@ try { await waitVideo(); await page.evaluate(async () => { const v = document.ge
 T('offline-playback-from-saved-file', controlled && offOk, JSON.stringify({ swControlled: controlled, v3 }));
 await ctx.setOffline(false);
 
+// T5b–T5e: حارس الاستكمال (fix/resume-zero) مع الملف المستورد
+const prog = () => page.evaluate(async () => { const db = await import('./db.js'); const p = await db.progress.get('demo-b', 'demo-b-episode-3'); return p ? +p.time.toFixed(1) : null; });
+const setProg = (t) => page.evaluate(async (t) => { const db = await import('./db.js'); await db.progress.save('demo-b', { id: 'demo-b-episode-3', n: 3 }, { time: t, duration: 90, done: false }); }, t);
+// الخروج من الحلقة والعودة إليها
+await page.goto(EP(2)); await page.waitForSelector('#pl iframe'); await setProg(40); await page.goto(EP(3)); await waitVideo(); await page.waitForTimeout(800);
+const r1 = await video(); const p1 = await prog();
+T('resume-after-exit-and-return', r1 && r1.t >= 39 && r1.t < 42 && p1 >= 39, JSON.stringify({ at: r1 && r1.t, saved: p1 }));
+// خروج سريع فور فتح الحلقة: لا يُكتب الصفر فوق الدقيقة المحفوظة
+await page.goto(EP(2)); await page.waitForSelector('#pl iframe'); await setProg(50);
+await page.evaluate(() => { location.hash = location.hash.replace('episode-2', 'episode-3'); });
+await page.waitForFunction(() => { const v = document.getElementById('v'); return v && v.readyState >= 1; });
+await page.evaluate(() => { dispatchEvent(new Event('pagehide')); location.hash = location.hash.replace('episode-3', 'episode-2'); });
+await page.waitForTimeout(800); const p2 = await prog();
+T('quick-exit-does-not-save-zero', p2 >= 49, 'saved=' + p2);
+// محاكاة iOS: المتصفح يتجاهل أول تعيين لـ currentTime
+await setProg(45);
+await page.evaluate(() => { const d = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime'); let n = 0; Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', { configurable: true, get() { return d.get.call(this); }, set(x) { if (n++ === 0) return; d.set.call(this, x); } }); location.hash = location.hash.replace('episode-2', 'episode-3'); });
+await waitVideo(); await page.waitForFunction(() => document.getElementById('v').readyState >= 3, null, { timeout: 15000 }); await page.waitForTimeout(800);
+const r3 = await video(); await page.evaluate(() => dispatchEvent(new Event('pagehide'))); await page.waitForTimeout(500); const p3 = await prog();
+T('ios-sim-first-seek-ignored-still-resumes', r3 && r3.t >= 44 && r3.t < 48 && p3 >= 44, JSON.stringify({ at: r3 && r3.t, saved: p3 }));
+await page.reload(); // يزيل المحاكاة
+// إغلاق التطبيق وإعادة فتحه (صفحة جديدة بنفس التخزين)
+await page.goto(EP(2)); await page.waitForSelector('#pl iframe'); await setProg(60);
+await page.goto('about:blank'); // يُغلق التطبيق في هذه الصفحة
+const pg2 = await ctx.newPage();
+await pg2.goto(EP(3)); await pg2.waitForFunction(() => { const v = document.getElementById('v'); return v && v.readyState >= 1; }); await pg2.waitForTimeout(800);
+const r4 = await pg2.evaluate(() => +document.getElementById('v').currentTime.toFixed(1));
+T('resume-after-close-and-reopen', r4 >= 59 && r4 < 62, 'at=' + r4);
+await pg2.close();
+
 // T6: حلقة أخرى لا تتأثر (ما زالت iframe)، والملف مرتبط بحلقته فقط
 await page.goto(EP(2)); await page.waitForSelector('#pl iframe');
 const other = await page.evaluate(() => ({ iframe: /arabhd/.test(document.querySelector('#pl iframe').src), noVideo: !document.getElementById('v') }));
