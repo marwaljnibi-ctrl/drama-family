@@ -78,7 +78,21 @@ const pg2 = await ctx.newPage();
 await pg2.goto(EP(3)); await pg2.waitForFunction(() => { const v = document.getElementById('v'); return v && v.readyState >= 1; }); await pg2.waitForTimeout(800);
 const r4 = await pg2.evaluate(() => +document.getElementById('v').currentTime.toFixed(1));
 T('resume-after-close-and-reopen', r4 >= 59 && r4 < 62, 'at=' + r4);
+// حفظ تلقائي كل 3 ثوانٍ أثناء التشغيل (بلا إيقاف مؤقت)
+await pg2.evaluate(async () => { const v = document.getElementById('v'); v.muted = true; await v.play(); });
+await pg2.waitForTimeout(4500);
+const live = await pg2.evaluate(async () => { const v = document.getElementById('v'); const db = await import('./db.js'); const p = await db.progress.get('demo-b', 'demo-b-episode-3'); return { cur: +v.currentTime.toFixed(1), saved: p && +p.time.toFixed(1), paused: v.paused }; });
+T('autosave-every-3s-while-playing', !live.paused && live.saved > 60.5 && live.cur - live.saved <= 3.6, JSON.stringify(live));
 await pg2.close();
+// قرب النهاية: لا تُعلَّم الحلقة منتهية قبل ذيلها الحقيقي (مقطع 90 ث: الذيل 4.5 ث وليس 20 ث)
+await page.goto(EP(2)); await page.waitForSelector('#pl iframe'); await setProg(80); await page.goto(EP(3)); await waitVideo(); await page.waitForTimeout(800);
+const r5 = await video();
+await page.evaluate(() => { const v = document.getElementById('v'); v.pause(); });
+await page.waitForTimeout(600);
+const p5 = await page.evaluate(async () => { const db = await import('./db.js'); const p = await db.progress.get('demo-b', 'demo-b-episode-3'); return p && { time: +p.time.toFixed(1), done: p.done }; });
+await page.goto(EP(2)); await page.waitForSelector('#pl iframe'); await page.goto(EP(3)); await waitVideo(); await page.waitForTimeout(800);
+const r6 = await video();
+T('near-end-resumes-not-marked-done', r5 && r5.t >= 79 && p5 && !p5.done && r6 && r6.t >= 79, JSON.stringify({ firstAt: r5 && r5.t, saved: p5, againAt: r6 && r6.t }));
 
 // T6: حلقة أخرى لا تتأثر (ما زالت iframe)، والملف مرتبط بحلقته فقط
 await page.goto(EP(2)); await page.waitForSelector('#pl iframe');

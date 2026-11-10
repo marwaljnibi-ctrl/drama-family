@@ -201,16 +201,29 @@ async function vWatch(showId, epId) {
     const startAt = p0 && !p0.done ? p0.time : 0;
     // حارس الاستكمال: لا نحفظ التقدم قبل أن يُطبَّق الانتقال إلى ثانية الاستكمال، وإلا قد يُكتب 0 فوق التقدم القديم
     // (مثلًا خروج سريع، أو متصفح يتجاهل currentTime قبل canplay). نعيد المحاولة عند canplay.
-    let armed = !(startAt > 3), tries = 0;
+    // ذيل الحلقة الذي يُعدّ «مشاهدة كاملة»: 20 ثانية للحلقات، ونسبة صغيرة للمقاطع القصيرة (مقطع 20 ث كان يُعدّ منتهيًا عند الثانية 15)
+    const tail = () => Math.min(20, v.duration * 0.05);
+    // حارس الاستكمال: لا حفظ قبل تأكيد الانتقال بحدث seeked، مع إعادة المحاولة عند جاهزية Safari (قد يتجاهل الانتقال قبل التشغيل)
+    let armed = !(startAt > 3), tries = 0, retryT;
     const applySeek = () => {
-      if (armed) return; tries++;
-      if (v.duration && startAt < v.duration - 5) { try { v.currentTime = startAt; } catch {} } else armed = true;
+      if (armed || !(v.duration > 0)) return;
+      if (!(startAt < v.duration - tail())) { armed = true; return; }
+      if (tries >= 6) return; tries++;
+      try { v.currentTime = startAt; } catch {}
+      clearTimeout(retryT); retryT = setTimeout(() => { if (!armed && Math.abs(v.currentTime - startAt) > 2) applySeek(); }, 1500);
     };
-    v.addEventListener('loadedmetadata', applySeek);
-    v.addEventListener('canplay', () => { if (!armed && Math.abs(v.currentTime - startAt) > 2) applySeek(); });
-    v.addEventListener('seeked', () => { if (!armed && Math.abs(v.currentTime - startAt) <= 2) armed = true; });
+    for (const ev of ['loadedmetadata', 'loadeddata', 'canplay', 'play', 'playing']) v.addEventListener(ev, () => { if (!armed && Math.abs(v.currentTime - startAt) > 2) applySeek(); });
+    v.addEventListener('seeked', () => { if (!armed && Math.abs(v.currentTime - startAt) <= 2) { armed = true; clearTimeout(retryT); } });
     let lastSave = 0;
-    const save = (force) => { if (!armed) { if (tries >= 2 && v.currentTime > 5) armed = true; else return; } if (!v.duration || isNaN(v.duration)) return; const now = Date.now(); if (!force && now - lastSave < 5000) return; lastSave = now; progress.save(showId, ep, { time: v.currentTime, duration: v.duration, done: p0 && p0.done && v.currentTime < v.duration * 0.9 ? false : (v.duration - v.currentTime < 20 || v.currentTime / v.duration > 0.95) }); };
+    // كل 3 ثوانٍ أثناء التشغيل، وفورًا عند الإيقاف/الإخفاء. يُعتبر الموضع محفوظًا فقط بعد اكتمال معاملة IndexedDB.
+    const save = (force) => {
+      if (!armed) { if (tries >= 2 && v.currentTime > 5) armed = true; else return; }
+      if (!(v.duration > 0)) return;
+      const now = Date.now(); if (!force && now - lastSave < 3000) return; lastSave = now;
+      const t = v.currentTime, d = v.duration;
+      return progress.save(showId, ep, { time: t, duration: d, done: p0 && p0.done && t < d * 0.9 ? false : (d - t < tail() || t / d > 0.95) })
+        .then(() => { v.dataset.savedAt = t.toFixed(1); }).catch(() => {});
+    };
     v.addEventListener('timeupdate', () => save(false));
     v.addEventListener('pause', () => save(true));
     v.addEventListener('ended', () => { progress.save(showId, ep, { time: v.duration, duration: v.duration, done: true }); toast('اكتملت الحلقة ✓'); });

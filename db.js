@@ -21,7 +21,8 @@ function open() {
 async function tx(store, mode, fn) {
   const d = await open();
   return new Promise((res, rej) => {
-    const t = d.transaction(store, mode), s = t.objectStore(store);
+    // durability 'strict': لا تكتمل المعاملة إلا بعد الكتابة على القرص (مهم إن أُطفئ الجهاز). المتصفح الذي لا يدعمها يتجاهلها.
+    const t = mode === 'readwrite' ? d.transaction(store, mode, { durability: 'strict' }) : d.transaction(store, mode), s = t.objectStore(store);
     const out = fn(s);
     t.oncomplete = () => res(out && 'result' in out ? out.result : out);
     t.onerror = (ev) => rej((ev && ev.target && ev.target.error) || t.error || new DOMException('IndexedDB error', 'UnknownError'));
