@@ -138,6 +138,41 @@ async function downloadEp(show, ep, onProgress) {
   await downloads.save(key, new Blob(chunks, { type: 'video/mp4' }), { showId: show.id, epId: ep.id, title: show.title, n: ep.n });
 }
 
+// ---------- استيراد حلقة من تطبيق الملفات (تجريبي) ----------
+// الملف يُربط بالمسلسل والحلقة المفتوحة، ويُحفظ على الجهاز (IndexedDB)، ثم يعمل بمشغّل HTML5 مع الاستكمال وبلا إنترنت.
+const epNumFromName = (n) => { const m = String(n).replace(/\.[^.]+$/, '').match(/(\d{1,4})(?!.*\d)/); return m ? +m[1] : null; };
+async function importEp(show, ep, file) {
+  if (!/^video\//.test(file.type) && !/\.(mp4|m4v|mov)$/i.test(file.name)) throw new Error('اختر ملف فيديو (mp4)');
+  const n = epNumFromName(file.name);
+  if (n && n !== +ep.n && !confirm(`اسم الملف يشير إلى الحلقة ${n} وأنت في الحلقة ${ep.n}. هل تريد ربطه بالحلقة ${ep.n}؟`)) throw new Error('أُلغي الاستيراد');
+  // 1) المساحة: نقارن حجم الملف بالمتاح قبل أي كتابة. التقدير قد يكون تقريبيًا على iOS، لذا نعالج فشل الحفظ أيضًا (أدناه).
+  let free = null;
+  if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); if (e.quota) free = Math.max(0, e.quota - (e.usage || 0)); }
+  if (free !== null && free < file.size * 1.05) throw new Error(`المساحة لا تكفي: الملف ${mb(file.size)} والمتاح نحو ${mb(free)}. احذف حلقات محفوظة أو حرّر مساحة في الجهاز ثم أعد المحاولة.`);
+  await persistStorage();
+  toast(`جارٍ حفظ الملف (${mb(file.size)})… لا تغلق التطبيق`);
+  const key = show.id + '|' + ep.id;
+  // 2) نمرّر ملف المستخدم نفسه إلى IndexedDB دون قراءته في ذاكرة الصفحة ودون slice/arrayBuffer: المتصفح ينقله من الملف إلى التخزين مباشرة.
+  //    (slice فقط إن كان نوع الملف فارغًا، وهو مجرد مؤشر بلا نسخ.)
+  const blob = file.type ? file : file.slice(0, file.size, 'video/mp4');
+  try {
+    await downloads.save(key, blob, { showId: show.id, epId: ep.id, title: show.title, n: ep.n, fname: file.name, imported: true });
+    const back = await downloads.getBlob(key); // مؤشر فقط: نتحقق من الحجم دون قراءة المحتوى
+    if (!back || back.size !== file.size) throw new Error('حجم الملف المحفوظ لا يطابق الأصل');
+  } catch (e) {
+    try { await downloads.remove(key); } catch {} // لا نترك ملفًا ناقصًا
+    if (e && (e.name === 'QuotaExceededError' || /quota/i.test(e.message || ''))) throw new Error('فشل الحفظ: مساحة التخزين المخصصة للتطبيق ممتلئة. احذف حلقات محفوظة أو حرّر مساحة في الجهاز ثم أعد المحاولة.');
+    if (e && e.name === 'AbortError') throw new Error('فشل الحفظ: أُلغيت العملية (غالبًا بسبب نقص المساحة). لم يُحفظ أي شيء.');
+    throw new Error('فشل حفظ الملف: ' + ((e && (e.message || e.name)) || 'خطأ غير معروف'));
+  }
+}
+function addImport(container, show, ep, onDone) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'video/mp4,video/*,.mp4,.m4v,.mov'; inp.hidden = true; inp.id = 'imp';
+  const btn = document.createElement('button'); btn.id = 'impbtn'; btn.textContent = '📥 استيراد من الملفات'; btn.onclick = () => inp.click();
+  inp.onchange = async () => { const f = inp.files && inp.files[0]; if (!f) return; try { await importEp(show, ep, f); toast('تم حفظ الحلقة'); onDone(); } catch (e) { toast(e.message || 'فشل الاستيراد'); } finally { inp.value = ''; } };
+  container.append(btn, inp);
+}
+
 async function vWatch(showId, epId) {
   const show = D.byId.get(showId), ep = show && findEp(show, epId);
   if (!ep) return (view.innerHTML = '<div class="empty">الحلقة غير موجودة.</div>');
@@ -158,14 +193,37 @@ async function vWatch(showId, epId) {
     if (meta) { const b = await downloads.getBlob(key); if (b) { blobUrl = URL.createObjectURL(b); src = blobUrl; } }
     pl.innerHTML = '<video id="v" controls playsinline webkit-playsinline preload="metadata"></video>';
     const v = $('#v');
+    v.addEventListener('error', () => { if (blobUrl) msg.innerHTML = '<div class="note">تعذّر تشغيل الملف المحفوظ (قد تكون صيغته غير مدعومة على هذا الجهاز). يمكنك حذفه واستيراد ملف آخر.</div>'; });
     if (ep.v && ep.v.type === 'hls' && !blobUrl) {
       if (v.canPlayType('application/vnd.apple.mpegurl')) v.src = ep.v.src;
       else { const m = await import('https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.mjs'); const h = new m.default(); h.loadSource(ep.v.src); h.attachMedia(v); }
     } else v.src = src;
     const startAt = p0 && !p0.done ? p0.time : 0;
-    v.addEventListener('loadedmetadata', () => { if (startAt > 3 && startAt < v.duration - 5) v.currentTime = startAt; });
+    // حارس الاستكمال: لا نحفظ التقدم قبل أن يُطبَّق الانتقال إلى ثانية الاستكمال، وإلا قد يُكتب 0 فوق التقدم القديم
+    // (مثلًا خروج سريع، أو متصفح يتجاهل currentTime قبل canplay). نعيد المحاولة عند canplay.
+    // ذيل الحلقة الذي يُعدّ «مشاهدة كاملة»: 20 ثانية للحلقات، ونسبة صغيرة للمقاطع القصيرة (مقطع 20 ث كان يُعدّ منتهيًا عند الثانية 15)
+    const tail = () => Math.min(20, v.duration * 0.05);
+    // حارس الاستكمال: لا حفظ قبل تأكيد الانتقال بحدث seeked، مع إعادة المحاولة عند جاهزية Safari (قد يتجاهل الانتقال قبل التشغيل)
+    let armed = !(startAt > 3), tries = 0, retryT;
+    const applySeek = () => {
+      if (armed || !(v.duration > 0)) return;
+      if (!(startAt < v.duration - tail())) { armed = true; return; }
+      if (tries >= 6) return; tries++;
+      try { v.currentTime = startAt; } catch {}
+      clearTimeout(retryT); retryT = setTimeout(() => { if (!armed && Math.abs(v.currentTime - startAt) > 2) applySeek(); }, 1500);
+    };
+    for (const ev of ['loadedmetadata', 'loadeddata', 'canplay', 'play', 'playing']) v.addEventListener(ev, () => { if (!armed && Math.abs(v.currentTime - startAt) > 2) applySeek(); });
+    v.addEventListener('seeked', () => { if (!armed && Math.abs(v.currentTime - startAt) <= 2) { armed = true; clearTimeout(retryT); } });
     let lastSave = 0;
-    const save = (force) => { if (!v.duration || isNaN(v.duration)) return; const now = Date.now(); if (!force && now - lastSave < 5000) return; lastSave = now; progress.save(showId, ep, { time: v.currentTime, duration: v.duration, done: p0 && p0.done && v.currentTime < v.duration * 0.9 ? false : (v.duration - v.currentTime < 20 || v.currentTime / v.duration > 0.95) }); };
+    // كل 3 ثوانٍ أثناء التشغيل، وفورًا عند الإيقاف/الإخفاء. يُعتبر الموضع محفوظًا فقط بعد اكتمال معاملة IndexedDB.
+    const save = (force) => {
+      if (!armed) { if (tries >= 2 && v.currentTime > 5) armed = true; else return; }
+      if (!(v.duration > 0)) return;
+      const now = Date.now(); if (!force && now - lastSave < 3000) return; lastSave = now;
+      const t = v.currentTime, d = v.duration;
+      return progress.save(showId, ep, { time: t, duration: d, done: p0 && p0.done && t < d * 0.9 ? false : (d - t < tail() || t / d > 0.95) })
+        .then(() => { v.dataset.savedAt = t.toFixed(1); }).catch(() => {});
+    };
     v.addEventListener('timeupdate', () => save(false));
     v.addEventListener('pause', () => save(true));
     v.addEventListener('ended', () => { progress.save(showId, ep, { time: v.duration, duration: v.duration, done: true }); toast('اكتملت الحلقة ✓'); });
@@ -201,6 +259,7 @@ async function vWatch(showId, epId) {
         act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; nosb = false; try { if (sv[cur][0] !== 'o') localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
         const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
         const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
+        addImport(act, show, ep, () => route());
       };
       if (!p0) await progress.save(showId, ep, { done: false });
       draw();
@@ -212,6 +271,7 @@ async function vWatch(showId, epId) {
     act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">▶ تشغيل الحلقة</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}${exBtn}`;
     const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
     const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
+    addImport(act, show, ep, () => route());
     msg.innerHTML = '<div class="note">تُفتح الحلقة في صفحة المصدر. يحفظ التطبيق أنك فتحتها وآخر حلقة وصلت إليها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيلها. اضغط «تمت المشاهدة» عند الانتهاء.</div>';
   }
 }

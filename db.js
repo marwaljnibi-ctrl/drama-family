@@ -21,10 +21,13 @@ function open() {
 async function tx(store, mode, fn) {
   const d = await open();
   return new Promise((res, rej) => {
-    const t = d.transaction(store, mode), s = t.objectStore(store);
+    // durability 'strict': لا تكتمل المعاملة إلا بعد الكتابة على القرص (مهم إن أُطفئ الجهاز). المتصفح الذي لا يدعمها يتجاهلها.
+    const t = mode === 'readwrite' ? d.transaction(store, mode, { durability: 'strict' }) : d.transaction(store, mode), s = t.objectStore(store);
     const out = fn(s);
     t.oncomplete = () => res(out && 'result' in out ? out.result : out);
-    t.onerror = () => rej(t.error);
+    t.onerror = (ev) => rej((ev && ev.target && ev.target.error) || t.error || new DOMException('IndexedDB error', 'UnknownError'));
+    // امتلاء التخزين قد يظهر كإلغاء للعملية (abort) بلا حدث error: نرفضه بدل التعليق بصمت.
+    t.onabort = () => rej(t.error || new DOMException('Transaction aborted', 'AbortError'));
   });
 }
 const all = (s) => tx(s, 'readonly', (st) => st.getAll());

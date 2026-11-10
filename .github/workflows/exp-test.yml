@@ -1,0 +1,35 @@
+name: exp-test
+on:
+  push: { branches: ['exp/**'] }
+  workflow_dispatch: {}
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: unit tests
+        run: node --test scripts/test.mjs
+      - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
+      - name: make test clip (H.264+AAC, 90s)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && mkdir -p test && ffmpeg -loglevel error -y -f lavfi -i testsrc=size=640x360:rate=24 -f lavfi -i sine=frequency=440 -t 90 -c:v libx264 -pix_fmt yuv420p -preset ultrafast -c:a aac -movflags +faststart test/clip.mp4
+      - name: make big file (700MB = valid mp4 + padding) for the memory test
+        run: cp test/clip.mp4 test/big.mp4 && head -c 700M /dev/zero >> test/big.mp4 && ls -la test/big.mp4
+      - name: import e2e (local server)
+        run: |
+          node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
+          sleep 2
+          node scripts/test-import.mjs
+      - name: import e2e (published preview, only if scripts/preview-url.txt exists)
+        run: |
+          if [ -f scripts/preview-url.txt ]; then BASE="$(cat scripts/preview-url.txt)" node scripts/test-import.mjs; else echo "no preview url"; fi
+      - name: check sample files and headers on the preview
+        run: |
+          U="$(cat scripts/preview-url.txt)"
+          U="${U%/}"
+          for p in "" "sample/" "sample/dizi-test-small.mp4" "manifest.webmanifest" "sw.js"; do
+            echo "CHK $p $(curl -s -o /dev/null -w '%{http_code} %{content_type} %{size_download}B' "$U/$p")"
+          done
+          echo "CHK range-mp4 $(curl -s -o /dev/null -w '%{http_code}' -H 'Range: bytes=0-99' "$U/sample/dizi-test-small.mp4")"
+          echo "CHK noindex $(curl -sI "$U/" | grep -i x-robots-tag | cut -c1-80)"
