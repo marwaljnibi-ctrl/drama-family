@@ -1,4 +1,4 @@
-import { loadData, loadMailru, asset, findEp, latestEpisodes } from './source.js';
+import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage } from './db.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -197,20 +197,20 @@ async function vWatch(showId, epId) {
   const key = showId + '|' + epId;
   // تنقّل سريع: إن تغيّر المسار أثناء الانتظار فهذه صفحة قديمة، تتوقف ولا تلمس الصفحة الجديدة
   const h0 = location.hash, stale = () => location.hash !== h0;
-  const [p0, meta, mr] = await Promise.all([progress.get(showId, epId), downloads.getMeta(key), D.demo ? null : loadMailru()]);
+  const [p0, meta] = await Promise.all([progress.get(showId, epId), downloads.getMeta(key)]);
   if (stale()) return;
   const next = nextEp(show, ep);
-  // سيرفران فقط: Arab HD (مشغّل مضمّن) وcloud.mail.ru (ملف MP4 عام يُشغَّل بمشغّل HTML5)
+  // سيرفران فقط: Arab HD (مشغّل مضمّن) وcloud.mail.ru.
+  // cloud.mail.ru لا يُضمَّن ولا يُقرأ من داخل التطبيق: رابط الملف المباشر مرتبط بعنوان IP لمن طلبه (اختُبر: 206 لنفس الجهاز، 404 لغيره)،
+  // وطلبه من المتصفح يمنعه CORS. لذلك زره يفتح صفحة الملف العامة في Safari للمشاهدة أو التنزيل.
   const arab = ((ep.sv || []).find((x) => x[0] === 'a') || [])[1];
   const exLink = ((ep.sv || []).find((x) => x[0] === 'e') || [])[1];
-  const exPath = exLink && (String(exLink).match(/\/public\/(.+)$/) || [])[1];
-  const cmUrl = exPath && mr && mr.base ? `${mr.base}/${exPath}` : null;
   const SRC = [];
   if (meta) SRC.push({ k: 'f', name: 'الملف المحفوظ', video: true });
   if (ep.v) SRC.push({ k: 'v', name: 'مباشر', video: true });
   if (arab) SRC.push({ k: 'a', name: 'Arab HD', video: false });
-  if (cmUrl) SRC.push({ k: 'e', name: 'cloud.mail.ru', video: true });
-  const dlHref = cmUrl || exLink || null;
+  if (exLink) SRC.push({ k: 'e', name: 'cloud.mail.ru ↗', video: false, href: exLink });
+  const dlHref = exLink || null;
 
   view.innerHTML = `${demoBanner()}<div class="player" id="pl"></div>
     <div class="actions" id="srv"></div>
@@ -270,16 +270,17 @@ async function vWatch(showId, epId) {
     pl.innerHTML = `<iframe src="${esc(`https://arabhd.onl/embed-${arab}.html`)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   };
   const drawSrv = () => {
-    srv.innerHTML = SRC.map((s) => `<button data-k="${s.k}" class="${s.k === cur ? 'pri' : ''}">${esc(s.name)}</button>`).join('');
+    srv.innerHTML = SRC.map((s) => s.href
+      ? `<a style="flex:1;min-width:120px" href="${esc(s.href)}" target="_blank" rel="noopener"><button style="width:100%">${esc(s.name)}</button></a>`
+      : `<button data-k="${s.k}" class="${s.k === cur ? 'pri' : ''}">${esc(s.name)}</button>`).join('');
     srv.querySelectorAll('[data-k]').forEach((b) => (b.onclick = () => select(b.dataset.k)));
   };
   const select = async (k, startAt) => {
     stopCur(); msg.innerHTML = ''; cur = k;
-    try { if (k === 'a' || k === 'e') localStorage.setItem('df-sv2', k); } catch {}
+    try { if (k === 'a') localStorage.setItem('df-sv2', k); } catch {}
     drawSrv();
     if (k === 'a') return mountArab();
     if (startAt == null) { const p = await progress.get(showId, epId); if (stale()) return; startAt = p && !p.done ? p.time || 0 : 0; }
-    if (k === 'e') return mountVideo(cmUrl, startAt);
     if (k === 'v') return mountVideo(ep.v.src, startAt);
     if (k === 'f') {
       if (!blobUrl) { const b = await downloads.getBlob(key); if (stale()) return; if (!b) { toast('الملف المحفوظ غير موجود'); return; } blobUrl = URL.createObjectURL(b); }
@@ -295,7 +296,7 @@ async function vWatch(showId, epId) {
     snapsEl.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => playFrom(snaps[+b.dataset.i].t)));
   };
   const playFrom = (t) => {
-    const vk = SRC.some((s) => s.video && s.k === cur) ? cur : (SRC.find((s) => s.k === 'f') || SRC.find((s) => s.k === 'e') || SRC.find((s) => s.k === 'v') || {}).k;
+    const vk = SRC.some((s) => s.video && s.k === cur) ? cur : (SRC.find((s) => s.k === 'f') || SRC.find((s) => s.k === 'v') || {}).k;
     if (!vk) return toast(`انتقل في المشغّل إلى ${fmt(t)} (Arab HD لا يسمح بالتحكم من التطبيق)`);
     if (curV && cur === vk && curV.duration > 0) { curV.currentTime = t; curV.play().catch(() => {}); toast('تشغيل من ' + fmt(t)); }
     else select(vk, t);
@@ -340,7 +341,9 @@ async function vWatch(showId, epId) {
     return;
   }
   let pref = null; try { pref = localStorage.getItem('df-sv2'); } catch {}
-  const first = (meta && 'f') || (SRC.some((s) => s.k === pref) && pref) || SRC[0].k;
+  const playable = SRC.filter((s) => !s.href);
+  if (!playable.length) { pl.innerHTML = `<a href="${esc(exLink)}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;background:#000;color:#fff;font-size:18px">▶ فتح الحلقة على cloud.mail.ru</a>`; return; }
+  const first = (meta && 'f') || (playable.some((s) => s.k === pref) && pref) || playable[0].k;
   select(first);
 }
 
