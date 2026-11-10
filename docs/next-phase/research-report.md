@@ -114,3 +114,68 @@
 | محاكاة iOS (تجاهل أول انتقال) → الاستكمال | PASS (45ث) | PENDING |
 
 تنبيه: «إغلاق PWA» في Chromium محاكاة بصفحة جديدة، وليس إغلاق تطبيق iOS حقيقيًا. لا تُعتبر المشكلة محلولة حتى يختبرها صاحب المشروع على iPhone.
+
+## 9. جولة التنزيل المباشر وOPFS (2026-11-10)
+
+### 9.1 مراجع جديدة (روابط وتراخيص من `gh api` — لم نراجع كود أيٍّ منها، والوصف من GitHub أو من ملخّص صاحب المشروع)
+
+| المرجع | الرابط | الترخيص | الادعاء (غير مختبر عندنا) | ملاحظة |
+|---|---|---|---|---|
+| FastDownload Accelerator | https://github.com/duydanh9989/fastdownload-accelerator | MIT | تنزيل متوازٍ حتى 16 مسارًا بـ HTTP Range | إضافة Chrome (MV3)، لا PWA؛ 0 نجوم. لا تنزيل متوازٍ قبل إثبات تحسّن السرعة |
+| opfs-worker | https://github.com/kachurun/opfs-worker | MIT | كتابة تدريجية إلى OPFS داخل Worker | نفس الفكرة التي جرّبناها بكودنا (9.3) |
+| pluggable-serviceworker | https://github.com/budarin/pluggable-serviceworker | MIT | تقديم ملفات OPFS عبر Service Worker بـ 206 | غير مختبر؛ قد يلزم لتشغيل ملفات كبيرة دون blob URL |
+| wllama | https://github.com/ngxson/wllama | MIT | تنزيل نماذج كبيرة بالتدفق إلى OPFS | مشروع LLM؛ نأخذ نمط التخزين فقط |
+| gguf-pwa | https://github.com/tshego3/gguf-pwa (أقرب تطابق بالاسم — **يحتاج تأكيد**) | لا ترخيص | توافق الكتابة مع Safari | لا ترخيص → لا نسخ كود |
+| Mediabunny Issue #459 | https://github.com/Vanilagy/mediabunny/issues/459 (المستودع MPL-2.0) | — | العنوان: «Safari: StreamTarget to OPFS export silently corrupts output file» (مغلقة) | سبب إضافي لعدم الوثوق بالكتابة دون تحقق نهائي |
+| Quietkeep | https://github.com/njefferson/Quietkeep | NOASSERTION | اختبارات احتفاظ بالتخزين على Apple | وصف المستودع «مخطِّط محلي» ولا يذكر ذلك؛ **غير متحقق** |
+| cors-anywhere-using-cloudflare | https://github.com/sharad-bapat/cors-anywhere-using-cloudflare | MIT | وسيط CORS على Cloudflare Workers | **لم يُنشأ** (انظر 9.2) |
+
+### 9.2 رابط Cloud.Mail (مصدر Express)
+
+الطريقة: نفس منطق `getMailruDownloadHref()` في YDMassDownLoad (طلب مجهول إلى `api/v2/dispatcher` ثم `weblink_get` + مسار الرابط). طلبات عادية بلا تزوير ترويسات.
+
+| الاختبار | النتيجة | التفصيل |
+|---|---|---|
+| الحصول على رابط التنزيل المباشر (خارج المتصفح) | PASS | dispatcher 200؛ تحويل 301 إلى `*.datacloudmail.ru/public/get/<token>/no/City 72.mp4` |
+| HTTP Range / 206 / Content-Range | PASS | `bytes 0-0/3781927829` (≈3.52 غ.ب)، منتصف ونهاية الملف 206 صحيح |
+| بصمة موثوقة | PENDING | ترويسة `Etag` من 40 خانة؛ لا نعرف أنها SHA-1 للمحتوى (Mail.ru يستخدم بصمة خاصة) → لا نعتمدها |
+| CORS من صفحة Dizi (متصفح حقيقي، أصل localhost) | **FAIL** | dispatcher وصفحة الرابط وخادم التنزيل: «No 'Access-Control-Allow-Origin' header». `no-cors` يعطي استجابة opaque غير قابلة للقراءة |
+| تنزيل تدريجي إلى OPFS من Dizi دون Safari/Aloha | **FAIL** | يمنعه CORS: الصفحة لا تستطيع قراءة البايتات |
+| الاستكمال بعد الانقطاع من Mail.ru | **FAIL / غير ممكن** | للسبب نفسه |
+
+**العائق الفعلي:** Mail.ru لا يرسل `Access-Control-Allow-Origin`. هذا قرار من المصدر، والمتصفح يطبّقه.
+
+**الوسيط:** لم يُنشأ. الوسيط هنا سيتجاوز سياسة CORS لمصدر لم يصرّح لنا بالقراءة عبر الأصول، والمحتوى ملك طرف ثالث. كذلك يمرّر ≈3.5 غ.ب للحلقة عبر Workers، وهذا غير مناسب للخطة المجانية ولشروطها. القرار لصاحب المشروع، ونوصي بعدم استخدامه.
+
+### 9.3 مختبر OPFS (الفرع `exp/opfs-download`، غير مربوط بالتطبيق)
+
+- الملفات: `lab/opfs-download/` (Worker يكتب بـ `createSyncAccessHandle`، وتنزيل متسلسل بقطع Range، ونقطة حفظ بعد كل قطعة مع `flush`).
+- معاينة منفصلة: https://exp-opfs-download.dizi-preview.pages.dev/lab/opfs-download/ (لا تمسّ معاينة الاستكمال).
+- شروط «مكتملة»: الحجم من `Content-Range`، و`written == total`، و`flush` ثم الحجم على القرص == total، ومرور على صناديق MP4 حتى نهاية الملف بالضبط (ftyp/moov/mdat)، وإغلاق الملف، ثم تقديم وترجيع فعلي (50% و97% ثم 10%). البصمة لا تُفحص لعدم وجود بصمة موثوقة من المصدر، ولأن WebCrypto لا يدعم الحساب التدريجي.
+- القطعة غير المعتمدة عند الانقطاع تُحذف، والجزء المسجّل يبقى للاستكمال.
+
+| اختبار (Chromium، مصدر من نفس الأصل) | 593 ك.ب | 2.6 م.ب |
+|---|---|---|
+| probe: 206 + الحجم | PASS | PASS |
+| انقطاع عند 50%: يبقى جزئيًا وغير مكتمل | PASS | PASS |
+| verify يرفض الملف الجزئي | PASS | PASS |
+| استكمال بعد 50% → مكتمل ومطابق (SHA-256 للاختبار فقط) | PASS | PASS |
+| انقطاع عند 99%: يبقى غير مكتمل | PASS | PASS |
+| الاستكمال بعد 99% يجلب آخر قطعة فقط | PASS | PASS |
+| الملف المكتمل لا يُعاد تنزيله | PASS | PASS |
+| تلف (كسر صندوق moov) → يُرفض ويُلغى «مكتمل» | PASS | PASS |
+| بيانات وصفية كاذبة (written=total لملف ناقص) → تُرفض | PASS | PASS |
+
+خلل وجدناه وأصلحناه: إيقاف الـ Worker دون إغلاق المقابض ترك الملف مقفلًا في Chromium، فتعلّقت العملية التالية. الإصلاح: `closeAll` قبل الإيقاف.
+
+| البند | الحالة |
+|---|---|
+| المختبر على Safari/iPhone | **PENDING** (يحتاج فتح رابط المعاينة على الجهاز) |
+| ملف بحجم حلقة حقيقية (>1 غ.ب) في OPFS على iOS | **PENDING** |
+| تشغيل ملف OPFS كبير في `<video>` على iOS (blob URL أو SW 206) | **PENDING** |
+| تنزيل متوازٍ | لم يُنفَّذ (لا قياس يثبت تحسّن السرعة) |
+
+### 9.4 الخطوة التالية
+1. تشغيل المختبر على iPhone (Safari ثم PWA): زر «تشغيل الاختبارات» وإرسال النتيجة.
+2. مصدر Express يبقى بالتنزيل اليدوي في Safari/Aloha ثم الاستيراد (مثبت على Chromium، PENDING على iPhone). لا مسار مباشر من Dizi ما دام المصدر يمنع CORS.
+3. إن نجح OPFS على iOS: ربطه خلف عقد `LibraryStore` للملفات المستوردة أو لأي مصدر يسمح بـ CORS.
