@@ -178,7 +178,10 @@ async function vWatch(showId, epId) {
   if (!ep) return (view.innerHTML = '<div class="empty">الحلقة غير موجودة.</div>');
   titleEl.textContent = `${show.title} - حلقة ${ep.n}`;
   const key = showId + '|' + epId;
+  // تنقّل سريع: إن تغيّر المسار أثناء الانتظار فهذه صفحة قديمة، تتوقف ولا تلمس الصفحة الجديدة
+  const h0 = location.hash, stale = () => location.hash !== h0;
   const [p0, meta] = await Promise.all([progress.get(showId, epId), downloads.getMeta(key)]);
+  if (stale()) return;
   const next = nextEp(show, ep);
   const direct = ep.v || meta;
   view.innerHTML = `${demoBanner()}<div class="player" id="pl"></div>
@@ -190,9 +193,9 @@ async function vWatch(showId, epId) {
   if (direct) {
     // مشغّل أصلي: تحكم كامل وحفظ كل 5 ثوانٍ
     let src = ep.v && ep.v.src, blobUrl;
-    if (meta) { const b = await downloads.getBlob(key); if (b) { blobUrl = URL.createObjectURL(b); src = blobUrl; } }
+    if (meta) { const b = await downloads.getBlob(key); if (stale()) return; if (b) { blobUrl = URL.createObjectURL(b); src = blobUrl; } }
     pl.innerHTML = '<video id="v" controls playsinline webkit-playsinline preload="metadata"></video>';
-    const v = $('#v');
+    const v = pl.querySelector('#v');
     v.addEventListener('error', () => { if (blobUrl) msg.innerHTML = '<div class="note">تعذّر تشغيل الملف المحفوظ (قد تكون صيغته غير مدعومة على هذا الجهاز). يمكنك حذفه واستيراد ملف آخر.</div>'; });
     if (ep.v && ep.v.type === 'hls' && !blobUrl) {
       if (v.canPlayType('application/vnd.apple.mpegurl')) v.src = ep.v.src;
