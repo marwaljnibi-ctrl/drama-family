@@ -31,6 +31,7 @@ window.runTests = async (srcUrl) => {
   await removeAll(NAME);
   const p = await probe(url).catch((e) => ({ err: e.message }));
   T('probe-206-and-total', p.total > 0, JSON.stringify(p));
+  if (!(p.total > 0)) { log('STOP: المصدر لا يدعم Range (206)، فلا معنى لبقية الاختبارات.'); log(`RESULT 0/${R.length}`); return { pass: 0, total: R.length, out: out.textContent }; }
   const srcHash = await sha(await (await fetch(url, { cache: 'no-store' })).arrayBuffer()); // للاختبار فقط (ملف صغير)
 
   const a1 = await abortAt(url, NAME, 0.5, CH); const s1 = await status(NAME);
@@ -65,7 +66,9 @@ window.runTests = async (srcUrl) => {
   await removeAll(NAME);
   const pass = R.filter((x) => x.ok).length; log(`RESULT ${pass}/${R.length}`); return { pass, total: R.length, out: out.textContent };
 };
-document.getElementById('run').onclick = () => window.runTests();
+// على Cloudflare Pages: الملفات الثابتة لا تدعم Range، فنستخدم نقطة /lab-range/ (نفس الأصل) التي تدعمه
+if (/\.pages\.dev$/.test(location.hostname)) document.getElementById('src').value = '/lab-range/lab/opfs-download/sample.mp4';
+document.getElementById('run').onclick = () => window.runTests().catch((e) => log('ERROR ' + e.name + ': ' + e.message));
 </script>
 </body>
 </html>
