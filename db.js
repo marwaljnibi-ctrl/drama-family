@@ -24,7 +24,7 @@ async function tx(store, mode, fn) {
     const t = d.transaction(store, mode), s = t.objectStore(store);
     const out = fn(s);
     t.oncomplete = () => res(out && 'result' in out ? out.result : out);
-    t.onerror = () => rej(t.error);
+    t.onerror = (ev) => rej((ev && ev.target && ev.target.error) || t.error || new DOMException('IndexedDB error', 'UnknownError'));
     // امتلاء التخزين قد يظهر كإلغاء للعملية (abort) بلا حدث error: نرفضه بدل التعليق بصمت.
     t.onabort = () => rej(t.error || new DOMException('Transaction aborted', 'AbortError'));
   });

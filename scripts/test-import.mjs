@@ -1,8 +1,9 @@
 // اختبار نهاية لنهاية (Chromium) لميزة استيراد حلقة من الملفات: ربط، حفظ، استكمال، بلا إنترنت، حذف، وعدم المساس بمشغّلات Arab HD/Turk.
 // يتطلب: خادم على 8123، وملف test/clip.mp4 (H.264+AAC، 90 ثانية). النتائج: سطر "T <اسم> PASS|FAIL <تفصيل>".
 import { chromium } from 'playwright';
-import { copyFileSync, existsSync, statSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { copyFileSync, existsSync, statSync, mkdtempSync, readFileSync } from 'node:fs';
+import { execSync, spawn } from 'node:child_process';
+import { tmpdir } from 'node:os';
 const BASE = process.env.BASE || 'http://localhost:8123/';
 const EP = (n) => `${BASE}?demo=1#/watch/demo-b/demo-b-episode-${n}`;
 copyFileSync('test/clip.mp4', 'test/Show 03.mp4'); copyFileSync('test/clip.mp4', 'test/Brother 22.mp4'); copyFileSync('test/clip.mp4', 'test/Show 05.mp4'); copyFileSync('test/clip.mp4', 'test/Show 06.mp4'); copyFileSync('test/clip.mp4', 'test/Show 07.mp4');
@@ -60,26 +61,29 @@ const afterRm = await page.evaluate(async () => { const db = await import('./db.
 T('delete-restores-embed', afterRm.metas === 0 && afterRm.iframe, JSON.stringify(afterRm));
 
 
-// ===== ملف كبير: لا يُحمَّل في الذاكرة ولا نسخ زائدة (Linux فقط: نقيس RSS لعمليات Chromium) =====
-const rss = () => { try { return execSync("ps -eo rss=,args= | grep -i '[c]hrom' | awk '{s+=$1} END {print s+0}'").toString().trim() * 1024; } catch { return null; } };
+// ===== ملف كبير: متصفح بملف تعريف حقيقي على القرص + مراقب RSS مستقل (Linux). لا يُحمَّل الملف في الذاكرة ولا نسخ زائدة =====
 if (existsSync('test/big.mp4') && process.platform === 'linux') {
-  const size = statSync('test/big.mp4').size;
-  await page.goto(EP(4)); await page.waitForSelector('#imp', { state: 'attached' });
-  const usage0 = await page.evaluate(async () => (await navigator.storage.estimate()).usage || 0);
-  const udd = (() => { try { return execSync("ps -eo args= | grep -o 'user-data-dir=[^ ]*' | head -1").toString().trim().replace('user-data-dir=', ''); } catch { return ''; } })();
-  const du = () => { try { return +execSync('du -sb ' + udd).toString().split('	')[0]; } catch { return null; } };
-  const disk0 = du(); let samples = 0;
-  const base = rss(); let peak = base; const timer = setInterval(() => { samples++; const r = rss(); if (r > peak) peak = r; }, 150);
-  await page.setInputFiles('#imp', 'test/big.mp4');
-  await page.waitForFunction(async () => { const db = await import('./db.js'); return (await db.downloads.meta()).some((m) => m.key.endsWith('episode-4')); }, null, { timeout: 180000 }).catch(() => {});
-  clearInterval(timer);
-  const res = await page.evaluate(async () => { const db = await import('./db.js'); const m = (await db.downloads.meta()).find((x) => x.key.endsWith('episode-4')); return { size: m && m.size, usage: (await navigator.storage.estimate()).usage || 0 }; });
-  const MB = 1048576, delta = (peak - base) / MB, usageGrowth = (res.usage - usage0) / size;
-  T('large-import-not-in-ram', res.size === size && delta < size / MB * 0.5, JSON.stringify({ fileMB: Math.round(size / MB), savedMatches: res.size === size, peakRssGrowthMB: Math.round(delta) }));
-  await page.waitForTimeout(1500); const disk1 = du(); const diskGrowth = disk0 !== null && disk1 !== null ? (disk1 - disk0) / size : null;
-  console.log('INFO baseRssMB', Math.round(base / MB), 'samples', samples, 'estimate-usage-growth x' + usageGrowth.toFixed(2) + ' (غير موثوق في Headless)');
-  T('large-import-no-extra-copy-on-disk', diskGrowth !== null && diskGrowth > 0.9 && diskGrowth < 1.3, 'browser profile disk growth x' + (diskGrowth === null ? 'n/a' : diskGrowth.toFixed(2)) + ' of file size (1.0 = one copy)');
-  await page.evaluate(async () => { const db = await import('./db.js'); await db.downloads.remove((await db.downloads.meta()).find((x) => x.key.endsWith('episode-4')).key); });
+  const size = statSync('test/big.mp4').size, MB = 1048576;
+  const dir = mkdtempSync(tmpdir() + '/pw-prof-'), log = dir + '-rss.log';
+  const bctx = await chromium.launchPersistentContext(dir, { viewport: { width: 390, height: 844 } });
+  const bp = await bctx.newPage(); await bp.goto(EP(4)); await bp.waitForSelector('#imp', { state: 'attached' });
+  const du = () => +execSync('du -sb ' + dir).toString().trim().split(/\s+/)[0];
+  const sampler = spawn('sh', ['-c', "while true; do ps -eo rss=,args= | grep -i '[c]hrom' | awk '{s+=$1} END {print s*1024}' >> " + log + "; sleep 0.2; done"], { detached: true, stdio: 'ignore' });
+  await new Promise((r) => setTimeout(r, 1500));
+  const disk0 = du();
+  await bp.setInputFiles('#imp', 'test/big.mp4');
+  await bp.waitForFunction(async () => { const db = await import('./db.js'); return (await db.downloads.meta()).some((m) => m.key.endsWith('episode-4')); }, null, { timeout: 240000 }).catch(() => {});
+  await new Promise((r) => setTimeout(r, 1500));
+  try { process.kill(-sampler.pid); } catch {}
+  const rows = readFileSync(log, 'utf8').trim().split(/\s+/).map(Number).filter(Boolean);
+  const base = rows[0], peak = Math.max(...rows), disk1 = du();
+  const saved = await bp.evaluate(async () => { const db = await import('./db.js'); const m = (await db.downloads.meta()).find((x) => x.key.endsWith('episode-4')); return m && m.size; });
+  const growthMB = (peak - base) / MB, diskGrowth = (disk1 - disk0) / size;
+  console.log('INFO fileMB', Math.round(size / MB), 'rssSamples', rows.length, 'baseRssMB', Math.round(base / MB), 'peakRssMB', Math.round(peak / MB), 'diskGrowthMB', Math.round((disk1 - disk0) / MB));
+  T('large-import-saved-complete', saved === size, 'saved=' + saved + ' expected=' + size);
+  T('large-import-not-in-ram', rows.length >= 5 && growthMB < size / MB * 0.5, 'peak RSS growth ' + Math.round(growthMB) + 'MB for a ' + Math.round(size / MB) + 'MB file');
+  T('large-import-no-extra-copy-on-disk', diskGrowth > 0.9 && diskGrowth < 1.3, 'profile disk growth x' + diskGrowth.toFixed(2) + ' of file size (1.0 = a single copy)');
+  await bctx.close();
 } else console.log('T large-import SKIPPED (no test/big.mp4 or not linux)');
 
 // ===== نقص المساحة: رسالة واضحة، ولا يُحفظ شيء =====
