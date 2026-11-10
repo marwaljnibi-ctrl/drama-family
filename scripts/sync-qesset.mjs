@@ -99,25 +99,8 @@ async function localizePosters(shows) {
   console.log(`posters: +${got} new, ${fail} failed, sharp=${!!sharp}`);
 }
 
-// رابط التنزيل العام لـ cloud.mail.ru: نفس طريقة getMailruDownloadHref (طلب مجهول إلى dispatcher، بلا تسجيل دخول).
-// الأساس يصلح لكل الروابط العامة؛ اختُبر صالحًا بعد 93 دقيقة. نحدّثه كل 30 دقيقة فقط حتى لا ننشر الموقع كل 5 دقائق.
-async function refreshMailru() {
-  const OUTM = 'data/mailru.json';
-  try {
-    const old = existsSync(OUTM) ? JSON.parse(readFileSync(OUTM, 'utf8')) : null;
-    if (old && Date.now() - Date.parse(old.at) < 30 * 60e3) return;
-    const r = await fetch('https://cloud.mail.ru/api/v2/dispatcher?api=2', { headers: { 'user-agent': UA } });
-    if (!r.ok) throw new Error('dispatcher ' + r.status);
-    const base = (((await r.json()).body || {}).weblink_get || [])[0]?.url;
-    if (!base) throw new Error('no weblink_get');
-    writeFileSync(OUTM, JSON.stringify({ base: base.replace(/\/$/, ''), at: new Date().toISOString() }));
-    console.log('mailru: base refreshed');
-  } catch (e) { console.log('mailru: kept previous (' + e.message + ')'); }
-}
-
 async function main() {
   mkdirSync('data', { recursive: true });
-  await refreshMailru();
   const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { shows: [] };
   const byId = new Map(prev.shows.map((s) => [s.id, s]));
   const now = Date.now();
