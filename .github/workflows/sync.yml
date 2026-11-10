@@ -1,6 +1,6 @@
 name: sync-shows
 on:
-  schedule: [{ cron: '*/30 * * * *' }]
+  schedule: [{ cron: '*/5 * * * *' }]
   workflow_dispatch:
     inputs:
       full: { description: 'مزامنة كاملة (1)', required: false, default: '0' }
@@ -15,7 +15,7 @@ jobs:
         with: { node-version: 22 }
       - run: npm i --no-save --no-audit --no-fund sharp
       - run: node scripts/sync-qesset.mjs
-        env: { SYNC_FULL: '${{ github.event.inputs.full }}' }
+        env: { SYNC_FULL: '${{ github.event.inputs.full }}', SYNC_SERVERS_PER_RUN: '150' }
       - name: Commit changes
         run: |
           git config user.name "sync-bot"; git config user.email "sync-bot@users.noreply.github.com"

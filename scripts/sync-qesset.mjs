@@ -73,20 +73,25 @@ async function localizePosters(shows) {
   mkdirSync('data/posters', { recursive: true });
   const ext = sharp ? 'webp' : 'jpg';
   let got = 0, fail = 0;
+  if (sharp) mkdirSync('data/posters/v2', { recursive: true });
   const queue = shows.filter((s) => s.poster);
   const work = async () => {
     for (let s; (s = queue.shift()); ) {
-      const name = createHash('sha1').update(s.id).digest('hex').slice(0, 12) + '.' + ext;
-      const path = 'data/posters/' + name;
-      s.img = path;
-      if (existsSync(path)) continue;
+      const h = createHash('sha1').update(s.id).digest('hex').slice(0, 12);
+      const path = 'data/posters/' + h + '.' + ext;
+      // v2: نسخة أوضح (600px، جودة 82) لشاشات iPhone عالية الدقة. الواجهة تفضّل img2 إن وُجدت.
+      const path2 = sharp ? 'data/posters/v2/' + h + '.webp' : null;
+      s.img = path; if (path2) s.img2 = path2;
+      const need1 = !existsSync(path), need2 = path2 && !existsSync(path2);
+      if (!need1 && !need2) continue;
       try {
         const r = await fetch(s.poster, { headers: { 'user-agent': UA, referer: BASE + '/' } });
         if (!r.ok) throw new Error(String(r.status));
-        let buf = Buffer.from(await r.arrayBuffer());
-        if (sharp) buf = await sharp(buf).resize({ width: 300, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer();
-        writeFileSync(path, buf); got++;
-      } catch (e) { fail++; delete s.img; }
+        const src = Buffer.from(await r.arrayBuffer());
+        if (need1) writeFileSync(path, sharp ? await sharp(src).resize({ width: 300, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer() : src);
+        if (need2) writeFileSync(path2, await sharp(src).resize({ width: 600, withoutEnlargement: true }).webp({ quality: 82 }).toBuffer());
+        got++;
+      } catch (e) { fail++; if (need1) delete s.img; if (need2) delete s.img2; }
       await sleep(150);
     }
   };
@@ -94,8 +99,25 @@ async function localizePosters(shows) {
   console.log(`posters: +${got} new, ${fail} failed, sharp=${!!sharp}`);
 }
 
+// رابط التنزيل العام لـ cloud.mail.ru: نفس طريقة getMailruDownloadHref (طلب مجهول إلى dispatcher، بلا تسجيل دخول).
+// الأساس يصلح لكل الروابط العامة؛ اختُبر صالحًا بعد 93 دقيقة. نحدّثه كل 30 دقيقة فقط حتى لا ننشر الموقع كل 5 دقائق.
+async function refreshMailru() {
+  const OUTM = 'data/mailru.json';
+  try {
+    const old = existsSync(OUTM) ? JSON.parse(readFileSync(OUTM, 'utf8')) : null;
+    if (old && Date.now() - Date.parse(old.at) < 30 * 60e3) return;
+    const r = await fetch('https://cloud.mail.ru/api/v2/dispatcher?api=2', { headers: { 'user-agent': UA } });
+    if (!r.ok) throw new Error('dispatcher ' + r.status);
+    const base = (((await r.json()).body || {}).weblink_get || [])[0]?.url;
+    if (!base) throw new Error('no weblink_get');
+    writeFileSync(OUTM, JSON.stringify({ base: base.replace(/\/$/, ''), at: new Date().toISOString() }));
+    console.log('mailru: base refreshed');
+  } catch (e) { console.log('mailru: kept previous (' + e.message + ')'); }
+}
+
 async function main() {
   mkdirSync('data', { recursive: true });
+  await refreshMailru();
   const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { shows: [] };
   const byId = new Map(prev.shows.map((s) => [s.id, s]));
   const now = Date.now();
