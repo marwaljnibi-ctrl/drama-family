@@ -1,4 +1,4 @@
-import { loadData, findEp, latestEpisodes } from './source.js';
+import { loadData, loadMailru, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage } from './db.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -7,7 +7,12 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const fmt = (t) => { t = Math.floor(t || 0); const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
 const mb = (b) => (b / 1048576).toFixed(0) + ' MB';
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 3200); }
-const poster = (s, cls = '') => (s.img || s.poster) ? `<img class="${cls}" loading="lazy" referrerpolicy="no-referrer" src="${esc(s.img || s.poster)}" alt="">` : `<div class="ph ${cls}"></div>`;
+// الصور: النسخة الأوضح (img2، 600px) إن وُجدت، ثم القديمة، ثم رابط المصدر
+const poster = (s, cls = '') => { const src = asset(s.img2 || s.img) || s.poster; return src ? `<img class="${cls}" loading="lazy" referrerpolicy="no-referrer" src="${esc(src)}" alt="">` : `<div class="ph ${cls}"></div>`; };
+// قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
+const HEART = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+const heartBtn = (id, on) => `<button class="heart ${on ? 'on' : ''}" data-id="${esc(id)}" aria-pressed="${on}" aria-label="مفضلة">${HEART}</button>`;
+const pop = (el) => { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); };
 
 let D;
 let cleanup = null;
@@ -17,8 +22,7 @@ async function route() {
   if (cleanup) { cleanup(); cleanup = null; }
   const [, name, a, b] = (location.hash || '#/new').split('/');
   document.querySelectorAll('#tabs a').forEach((x) => x.classList.toggle('on', x.dataset.t === name || (name === 'show' && x.dataset.t === 'shows') || (name === 'watch' && x.dataset.t === 'shows')));
-  const sub = name === 'show' || name === 'watch';
-  backBtn.hidden = !sub;
+  backBtn.hidden = false; // زر رجوع في كل صفحة
   window.scrollTo(0, 0);
   if (!D) {
     try { D = await loadData(); } catch { view.innerHTML = '<div class="empty">تعذّر تحميل قائمة المسلسلات.<br>تأكد من الاتصال ثم أعد المحاولة.</div>'; return; }
@@ -27,7 +31,7 @@ async function route() {
   titleEl.textContent = { new: 'الحلقات الجديدة', shows: 'قائمة المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات' }[name] || 'Dizi';
   await (R[name] || vNew)();
 }
-backBtn.onclick = () => history.back();
+backBtn.onclick = () => { if (history.length > 1) history.back(); else location.hash = '#/new'; };
 addEventListener('hashchange', route);
 
 const emptyData = () => '<div class="empty">لم تتم مزامنة فهرس المسلسلات بعد.<br>عند أول تحديث ناجح من المصدر ستظهر المسلسلات هنا.</div>';
@@ -36,13 +40,15 @@ const demoBanner = () => (D.demo ? '<div class="note">وضع تجريبي: بي�
 // ---------- الحلقات الجديدة ----------
 async function vNew() {
   if (!D.shows.length) return (view.innerHTML = emptyData());
-  const prog = new Map((await progress.all()).map((p) => [p.key, p]));
+  const [pa, fa] = await Promise.all([progress.all(), favs.all()]);
+  const prog = new Map(pa.map((p) => [p.key, p])), fv = new Set(fa.map((f) => f.showId));
   const items = latestEpisodes(D);
   view.innerHTML = demoBanner() + (items.length ? `<div class="grid">${items.map(({ show, ep }) => {
     const p = prog.get(show.id + '|' + ep.id);
     const isNew = ep.ts && Date.now() - ep.ts < 3 * 864e5 && !(p && p.done);
-    return `<a class="card" href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}${isNew ? '<span class="badge">جديد</span>' : ''}<div class="t">${esc(show.title)}</div><div class="s">حلقة ${esc(ep.n)}${p && p.done ? ' ✓' : ''}</div></a>`;
+    return `<div class="card"><a href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}${isNew ? '<span class="badge">جديد</span>' : ''}<div class="t">${esc(show.title)}</div><div class="s">حلقة ${esc(ep.n)}${p && p.done ? ' ✓' : ''}</div></a>${heartBtn(show.id, fv.has(show.id))}</div>`;
   }).join('')}</div>` : '<div class="empty">لا حلقات جديدة.</div>');
+  const g = $('.grid'); if (g) g.onclick = heartClick(fv);
 }
 
 // ---------- قائمة المسلسلات ----------
@@ -60,14 +66,16 @@ async function vShows() {
   $('#q').oninput = draw; draw();
   g.onclick = heartClick(fv);
 }
-const cardHtml = (s, fv) => `<div class="card"><a href="#/show/${encodeURIComponent(s.id)}">${poster(s)}<div class="t">${esc(s.title)}</div></a><button class="heart ${fv.has(s.id) ? 'on' : ''}" data-id="${esc(s.id)}" aria-label="مفضلة">${fv.has(s.id) ? '♥' : '♡'}</button></div>`;
+const cardHtml = (s, fv) => `<div class="card"><a href="#/show/${encodeURIComponent(s.id)}">${poster(s)}<div class="t">${esc(s.title)}</div></a>${heartBtn(s.id, fv.has(s.id))}</div>`;
 function heartClick(fv, after) {
   return async (e) => {
     const b = e.target.closest('.heart'); if (!b) return;
     e.preventDefault();
     const on = await favs.toggle(b.dataset.id);
     on ? fv.add(b.dataset.id) : fv.delete(b.dataset.id);
-    b.classList.toggle('on', on); b.textContent = on ? '♥' : '♡';
+    // كل قلوب المسلسل نفسه في الصفحة تتحدث معًا
+    view.querySelectorAll('.heart[data-id]').forEach((x) => { if (x.dataset.id === b.dataset.id) { x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); } });
+    pop(b);
     if (after) after();
   };
 }
@@ -77,7 +85,7 @@ async function vFavs() {
   const fv = new Set((await favs.all()).map((f) => f.showId));
   const draw = () => {
     const list = D.shows.filter((s) => fv.has(s.id));
-    view.innerHTML = demoBanner() + (list.length ? `<div class="grid">${list.map((s) => cardHtml(s, fv)).join('')}</div>` : '<div class="empty">لم تضف أي مسلسل بعد.<br>اضغط ♡ على أي مسلسل لإضافته.</div>');
+    view.innerHTML = demoBanner() + (list.length ? `<div class="grid">${list.map((s) => cardHtml(s, fv)).join('')}</div>` : '<div class="empty">لم تضف أي مسلسل بعد.<br>اضغط على القلب في أي مسلسل لإضافته.</div>');
     const g = $('.grid'); if (g) g.onclick = heartClick(fv, draw);
   };
   draw();
@@ -113,12 +121,11 @@ async function vShow(id) {
   const cont = lastEp ? (last.done ? nextEp(show, lastEp) || lastEp : lastEp) : null;
   const dlAble = show.eps.filter((e) => e.v && e.v.type === 'mp4');
   view.innerHTML = `${demoBanner()}<div class="hero">${poster(show)}<div><h2>${esc(show.title)}</h2><small style="color:var(--mute)">${show.eps.length} حلقة</small>
-    <div class="actions"><button id="fav">${fv ? '♥ في المفضلة' : '♡ أضف للمفضلة'}</button></div></div></div>
+    <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button></div></div></div>
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'استكمال حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
-    <div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>
-    <div class="note">✓ باهتة: مكتملة · إطار عنابي: بدأتها ولم تكتمل · عنابي ممتلئ: آخر حلقة وصلت إليها</div>`;
-  $('#fav').onclick = async (e) => { const on = await favs.toggle(id); e.target.textContent = on ? '♥ في المفضلة' : '♡ أضف للمفضلة'; };
+    <div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>`;
+  $('#fav').onclick = async () => { const b = $('#fav'); const on = await favs.toggle(id); b.classList.toggle('on', on); b.querySelector('span').textContent = on ? 'في المفضلة' : 'أضف للمفضلة'; pop(b); };
   const da = $('#dlall');
   if (da) da.onclick = async () => { let n = 0; for (const e of dlAble) { if (!dl.has(id + '|' + e.id)) { try { await downloadEp(show, e, (m) => (da.textContent = m)); n++; } catch (err) { toast('توقف التحميل: ' + err.message); break; } } } da.textContent = 'تحميل الكل'; if (n) vShow(id); };
 }
@@ -173,6 +180,16 @@ function addImport(container, show, ep, onDone) {
   container.append(btn, inp);
 }
 
+// يحوّل «23:10» أو «1:02:05» أو «23» (دقائق) إلى ثوانٍ؛ يقبل الأرقام العربية.
+const parseTime = (s) => {
+  s = String(s || '').replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+  if (!s) return null;
+  const p = s.split(/[:.،,]/).map((x) => x.trim()).filter((x) => x !== '').map(Number);
+  if (!p.length || p.length > 3 || p.some((x) => !Number.isFinite(x) || x < 0)) return null;
+  return p.length === 1 ? p[0] * 60 : p.reduce((a, x) => a * 60 + x, 0);
+};
+const ago = (at) => { try { return new Date(at).toLocaleString('ar', { weekday: 'short', hour: 'numeric', minute: '2-digit' }); } catch { return ''; } };
+
 async function vWatch(showId, epId) {
   const show = D.byId.get(showId), ep = show && findEp(show, epId);
   if (!ep) return (view.innerHTML = '<div class="empty">الحلقة غير موجودة.</div>');
@@ -180,33 +197,49 @@ async function vWatch(showId, epId) {
   const key = showId + '|' + epId;
   // تنقّل سريع: إن تغيّر المسار أثناء الانتظار فهذه صفحة قديمة، تتوقف ولا تلمس الصفحة الجديدة
   const h0 = location.hash, stale = () => location.hash !== h0;
-  const [p0, meta] = await Promise.all([progress.get(showId, epId), downloads.getMeta(key)]);
+  const [p0, meta, mr] = await Promise.all([progress.get(showId, epId), downloads.getMeta(key), D.demo ? null : loadMailru()]);
   if (stale()) return;
   const next = nextEp(show, ep);
-  const direct = ep.v || meta;
-  view.innerHTML = `${demoBanner()}<div class="player" id="pl"></div>
-    <div class="actions" id="act"></div><div id="msg"></div>
-    <div class="actions">${next ? `<a style="flex:1" href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button style="width:100%">الحلقة التالية (${esc(next.n)})</button></a>` : ''}<a style="flex:1" href="#/show/${encodeURIComponent(showId)}"><button style="width:100%">كل الحلقات</button></a></div>`;
-  const pl = $('#pl'), act = $('#act'), msg = $('#msg');
-  const setDone = async (done) => { await progress.save(showId, ep, { done, ...(done ? {} : { time: 0 }) }); toast(done ? 'تم وضع علامة ✓' : 'أُعيدت الحلقة للبداية'); route(); };
+  // سيرفران فقط: Arab HD (مشغّل مضمّن) وcloud.mail.ru (ملف MP4 عام يُشغَّل بمشغّل HTML5)
+  const arab = ((ep.sv || []).find((x) => x[0] === 'a') || [])[1];
+  const exLink = ((ep.sv || []).find((x) => x[0] === 'e') || [])[1];
+  const exPath = exLink && (String(exLink).match(/\/public\/(.+)$/) || [])[1];
+  const cmUrl = exPath && mr && mr.base ? `${mr.base}/${exPath}` : null;
+  const SRC = [];
+  if (meta) SRC.push({ k: 'f', name: 'الملف المحفوظ', video: true });
+  if (ep.v) SRC.push({ k: 'v', name: 'مباشر', video: true });
+  if (arab) SRC.push({ k: 'a', name: 'Arab HD', video: false });
+  if (cmUrl) SRC.push({ k: 'e', name: 'cloud.mail.ru', video: true });
+  const dlHref = cmUrl || exLink || null;
 
-  if (direct) {
-    // مشغّل أصلي: تحكم كامل وحفظ كل 5 ثوانٍ
-    let src = ep.v && ep.v.src, blobUrl;
-    if (meta) { const b = await downloads.getBlob(key); if (stale()) return; if (b) { blobUrl = URL.createObjectURL(b); src = blobUrl; } }
+  view.innerHTML = `${demoBanner()}<div class="player" id="pl"></div>
+    <div class="actions" id="srv"></div>
+    <div class="actions" id="act"></div>
+    <div class="snaps" id="snaps"></div>
+    <div id="msg"></div>
+    <div class="note">لا تنسَ حفظ اللقطة قبل الخروج من الصفحة لكي تستطيع الرجوع لها بسهولة.</div>
+    <div class="actions">${next ? `<a style="flex:1" href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button style="width:100%">الحلقة التالية (${esc(next.n)})</button></a>` : ''}<a style="flex:1" href="#/show/${encodeURIComponent(showId)}"><button style="width:100%">كل الحلقات</button></a></div>`;
+  const pl = $('#pl'), srv = $('#srv'), act = $('#act'), msg = $('#msg'), snapsEl = $('#snaps');
+  const setDone = async (done) => { await progress.save(showId, ep, { done, ...(done ? {} : { time: 0 }) }); toast(done ? 'تم وضع علامة ✓' : 'أُعيدت الحلقة للبداية'); route(); };
+  if (!p0) await progress.save(showId, ep, { done: false });
+  if (stale()) return;
+
+  let cur = null, curV = null, teardown = null, blobUrl = null;
+  const stopCur = () => { if (teardown) { teardown(); teardown = null; } curV = null; };
+  cleanup = () => { stopCur(); if (blobUrl) URL.revokeObjectURL(blobUrl); };
+
+  // مشغّل HTML5: حفظ تلقائي كل 3 ثوانٍ، واستكمال مؤكد بحدث seeked (منقول كما هو من النسخة المختبرة على iPhone)
+  const mountVideo = (src, startAt) => {
     pl.innerHTML = '<video id="v" controls playsinline webkit-playsinline preload="metadata"></video>';
-    const v = pl.querySelector('#v');
-    v.addEventListener('error', () => { if (blobUrl) msg.innerHTML = '<div class="note">تعذّر تشغيل الملف المحفوظ (قد تكون صيغته غير مدعومة على هذا الجهاز). يمكنك حذفه واستيراد ملف آخر.</div>'; });
-    if (ep.v && ep.v.type === 'hls' && !blobUrl) {
-      if (v.canPlayType('application/vnd.apple.mpegurl')) v.src = ep.v.src;
-      else { const m = await import('https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.mjs'); const h = new m.default(); h.loadSource(ep.v.src); h.attachMedia(v); }
+    const v = pl.querySelector('#v'); curV = v;
+    v.addEventListener('error', () => {
+      if (cur === 'e') msg.innerHTML = '<div class="note">لم يعمل cloud.mail.ru داخل التطبيق على هذا الجهاز. استخدم Arab HD أو زر «تنزيل».</div>';
+      else if (cur === 'f') msg.innerHTML = '<div class="note">تعذّر تشغيل الملف المحفوظ (قد تكون صيغته غير مدعومة على هذا الجهاز). يمكنك حذفه واستيراد ملف آخر.</div>';
+    });
+    if (cur === 'v' && ep.v.type === 'hls' && !v.canPlayType('application/vnd.apple.mpegurl')) {
+      import('https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.mjs').then((m) => { const h = new m.default(); h.loadSource(src); h.attachMedia(v); });
     } else v.src = src;
-    const startAt = p0 && !p0.done ? p0.time : 0;
-    // حارس الاستكمال: لا نحفظ التقدم قبل أن يُطبَّق الانتقال إلى ثانية الاستكمال، وإلا قد يُكتب 0 فوق التقدم القديم
-    // (مثلًا خروج سريع، أو متصفح يتجاهل currentTime قبل canplay). نعيد المحاولة عند canplay.
-    // ذيل الحلقة الذي يُعدّ «مشاهدة كاملة»: 20 ثانية للحلقات، ونسبة صغيرة للمقاطع القصيرة (مقطع 20 ث كان يُعدّ منتهيًا عند الثانية 15)
     const tail = () => Math.min(20, v.duration * 0.05);
-    // حارس الاستكمال: لا حفظ قبل تأكيد الانتقال بحدث seeked، مع إعادة المحاولة عند جاهزية Safari (قد يتجاهل الانتقال قبل التشغيل)
     let armed = !(startAt > 3), tries = 0, retryT;
     const applySeek = () => {
       if (armed || !(v.duration > 0)) return;
@@ -218,7 +251,6 @@ async function vWatch(showId, epId) {
     for (const ev of ['loadedmetadata', 'loadeddata', 'canplay', 'play', 'playing']) v.addEventListener(ev, () => { if (!armed && Math.abs(v.currentTime - startAt) > 2) applySeek(); });
     v.addEventListener('seeked', () => { if (!armed && Math.abs(v.currentTime - startAt) <= 2) { armed = true; clearTimeout(retryT); } });
     let lastSave = 0;
-    // كل 3 ثوانٍ أثناء التشغيل، وفورًا عند الإيقاف/الإخفاء. يُعتبر الموضع محفوظًا فقط بعد اكتمال معاملة IndexedDB.
     const save = (force) => {
       if (!armed) { if (tries >= 2 && v.currentTime > 5) armed = true; else return; }
       if (!(v.duration > 0)) return;
@@ -232,51 +264,84 @@ async function vWatch(showId, epId) {
     v.addEventListener('ended', () => { progress.save(showId, ep, { time: v.duration, duration: v.duration, done: true }); toast('اكتملت الحلقة ✓'); });
     const vis = () => document.visibilityState === 'hidden' && save(true);
     document.addEventListener('visibilitychange', vis); addEventListener('pagehide', vis);
-    cleanup = () => { save(true); document.removeEventListener('visibilitychange', vis); removeEventListener('pagehide', vis); blobUrl && URL.revokeObjectURL(blobUrl); };
-    act.innerHTML = `${meta ? `<button id="rm">حذف التحميل (${mb(meta.size)})</button>` : ep.v && ep.v.type === 'mp4' ? '<button class="pri" id="dl">تحميل الحلقة</button>' : ''}<button id="rs">إعادة من البداية</button>`;
-    const dlb = $('#dl'); if (dlb) dlb.onclick = async () => { try { await downloadEp(show, ep, (m) => (dlb.textContent = m)); toast('تم التحميل'); route(); } catch (e) { toast(e.message); dlb.textContent = 'تحميل الحلقة'; } };
-    const rm = $('#rm'); if (rm) rm.onclick = async () => { await downloads.remove(key); route(); };
-    $('#rs').onclick = () => { v.currentTime = 0; setDone(false); };
-    if (!(ep.v && ep.v.type === 'mp4') && !meta) msg.innerHTML = '<div class="note">التحميل غير متاح لهذه الحلقة: المصدر يبثها بصيغة لا تُحفظ على الجهاز.</div>';
-  } else {
-    // مشغّلات التضمين العامة (Arab HD / Turk / OK): تُعرض مباشرة داخل التطبيق بلا صفحة المصدر وإعلاناتها.
-    // اختُبرت من أصل github.io: تعمل داخل iframe بدون نوافذ منبثقة. لا يمكن قراءة ثانية التوقف من مشغّل خارجي.
-    const EMB = { a: ['Arab HD', (i) => `https://arabhd.onl/embed-${i}.html`], t: ['Turk', (i) => `https://arabveturk.com/embed-${i}.html`], o: ['OK', (i) => `https://ok.ru/videoembed/${i}`] };
-    const sv = (ep.sv || []).filter((x) => EMB[x[0]]).sort((x, y) => 'ato'.indexOf(x[0]) - 'ato'.indexOf(y[0]));
-    // Express = رابط عام لملف على cloud.mail.ru: لا يُضمَّن. يُفتح للتنزيل عبر Safari (يحفظه في تطبيق الملفات).
-    const exLink = ((ep.sv || []).find((x) => x[0] === 'e') || [])[1];
-    const exBtn = exLink ? `<a style="flex:1;min-width:120px" href="${esc(exLink)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل (Express)</button></a>` : '';
-    const exNote = exLink ? ' زر «تنزيل (Express)» يفتح صفحة الملف العامة على cloud.mail.ru، وتنزّله منها عبر Safari إلى تطبيق الملفات.' : '';
-    if (sv.length) {
-      // الافتراضي: Arab HD ثم Turk. نتذكر اختيارك لهما فقط. OK يعتمد على المنطقة فلا يصير افتراضيًا أبدًا.
-      let cur = 0; try { const k = localStorage.getItem('df-sv'); const i = k === 'o' ? -1 : sv.findIndex((x) => x[0] === k); if (i >= 0) cur = i; } catch {}
-      let nosb = false; // خيار تجريبي لحل مشاكل بعض الأجهزة: تعطيل sandbox لهذا المشغّل
-      const SB = 'sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"';
-      const draw = () => {
-        const [k, id] = sv[cur];
-        const embUrl = EMB[k][1](id);
-        pl.innerHTML = `<iframe src="${esc(embUrl)}" ${nosb ? '' : SB} allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-        msg.innerHTML = `<div class="note">${k === 'o' ? 'OK لا يعمل في بعض الدول (يعرض «غير متاح للمنطقة»)، جرّب Arab HD أو Turk. ' : 'إن لم يعمل المشغّل جرّب الآخر. '}التطبيق يحفظ آخر حلقة فتحتها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيل الحلقة من المشغّل نفسه. اضغط «تمت المشاهدة» عند الانتهاء.${exNote}<br>المشغّل لا يعمل؟ <a href="#" id="nb">${nosb ? 'أعد الحماية' : 'جرّب بدون حماية'}</a> · <a href="${esc(embUrl)}" target="_blank" rel="noopener">افتح المشغّل في Safari</a></div>`;
-        $('#nb').onclick = (ev) => { ev.preventDefault(); nosb = !nosb; draw(); };
-        act.innerHTML = sv.map(([kk], i) => `<button data-i="${i}" class="${i === cur ? 'pri' : ''}">${EMB[kk][0]}</button>`).join('') + (p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>') + exBtn;
-        act.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { cur = +b.dataset.i; nosb = false; try { if (sv[cur][0] !== 'o') localStorage.setItem('df-sv', sv[cur][0]); } catch {} draw(); }));
-        const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
-        const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
-        addImport(act, show, ep, () => route());
-      };
-      if (!p0) await progress.save(showId, ep, { done: false });
-      draw();
-      return;
+    teardown = () => { save(true); clearTimeout(retryT); document.removeEventListener('visibilitychange', vis); removeEventListener('pagehide', vis); try { v.pause(); v.removeAttribute('src'); v.load(); } catch {} };
+  };
+  const mountArab = () => {
+    pl.innerHTML = `<iframe src="${esc(`https://arabhd.onl/embed-${arab}.html`)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  };
+  const drawSrv = () => {
+    srv.innerHTML = SRC.map((s) => `<button data-k="${s.k}" class="${s.k === cur ? 'pri' : ''}">${esc(s.name)}</button>`).join('');
+    srv.querySelectorAll('[data-k]').forEach((b) => (b.onclick = () => select(b.dataset.k)));
+  };
+  const select = async (k, startAt) => {
+    stopCur(); msg.innerHTML = ''; cur = k;
+    try { if (k === 'a' || k === 'e') localStorage.setItem('df-sv2', k); } catch {}
+    drawSrv();
+    if (k === 'a') return mountArab();
+    if (startAt == null) { const p = await progress.get(showId, epId); if (stale()) return; startAt = p && !p.done ? p.time || 0 : 0; }
+    if (k === 'e') return mountVideo(cmUrl, startAt);
+    if (k === 'v') return mountVideo(ep.v.src, startAt);
+    if (k === 'f') {
+      if (!blobUrl) { const b = await downloads.getBlob(key); if (stale()) return; if (!b) { toast('الملف المحفوظ غير موجود'); return; } blobUrl = URL.createObjectURL(b); }
+      return mountVideo(blobUrl, startAt);
     }
-    // لا سيرفر معروف بعد لهذه الحلقة (لم يُحلّ في المزامنة): نفتح صفحة المصدر بزر واحد.
-    pl.innerHTML =`<a href="${esc(ep.url)}" target="_blank" rel="noopener" id="go" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;overflow:hidden;background:#000">${(show.img || show.poster) ? `<img src="${esc(show.img || show.poster)}" referrerpolicy="no-referrer" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">` : ''}<span style="position:relative;font-size:64px;line-height:1">▶</span></a>`;
-    $('#go').onclick = () => { progress.save(showId, ep, { done: false }); };
-    act.innerHTML = `<a style="flex:1" href="${esc(ep.url)}" target="_blank" rel="noopener"><button class="pri" style="width:100%">▶ تشغيل الحلقة</button></a>${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}${exBtn}`;
-    const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
-    const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
-    addImport(act, show, ep, () => route());
-    msg.innerHTML = '<div class="note">تُفتح الحلقة في صفحة المصدر. يحفظ التطبيق أنك فتحتها وآخر حلقة وصلت إليها، لكنه لا يعرف الدقيقة التي توقفت عندها ولا يستطيع تنزيلها. اضغط «تمت المشاهدة» عند الانتهاء.</div>';
+  };
+
+  // اللقطات: آخر 3 مواضع حفظتها بنفسك (مع وقت الحفظ)
+  const drawSnaps = (snaps) => {
+    snaps = snaps || [];
+    const rb = $('#resume'); if (rb) rb.disabled = !snaps.length;
+    snapsEl.innerHTML = snaps.length ? `<div class="snaps-t">آخر اللقطات</div>${snaps.map((s, i) => `<button class="snap" data-i="${i}">⏱ ${fmt(s.t)}<small>${esc(ago(s.at))}</small></button>`).join('')}` : '';
+    snapsEl.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => playFrom(snaps[+b.dataset.i].t)));
+  };
+  const playFrom = (t) => {
+    const vk = SRC.some((s) => s.video && s.k === cur) ? cur : (SRC.find((s) => s.k === 'f') || SRC.find((s) => s.k === 'e') || SRC.find((s) => s.k === 'v') || {}).k;
+    if (!vk) return toast(`انتقل في المشغّل إلى ${fmt(t)} (Arab HD لا يسمح بالتحكم من التطبيق)`);
+    if (curV && cur === vk && curV.duration > 0) { curV.currentTime = t; curV.play().catch(() => {}); toast('تشغيل من ' + fmt(t)); }
+    else select(vk, t);
+  };
+  const saveSnap = async () => {
+    let t;
+    if (curV && curV.duration > 0) t = curV.currentTime;
+    else {
+      const s = prompt('مشغّل Arab HD لا يسمح للتطبيق بقراءة الوقت.\nاكتب الدقيقة التي توقفت عندها (مثال 23:10):');
+      if (s == null) return;
+      t = parseTime(s); if (t == null) return toast('صيغة الوقت غير صحيحة. مثال: 23:10');
+    }
+    const p = (await progress.get(showId, epId)) || {};
+    const snaps = [{ t, at: Date.now(), src: cur }, ...(p.snaps || [])].slice(0, 3);
+    await progress.save(showId, ep, { snaps, time: t, done: false });
+    toast('حُفظت اللقطة عند ' + fmt(t)); drawSnaps(snaps);
+  };
+  const exportFile = async () => {
+    const b = await downloads.getBlob(key); if (!b) return toast('الملف المحفوظ غير موجود');
+    const name = `${show.title} - الحلقة ${ep.n}.mp4`.replace(/[\\/:*?"<>|]/g, ' ');
+    const f = new File([b], name, { type: 'video/mp4' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: name }); } catch (e) { if (e.name !== 'AbortError') toast('تعذّر الحفظ: ' + e.message); } }
+    else { const u = URL.createObjectURL(f); const a = document.createElement('a'); a.href = u; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); }
+  };
+
+  act.innerHTML = `${dlHref ? `<a style="flex:1;min-width:120px" href="${esc(dlHref)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل</button></a>` : ''}
+    <button id="snap">احفظ آخر لقطة</button><button id="resume">تشغيل من آخر لقطة</button>
+    ${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}
+    ${meta ? `<button id="exp">حفظ في الملفات</button><button id="rm">حذف الملف المحفوظ (${mb(meta.size)})</button>` : ''}`;
+  addImport(act, show, ep, () => route());
+  $('#snap').onclick = saveSnap;
+  $('#resume').onclick = async () => { const p = await progress.get(showId, epId); const s = p && p.snaps && p.snaps[0]; if (s) playFrom(s.t); };
+  const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
+  const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
+  const ex = $('#exp'); if (ex) ex.onclick = exportFile;
+  const rm = $('#rm'); if (rm) rm.onclick = async () => { stopCur(); await downloads.remove(key); route(); };
+  drawSnaps(p0 && p0.snaps);
+
+  if (!SRC.length) {
+    // لا سيرفر معروف بعد لهذه الحلقة: زر يفتح صفحة المصدر
+    pl.innerHTML = `<a href="${esc(ep.url)}" target="_blank" rel="noopener" id="go" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;overflow:hidden;background:#000">${(show.img || show.poster) ? `<img src="${esc(asset(show.img2 || show.img) || show.poster)}" referrerpolicy="no-referrer" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">` : ''}<span style="position:relative;font-size:64px;line-height:1;color:#fff">▶</span></a>`;
+    return;
   }
+  let pref = null; try { pref = localStorage.getItem('df-sv2'); } catch {}
+  const first = (meta && 'f') || (SRC.some((s) => s.k === pref) && pref) || SRC[0].k;
+  select(first);
 }
 
 // ---------- تشغيل وتحديث دوري ----------
@@ -288,7 +353,10 @@ if ('serviceWorker' in navigator) {
 }
 persistStorage();
 route();
-setInterval(async () => { if (document.visibilityState !== 'visible') return; try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(new|shows)?$/.test(location.hash) || !location.hash) route(); } } catch {} }, 15 * 60 * 1000);
+// فحص الحلقات الجديدة كل 5 دقائق، وعند العودة إلى التطبيق
+const refresh = async () => { if (document.visibilityState !== 'visible' || !D) return; try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(new|shows)?$/.test(location.hash) || !location.hash) route(); } } catch {} };
+setInterval(refresh, 5 * 60 * 1000);
+document.addEventListener('visibilitychange', refresh);
 
 // الأرقام العربية (١٢٣) في كل نص معروض، بلا المساس بالروابط أو القيم.
 {

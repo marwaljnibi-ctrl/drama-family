@@ -17,7 +17,7 @@ const waitVideo = async () => { await page.waitForFunction(() => { const v = doc
 
 // T1: بدون استيراد، مشغّلات Arab HD/Turk كما هي (iframe بالحماية، Arab HD الافتراضي)
 await page.goto(EP(3)); await page.waitForSelector('#pl iframe');
-const base = await page.evaluate(() => ({ src: document.querySelector('#pl iframe').src, sb: document.querySelector('#pl iframe').getAttribute('sandbox'), active: document.querySelector('#act button.pri')?.textContent, imp: !!document.getElementById('impbtn') }));
+const base = await page.evaluate(() => ({ src: document.querySelector('#pl iframe').src, sb: document.querySelector('#pl iframe').getAttribute('sandbox'), active: document.querySelector('#srv button.pri')?.textContent, imp: !!document.getElementById('impbtn') }));
 T('baseline-embed-unchanged', /arabhd\.onl/.test(base.src) && /allow-scripts/.test(base.sb) && base.active === 'Arab HD' && base.imp, JSON.stringify(base));
 
 // T2: اسم الملف يشير لحلقة مختلفة: يسأل، وعند الرفض لا يُحفظ شيء
