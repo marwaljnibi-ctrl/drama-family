@@ -24,3 +24,9 @@ jobs:
       - name: import e2e (published preview, only if scripts/preview-url.txt exists)
         run: |
           if [ -f scripts/preview-url.txt ]; then BASE="$(cat scripts/preview-url.txt)" node scripts/test-import.mjs; else echo "no preview url"; fi
+      - name: check sample files and headers on the preview
+        run: |
+          U="$(cat scripts/preview-url.txt)"; U="${U%/}"
+          for p in "" "sample/" "sample/dizi-test-small.mp4" "manifest.webmanifest" "sw.js"; do echo "CHK $p $(curl -s -o /dev/null -w "%{http_code} %{content_type} %{size_download}B" "$U/$p")"; done
+          echo "CHK range-mp4 $(curl -s -o /dev/null -w "%{http_code}" -H "Range: bytes=0-99" "$U/sample/dizi-test-small.mp4")"
+          echo "CHK noindex $(curl -sI "$U/" | grep -i x-robots-tag | tr -d "")"
