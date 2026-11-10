@@ -1,0 +1,37 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>اختبار التشغيل المباشر</title>
+<style>body{font:16px/1.7 system-ui,sans-serif;margin:0;padding:16px;max-width:720px;margin-inline:auto;color:#111}
+input{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font:14px monospace;direction:ltr;margin:4px 0}
+button{padding:12px 14px;border-radius:10px;border:1px solid #9E2B35;background:#9E2B35;color:#fff;font:500 14px system-ui;margin:4px 2px}
+button.s{background:#f4f4f2;color:#111;border-color:#ddd}video{width:100%;background:#000;border-radius:12px;aspect-ratio:16/9}
+#log{background:#f4f4f2;border-radius:10px;padding:10px;font:12px/1.6 monospace;direction:ltr;white-space:pre-wrap;max-height:260px;overflow:auto}
+.ok{color:#0a7a2f}.bad{color:#b00020}h3{margin:18px 0 6px}</style></head><body>
+<h2>اختبار: تشغيل رابط MP4 خارجي داخل مشغّل HTML5 وقراءة currentTime</h2>
+<h3>1) رابط مباشر</h3>
+<input id="u" value="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+<button id="go">شغّل</button><button class="s" id="seek">اختبار القفز إلى منتصف الفيديو</button><button class="s" id="rs">استكمال من المحفوظ</button>
+<h3>2) رابط cloud.mail.ru (يُبنى على جهازك)</h3>
+<input id="pub" placeholder="https://cloud.mail.ru/public/fVTq/gM7Nv1LK6" value="https://cloud.mail.ru/public/fVTq/gM7Nv1LK6">
+<button class="s" id="disp">أ) افتح رابط الخادم (سيظهر JSON، انسخ قيمة weblink_get ← url)</button>
+<input id="base" placeholder="ب) الصق هنا قيمة url (تبدأ بـ https://cloclo…)">
+<button id="mk">ج) ابنِ الرابط وشغّل</button>
+<h3>المشغّل</h3><video id="v" controls playsinline preload="metadata"></video>
+<h3>النتيجة</h3><div id="log"></div><button class="s" id="cp">انسخ النتيجة</button>
+<script>
+const $=id=>document.getElementById(id),v=$('v'),L=$('log');let cur='',lastT=0,moved=0,t0=0;
+const log=(m,c)=>{L.innerHTML+=`<div class="${c||''}">${new Date().toLocaleTimeString('en')} ${m}</div>`;L.scrollTop=1e9};
+const key=()=>'dv:'+cur;
+function play(u){cur=u;lastT=0;moved=0;t0=Date.now();L.innerHTML='';log('تحميل: '+u.slice(0,90));v.src=u;v.load()}
+['loadstart','loadedmetadata','loadeddata','canplay','playing','waiting','stalled','ended'].forEach(e=>v.addEventListener(e,()=>{
+ if(e==='loadedmetadata')log(`loadedmetadata: المدة=${v.duration.toFixed(1)}s ${v.videoWidth}x${v.videoHeight}`,'ok');else log(e)}));
+v.addEventListener('error',()=>log('ERROR code='+(v.error&&v.error.code)+' '+(v.error&&v.error.message||''),'bad'));
+v.addEventListener('timeupdate',()=>{if(v.currentTime>0&&!moved){moved=1;log('currentTime تتحرك ✔ قراءة='+v.currentTime.toFixed(2),'ok')}lastT=v.currentTime});
+setInterval(()=>{if(cur&&lastT>1){try{localStorage.setItem(key(),String(lastT))}catch{}}},3000);
+$('go').onclick=()=>play($('u').value.trim());
+$('rs').onclick=()=>{const t=+localStorage.getItem(key()||'dv:'+$('u').value.trim());if(!cur)play($('u').value.trim());const a=()=>{v.currentTime=t;log('استكمال إلى '+t.toFixed(1)+'s')};v.readyState>=1?a():v.addEventListener('loadedmetadata',a,{once:true})};
+$('seek').onclick=()=>{if(!v.duration)return log('لا مدة بعد','bad');const to=v.duration/2;v.currentTime=to;setTimeout(()=>{const d=Math.abs(v.currentTime-to);log(`القفز: طلبت ${to.toFixed(1)} فصارت ${v.currentTime.toFixed(1)} seekable=${v.seekable.length?v.seekable.end(0).toFixed(0):'لا'}`,d<3?'ok':'bad')},2500)};
+$('disp').onclick=()=>open('https://cloud.mail.ru/api/v2/dispatcher?api=2','_blank');
+$('mk').onclick=()=>{let b=$('base').value.trim();try{const j=JSON.parse(b);b=(j.body&&j.body.weblink_get&&j.body.weblink_get[0]&&j.body.weblink_get[0].url)||b}catch{}
+ const p=$('pub').value.trim().replace(/^https?:\/\/cloud\.mail\.ru\/public\//,'');if(!/^https?:/.test(b))return log('الصق قيمة url أولًا','bad');play(b.replace(/\/$/,'')+'/'+p)};
+$('cp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(L.innerText).then(()=>log('نُسخت'));
+log('اضغط «شغّل» ثم تشغّل الفيديو ثواني.');
+</script></body></html>
