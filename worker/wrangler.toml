@@ -15,6 +15,6 @@ crons = ["*/5 * * * *"]
 [vars]
 DATA_URL = "https://marwaljnibi-ctrl.github.io/drama-family/data/shows.json"
 DIZI_URL = "https://marwaljnibi-ctrl.github.io/drama-family/"
-SETTINGS_URL = "https://exp-whatsapp-alerts.dizi-preview.pages.dev/"
+SETTINGS_URL = "https://exp-family-v1.dizi-preview.pages.dev/"
 ALLOWED_ORIGINS = "https://exp-whatsapp-alerts.dizi-preview.pages.dev,https://exp-family-v1.dizi-preview.pages.dev,https://marwaljnibi-ctrl.github.io"
 # الأسرار (لا تُكتب هنا): UM_API_KEY و ADMIN_KEY عبر: npx wrangler secret put <NAME>
