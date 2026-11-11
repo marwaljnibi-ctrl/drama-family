@@ -22,7 +22,7 @@ export async function handleAccounts({ env, req, p, body, out, sendWA, now = Dat
   if (p === '/auth/google') {
     const g = await verifyGoogle(body.credential, env.GOOGLE_CLIENT_ID, now, getKeys);
     if (!g) return out({ error: 'invalid_token' }, 401);
-    const inv = await sql(env, 'SELECT 1 AS x FROM invites WHERE email = ?', g.email).first();
+    const inv = env.REQUIRE_INVITE === '1' ? await sql(env, 'SELECT 1 AS x FROM invites WHERE email = ?', g.email).first() : { x: 1 };   // التسجيل مفتوح لأي حساب Google؛ الدعوة مطلوبة فقط إن فُعّل REQUIRE_INVITE=1
     if (!inv) return out({ error: 'not_invited' }, 403);                 // فقط المدعوون يُنشئون حسابات
     const uid = 'g_' + g.sub;
     await sql(env, 'INSERT INTO users (id, email, name, created) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, email = excluded.email', uid, g.email, g.name, now).run();

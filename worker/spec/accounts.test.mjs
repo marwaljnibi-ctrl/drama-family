@@ -29,7 +29,7 @@ globalThis.fetch = async (url, init = {}) => {
   if (u === 'https://api.unlimitedmessaging.app/message') { UM.push(JSON.parse(init.body)); return new Response(JSON.stringify({ id: 'm' + UM.length }), { status: UM_STATUS }); }
   return realFetch(url, init);
 };
-const env = () => ({ DB: mkDB(), GOOGLE_CLIENT_ID: CLIENT, DATA_URL: 'https://data.test/shows.json', DIZI_URL: 'https://dizi.test/', SETTINGS_URL: 'https://app.test/', ALLOWED_ORIGINS: 'https://app.test', UM_API_KEY: 'ak', ADMIN_KEY: 'adm-secret' });
+const env = () => ({ DB: mkDB(), GOOGLE_CLIENT_ID: CLIENT, REQUIRE_INVITE: '1', DATA_URL: 'https://data.test/shows.json', DIZI_URL: 'https://dizi.test/', SETTINGS_URL: 'https://app.test/', ALLOWED_ORIGINS: 'https://app.test', UM_API_KEY: 'ak', ADMIN_KEY: 'adm-secret' });
 const call = async (e, path, { key, body, now = NOW } = {}) => { const r = await handle(new Request('https://w.test' + path, { method: 'POST', headers: { authorization: key ? 'Bearer ' + key : '', 'content-type': 'application/json', origin: 'https://app.test' }, body: JSON.stringify(body || {}) }), e, { now, getKeys }); return { status: r.status, body: await r.json().catch(() => null) }; };
 const adm = (e, path, body) => call(e, path, { key: 'adm-secret', body });
 async function login(e, who = {}, invite = true) {
