@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { recommend } from '../recommend.js';
 import { validExtMessage, validClientMessage, ARAB_ORIGIN, OK_ORIGIN } from '../bridge.js';
 import { acceptTime, canReloadNow } from '../guards.js';
+import { pickDefault, alternatives } from '../servers.js';
 
 const mk = (id, genres) => ({ id, eps: [{ id: id + '-1' }], ...(genres ? { genres } : {}) });
 
@@ -99,4 +100,14 @@ test('update guard: no automatic reload on the watch page or while a video plays
 });
 test('bridge: restore message type is accepted by origin/id check', () => {
   assert.deepEqual(validClientMessage(ev({ data: { src: 'dizi-resume-ext', type: 'restore', id: 'abc123', ok: 'yes' } }), win, 'abc123', ARAB_ORIGIN), { type: 'restore' });
+});
+
+test('servers: default is the last successful server when available, else the first', () => {
+  assert.equal(pickDefault(['a', 'o'], 'o'), 'o');
+  assert.equal(pickDefault(['a', 'o'], 't'), 'a');
+  assert.equal(pickDefault(['a', 'o'], null), 'a');
+});
+test('servers: alternatives exclude the current one and keep registry order', () => {
+  assert.deepEqual(alternatives(['a', 'o', 'd'], 'a'), ['o', 'd']);
+  assert.deepEqual(alternatives(['a'], 'a'), []);
 });

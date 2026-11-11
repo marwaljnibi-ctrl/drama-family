@@ -4,7 +4,7 @@ import { $, esc, fmt, mb, toast, poster, HEART, pop, heartClick, showCard, skele
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
-import { SERVERS } from './servers.js';
+import { SERVERS, pickDefault, alternatives } from './servers.js';
 import { canReloadNow } from './guards.js';
 
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
@@ -23,7 +23,7 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
-const BUILD = 'df-v20';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v21';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -262,11 +262,14 @@ async function vWatch(showId, epId) {
     const S = SERVERS[k], id = ids[k];
     pl.innerHTML = `<iframe src="${esc(S.url(id))}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
     const ad = embedAdapter({ getFrame: () => pl.querySelector('iframe'), origin: S.origin, id });
-    let base = 0, restored = false; const guardUntil = Date.now() + 30000;
+    let okMarked = false, loaded = false, base = 0, restored = false; const guardUntil = Date.now() + 30000;
     ad.onRestore(() => { restored = true; });
     ad.onReady(async () => { const q = await progress.get(showId, epId); const ok = q && !q.done && q.duration > 0 && q.time > 5; base = ok ? q.time : 0; ad.seekTo(ok ? q.time : null, ok ? q.duration : null); });
-    ad.onProgress((t, d) => { if (stale() || noSave) return; if (!restored && Date.now() < guardUntil && base && t < base - 15) return; progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); });
-    teardown = ad.destroy;
+    ad.onProgress((t, d) => { if (!okMarked) { okMarked = true; try { localStorage.setItem('df-sv-ok', k); } catch {} }
+      if (stale() || noSave) return; if (!restored && Date.now() < guardUntil && base && t < base - 15) return; progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); });
+    const fr = pl.querySelector('iframe'); const failT = setTimeout(() => { if (loaded || stale()) return; const alts = alternatives(SRC.filter((x) => !x.href && SERVERS[x.k]).map((x) => x.k), k); if (!alts.length) return; msg.innerHTML = `<div class="note">تأخر تحميل ${esc(S.name)}. ${alts.map((x) => `<button class="alt" data-k="${x}">جرّب ${esc(SERVERS[x].name)}</button>`).join(' ')}</div>`; msg.querySelectorAll('.alt').forEach((b) => (b.onclick = () => select(b.dataset.k))); }, 15000);
+    if (fr) fr.addEventListener('load', () => { loaded = true; clearTimeout(failT); });
+    teardown = () => { clearTimeout(failT); ad.destroy(); };
     msg.innerHTML = S.hint ? `<div class="note">${esc(S.hint)}</div>` : '';
     if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
   };
@@ -278,7 +281,6 @@ async function vWatch(showId, epId) {
   };
   const select = async (k, startAt) => {
     stopCur(); msg.innerHTML = ''; cur = k;
-    try { if (k === 'a') localStorage.setItem('df-sv2', k); } catch {}
     drawSrv();
     if (SERVERS[k]) return mountServer(k);
     if (startAt == null) { const p = await progress.get(showId, epId); if (stale()) return; startAt = p && !p.done ? p.time || 0 : 0; }
@@ -310,14 +312,15 @@ async function vWatch(showId, epId) {
   const rm = $('#rm'); if (rm) rm.onclick = async () => { stopCur(); await downloads.remove(key); route(); };
 
   if (!SRC.length) {
-    // لا سيرفر معروف بعد لهذه الحلقة: زر يفتح صفحة المصدر
-    pl.innerHTML = `<a href="${esc(ep.url)}" target="_blank" rel="noopener" id="go" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;overflow:hidden;background:#000">${(show.img || show.poster) ? `<img src="${esc(asset(show.img2 || show.img) || show.poster)}" referrerpolicy="no-referrer" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">` : ''}<span style="position:relative;font-size:64px;line-height:1;color:#fff">▶</span></a>`;
+    // لا سيرفر معروف لهذه الحلقة بعد: الحلقات القديمة تُفهرس تدريجيًا في الخلفية. نقول ذلك، والمصدر الخارجي خيار ثانوي
+    pl.style.cssText = 'aspect-ratio:auto;background:none';
+    pl.innerHTML = `<div class="empty-card"><b>سيرفرات هذه الحلقة قيد الفهرسة</b><p>تُضاف تلقائيًا خلال ساعات. جرّب حلقة أحدث أو عد لاحقًا.</p><a href="${esc(ep.url)}" target="_blank" rel="noopener"><button>فتح الحلقة في المصدر ↗</button></a></div>`;
     return;
   }
-  let pref = null; try { pref = localStorage.getItem('df-sv2'); } catch {}
+  let pref = null; try { pref = localStorage.getItem('df-sv-ok'); } catch {}
   const playable = SRC.filter((s) => !s.href);
   if (!playable.length) { pl.innerHTML = `<a href="${esc(exLink)}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;background:#000;color:#fff;font-size:18px">▶ فتح الحلقة على cloud.mail.ru</a>`; return; }
-  const first = (meta && 'f') || (playable.some((s) => s.k === pref) && pref) || playable[0].k;
+  const first = (meta && 'f') || pickDefault(playable.map((s) => s.k), pref);
   select(first);
 }
 

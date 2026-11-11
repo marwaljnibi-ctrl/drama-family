@@ -5,3 +5,8 @@ export const SERVERS = {
   o: { name: 'OK', origin: 'https://ok.ru', url: (id) => `https://ok.ru/videoembed/${id}`, hint: 'إن لم يظهر الفيديو جرّب Arab HD.' },
   // t: Turk — مؤجل (لا يصل الدومين على شبكتنا حاليًا). يُضاف هنا لاحقًا مع سكربته.
 };
+
+// آخر سيرفر نجح (وصلنا منه تقدم مشاهدة) يُفضَّل إن كان متاحًا لهذه الحلقة؛ وإلا الأول المتاح
+export const pickDefault = (available, lastOk) => (available.includes(lastOk) ? lastOk : available[0]);
+// بدائل سيرفر تعطل: المتاحة غير الحالي، بترتيب السجل
+export const alternatives = (available, current) => available.filter((k) => k !== current);
