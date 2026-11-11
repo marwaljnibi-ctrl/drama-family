@@ -30,3 +30,12 @@ test('guest import: adds missing favorites/progress, keeps the newer progress, n
   assert.deepEqual(add.progress.map((p) => p.key).sort(), ['s|2', 's|3']);      // s|1 الأحدث في الحساب يبقى، وs|2 الأحدث عند الضيف يُضاف
   assert.equal(guest.favs.length, 2); assert.equal(mine.favs.length, 1);
 });
+
+test('an empty placeholder record (episode opened, nothing watched) never beats real cloud progress and is never pushed', async () => {
+  const { isReal } = await import('../sync.js');
+  const empty = { key: 's|e', showId: 's', epId: 'e', epNum: 1, time: 0, duration: 0, done: false, hidden: false, updated: 9999 };
+  assert.equal(isReal(empty), false); assert.equal(isReal(P('s|e', 1, 5)), true);
+  const r = planMerge({ favs: [], progress: [empty] }, { favs: [], progress: [P('s|e', 1000, 600)] });
+  assert.deepEqual(r.putProg.map((p) => p.time), [600]); assert.equal(r.pushProg.length, 0);
+  assert.equal(planMerge({ favs: [], progress: [empty] }, { favs: [], progress: [] }).pushProg.length, 0);
+});

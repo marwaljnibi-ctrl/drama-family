@@ -8,7 +8,7 @@ import { SERVERS, pickDefault, alternatives } from './servers.js';
 import { canReloadNow } from './guards.js';
 import { renderAlerts, bindShowAlert, askOnboarding } from './alerts.js';
 import { getSession, prepareDb, renderLogin } from './auth.js';
-import { startSync, importGuest } from './sync.js';
+import { startSync, importGuest, whenSynced } from './sync.js';
 
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
 // تشخيص للمطوّر فقط: يظهر عند فتح الموقع بـ ?arabtest=1 (ويُطفأ بـ ?arabtest=0). للقراءة فقط: لا أزرار ولا إرسال للمشغّل. لا يظهر للمستخدم العادي.
@@ -26,7 +26,7 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
-const BUILD = 'df-v28';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v29';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -192,6 +192,7 @@ async function vWatch(showId, epId) {
   const key = showId + '|' + epId;
   // تنقّل سريع: إن تغيّر المسار أثناء الانتظار فهذه صفحة قديمة، تتوقف ولا تلمس الصفحة الجديدة
   const h0 = location.hash, stale = () => location.hash !== h0;
+  await whenSynced();   // للمسجّل: انتظر (بمهلة قصيرة) السحب الأول من الحساب حتى لا نقرأ تقدمًا ناقصًا ونكتب فوق الدقيقة الصحيحة
   const [p0, meta] = await Promise.all([progress.get(showId, epId), downloads.getMeta(key)]);
   if (stale()) return;
   const next = nextEp(show, ep);

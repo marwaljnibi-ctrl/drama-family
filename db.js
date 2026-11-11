@@ -104,6 +104,6 @@ export function readOther(name) {
 }
 // كتابات خام بلا إطلاق أحداث: تستعملها المزامنة عند سحب بيانات الحساب (حتى لا تُدفع من جديد)
 export const raw = {
-  favs: () => all('favs'), progress: () => all('progress'),
+  favs: () => all('favs'), progress: () => all('progress'), getProgress: (k) => get('progress', k),
   putFav: (v) => put('favs', v), delFav: (id) => del('favs', id), putProgress: (v) => put('progress', v),
 };
