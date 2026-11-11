@@ -1,29 +1,50 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>اختبار OK و Turk</title>
+<title>اختبار OK و Turk (نسخة 2)</title>
 <style>body{font:15px/1.7 system-ui,sans-serif;margin:0;padding:14px;max-width:720px;margin-inline:auto;color:#111}
 .ep{border:1px solid #e5e5e3;border-radius:12px;padding:10px;margin:10px 0}.ep b{display:block}
-button{padding:10px 14px;border-radius:10px;border:1px solid #9E2B35;background:#9E2B35;color:#fff;font:14px system-ui;margin:3px 2px}button.s{background:#f4f4f2;color:#111;border-color:#ddd}
+button{padding:9px 12px;border-radius:10px;border:1px solid #9E2B35;background:#9E2B35;color:#fff;font:13px system-ui;margin:3px 2px}button.s{background:#f4f4f2;color:#111;border-color:#ddd}button.g{background:#0a7a2f;border-color:#0a7a2f}button.r{background:#b00020;border-color:#b00020}
 iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000;margin-top:8px}
-.st{font:12px/1.6 monospace;direction:ltr;background:#f4f4f2;border-radius:8px;padding:6px 8px;margin-top:6px;white-space:pre-wrap}.ok{color:#0a7a2f}.bad{color:#b00020}</style></head><body>
-<h3>اختبار تشغيل OK وTurk داخل Dizi (آخر 4 حلقات)</h3>
-<div id="net" class="st">فحص الوصول من هذه الشبكة…</div>
+.st{font:12px/1.6 monospace;direction:ltr;background:#f4f4f2;border-radius:8px;padding:6px 8px;margin-top:6px;white-space:pre-wrap}.ok{color:#0a7a2f}.bad{color:#b00020}small{color:#666}</style></head><body>
+<h3>OK وTurk داخل Dizi — نسخة 2 (آخر 4 حلقات)</h3>
+<p><small>اضغط متغيّرًا ثم <b>شغّل الفيديو داخل الإطار فعلًا</b> (زر التشغيل)، ثم اضغط ✔ إن بدأ الفيديو أو ✘ إن لم يبدأ.</small></p>
+<div id="net" class="st">فحص الشبكة…</div>
 <div id="eps"></div>
 <div class="st" id="log"></div><button class="s" id="cp">انسخ النتيجة</button>
 <script>
 const EPS=[
- {t:'مسلسل الكرامة - 9',a:'a3w3ctgqz57k',k:'8e5avcb4n3m7',o:'17432039066210'},
- {t:'مسلسل نصف الأم - 7',a:'ex6ypyav5nk7',k:'xcevw0xz987n',o:'18191229717155'},
- {t:'مسلسل القهوة المالحة - 10',a:'9v9qxsvqbre0',k:'ylaeueekwom5',o:'17692146797057'},
- {t:'مسلسل المدينة البعيدة - 72',a:'x6c45ct3pkqy',k:'m81hqp98bnep',o:'16660601047793'}];
-const SRV={a:['Arab HD (للمقارنة)',i=>`https://arabhd.onl/embed-${i}.html`],k:['Turk',i=>`https://arabveturk.com/embed-${i}.html`],o:['OK',i=>`https://ok.ru/videoembed/${i}`]};
+ {t:'الكرامة 9',k:'8e5avcb4n3m7',o:'17432039066210'},
+ {t:'نصف الأم 7',k:'xcevw0xz987n',o:'18191229717155'},
+ {t:'القهوة المالحة 10',k:'ylaeueekwom5',o:'17692146797057'},
+ {t:'المدينة البعيدة 72',k:'m81hqp98bnep',o:'16660601047793'}];
+const SBX='allow-scripts allow-same-origin allow-presentation allow-forms';
+// متغيّرات iframe: A = صيغة OK الرسمية بلا sandbox، B = sandbox كما في Dizi، C = sandbox أوسع، N = بلا referrer
+const VAR={
+ A:{n:'رسمي بلا sandbox',a:{allow:'autoplay; fullscreen; picture-in-picture',allowfullscreen:''}},
+ B:{n:'sandbox كما في Dizi',a:{sandbox:SBX,allow:'autoplay; fullscreen; picture-in-picture',allowfullscreen:''}},
+ C:{n:'sandbox أوسع',a:{sandbox:SBX+' allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation',allow:'autoplay; fullscreen; picture-in-picture',allowfullscreen:''}},
+ N:{n:'بلا referrer',a:{referrerpolicy:'no-referrer',allow:'autoplay; fullscreen',allowfullscreen:''}}};
+const URLS={ok:(e)=>`https://ok.ru/videoembed/${e.o}`,turk:(e)=>`https://arabveturk.com/embed-${e.k}.html`};
 const R=[],L=document.getElementById('log');const log=m=>{R.push(m);L.textContent+=m+'\n'};
-async function reach(host){const t0=performance.now();try{await fetch('https://'+host+'/favicon.ico',{mode:'no-cors',cache:'no-store',signal:AbortSignal.timeout(8000)});return 'REACHABLE '+Math.round(performance.now()-t0)+'ms'}catch(e){return 'UNREACHABLE ('+e.name+') '+Math.round(performance.now()-t0)+'ms'}}
-(async()=>{const o={};for(const h of ['arabhd.onl','arabveturk.com','ok.ru']){o[h]=await reach(h)}
- document.getElementById('net').innerHTML=Object.entries(o).map(([h,v])=>`${h}: <span class="${/^REACH/.test(v)?'ok':'bad'}">${v}</span>`).join('<br>');log('NET '+JSON.stringify(o))})();
-document.getElementById('eps').innerHTML=EPS.map((e,n)=>`<div class="ep"><b>${e.t}</b>${Object.keys(SRV).map(k=>`<button class="${k==='a'?'s':''}" data-n="${n}" data-k="${k}">${SRV[k][0]}</button>`).join('')}<div class="box"></div></div>`).join('');
-document.getElementById('eps').onclick=e=>{const b=e.target.closest('button');if(!b)return;const ep=EPS[+b.dataset.n],k=b.dataset.k,box=b.parentElement.querySelector('.box');
- const f=document.createElement('iframe');f.src=SRV[k][1]({a:ep.a,k:ep.k,o:ep.o}[k]);f.setAttribute('sandbox','allow-scripts allow-same-origin allow-presentation allow-forms');f.setAttribute('allow','autoplay; fullscreen; picture-in-picture');f.allowFullscreen=true;
- const s=document.createElement('div');s.className='st';s.textContent='يحمّل…';f.onload=()=>{s.textContent='iframe load event (لا يعني أن الفيديو يعمل: ما تراه داخل الإطار هو النتيجة)';log(`${ep.t} ${SRV[k][0]}: load`)};
- box.replaceChildren(f,s);log(`${ep.t} ${SRV[k][0]}: opened`)};
+async function probe(label,url,ms=20000){const t0=performance.now();try{await fetch(url,{mode:'no-cors',cache:'no-store',signal:AbortSignal.timeout(ms)});return label+': REACHABLE '+Math.round(performance.now()-t0)+'ms'}catch(e){return label+': FAILED '+e.name+' after '+Math.round(performance.now()-t0)+'ms (timeout='+ms+')'}}
+(async()=>{
+ const out=[];
+ out.push(await probe('control cdnjs.cloudflare.com (Cloudflare)','https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js'));
+ out.push(await probe('ok.ru','https://ok.ru/favicon.ico'));
+ out.push(await probe('arabveturk.com (20s)','https://arabveturk.com/favicon.ico'));
+ try{const r=await fetch('https://cloudflare-dns.com/dns-query?name=arabveturk.com&type=A',{headers:{accept:'application/dns-json'}});const j=await r.json();out.push('DoH says arabveturk.com resolves to: '+(j.Answer||[]).map(a=>a.data).join(','))}catch(e){out.push('DoH query failed: '+e.name)}
+ document.getElementById('net').innerHTML=out.map(l=>`<span class="${/REACHABLE|resolves/.test(l)?'ok':'bad'}">${l}</span>`).join('<br>');log('NET\n'+out.join('\n'));
+})();
+document.getElementById('eps').innerHTML=EPS.map((e,n)=>`<div class="ep"><b>${e.t}</b>
+ <div>OK: ${['A','B','C','N'].map(v=>`<button data-n="${n}" data-s="ok" data-v="${v}" class="s">${v}</button>`).join('')}</div>
+ <div>Turk: ${['A','B','N'].map(v=>`<button data-n="${n}" data-s="turk" data-v="${v}" class="s">${v}</button>`).join('')}</div>
+ <div class="box"></div></div>`).join('')+'<p><small>A=رسمي بلا sandbox · B=sandbox كما في Dizi · C=sandbox أوسع · N=بلا referrer</small></p>';
+document.getElementById('eps').onclick=ev=>{
+ const o=ev.target.closest('[data-obs]');if(o){log(`${o.dataset.obs}`);o.parentElement.querySelector('.res').textContent=o.dataset.obs.includes(' YES')?'سُجّل: يعمل':'سُجّل: لا يعمل';return}
+ const b=ev.target.closest('button[data-s]');if(!b)return;const e=EPS[+b.dataset.n],box=b.closest('.ep').querySelector('.box'),s=b.dataset.s,v=b.dataset.v,V=VAR[v];
+ const f=document.createElement('iframe');for(const [k,val] of Object.entries(V.a))f.setAttribute(k,val);f.src=URLS[s](e);
+ const tag=`${e.t} ${s.toUpperCase()}-${v} (${V.n})`;
+ const ctl=document.createElement('div');ctl.innerHTML=`<small>${tag}</small> <button class="g" data-obs="${tag} YES">✔ بدأ الفيديو</button><button class="r" data-obs="${tag} NO">✘ لم يبدأ</button> <span class="res"></span>`;
+ f.onload=()=>log(tag+': frame load event');box.replaceChildren(f,ctl);log(tag+': opened');
+};
 document.getElementById('cp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(R.join('\n'));
 </script></body></html>
