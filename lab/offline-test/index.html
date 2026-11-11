@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>اختبار التخزين والتشغيل بلا إنترنت</title>
+<style>
+body{font:15px/1.7 system-ui,sans-serif;margin:0;padding:14px;max-width:760px;margin-inline:auto;color:#111}
+h2{margin:6px 0 4px}h3{margin:20px 0 6px;border-top:1px solid #e5e5e3;padding-top:12px}
+button,select,input{padding:10px 12px;border-radius:10px;border:1px solid #ccc;font:14px system-ui;margin:3px 2px;max-width:100%}
+button{background:#9E2B35;color:#fff;border-color:#9E2B35}button.s{background:#f4f4f2;color:#111;border-color:#ddd}button:disabled{opacity:.45}
+input{width:100%;direction:ltr;font:13px monospace}
+video{width:100%;background:#000;border-radius:12px;aspect-ratio:16/9}
+.log{background:#f4f4f2;border-radius:10px;padding:10px;font:12px/1.6 monospace;direction:ltr;white-space:pre-wrap;max-height:260px;overflow:auto}
+.ok{color:#0a7a2f}.bad{color:#b00020}.warn{color:#8a5a00}
+.bar{height:8px;background:#e5e5e3;border-radius:4px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;width:0;background:#9E2B35}
+#net{position:sticky;top:0;z-index:9;padding:6px 10px;border-radius:8px;font-weight:600;background:#e8f5ea;color:#0a7a2f}#net.off{background:#fde8e8;color:#b00020}
+table{width:100%;border-collapse:collapse;font:13px monospace;direction:ltr}td,th{border-bottom:1px solid #eee;padding:4px;text-align:left}
+</style></head><body>
+<div id="net">…</div>
+<h2>اختبار: تنزيل ← حفظ في OPFS ← تشغيل بلا إنترنت</h2>
+<p>مختبر مؤقت منفصل عن Dizi. لا حسابات ولا وسيط. المصادر المستخدمة تسمح بالتنزيل وبـ CORS وRange.</p>
+
+<h3>0) الجهاز والتخزين</h3>
+<div id="env" class="log"></div>
+<button id="persist">اطلب تخزينًا دائمًا (persist)</button><button class="s" id="refresh">حدّث</button>
+
+<h3>أ) تنزيل من مصدر حقيقي (CORS + Range) إلى OPFS</h3>
+<select id="src">
+  <option value="mp4|https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">MP4 صغير 1.1 م.ب (MDN، CC0)</option>
+  <option value="webm|https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.1080p.vp9.webm">WebM حقيقي 300 م.ب (Wikimedia، Big Buck Bunny)</option>
+  <option value="custom">رابط آخر…</option>
+</select>
+<input id="custom" placeholder="https://… (mp4 أو webm يسمح بـ CORS وRange)" hidden>
+<div><button id="dl">تنزيل</button><button class="s" id="pause" disabled>إيقاف مؤقت</button><button class="s" id="resume" disabled>استكمال</button><button class="s" id="cancel">حذف ملف التنزيل</button></div>
+<div class="bar"><i id="dlbar"></i></div><div id="dlst" class="log">—</div>
+
+<h3>ب) ملف كبير اصطناعي (بلا شبكة): MP4 صالح + بطانة، لاختبار 1–4 غ.ب</h3>
+<p>يكتب قطعًا بحجم 8 م.ب مباشرة إلى OPFS (لا يجمع الملف في الذاكرة). المحتوى المشغَّل هو العيّنة الحقيقية؛ الباقي بطانة داخل صندوق <code>free</code> الصالح في MP4.</p>
+<select id="gb"><option value="256">256 م.ب</option><option value="1024">1 غ.ب</option><option value="2048">2 غ.ب</option><option value="4096">4 غ.ب</option></select>
+<button id="fill">ابدأ الملء</button><button class="s" id="fpause" disabled>إيقاف مؤقت</button><button class="s" id="fresume" disabled>استكمال</button>
+<div class="bar"><i id="fbar"></i></div><div id="fst" class="log">—</div>
+
+<h3>ج) الملفات المخزّنة (تبقى بعد إغلاق Safari وإعادة التشغيل)</h3>
+<button id="list">اعرض وافحص الملفات</button><button class="s" id="rmall">احذف كل ملفات الاختبار</button>
+<table id="files"></table>
+
+<h3>د) التشغيل من OPFS (جرّبه في وضع الطيران)</h3>
+<select id="pick"></select><button id="play">شغّل</button><button class="s" id="mid">اقفز لمنتصف الفيديو</button><button class="s" id="near">اقفز قرب النهاية</button>
+<video id="v" controls playsinline preload="metadata"></video>
+<div id="pst" class="log">—</div>
+
+<h3>السجل والنتائج</h3>
+<div id="log" class="log"></div>
+<button class="s" id="cp">انسخ التقرير</button>
+
+<script type="module">
+import * as dl from './dl2.js';
+const $ = (id) => document.getElementById(id), L = $('log'); const R = [];
+const log = (m, c) => { L.innerHTML += `<div class="${c || ''}">${new Date().toLocaleTimeString('en')} ${m}</div>`; L.scrollTop = 1e9; };
+const res = (name, ok, d = '') => { R.push(`${ok ? 'PASS' : 'FAIL'} ${name} ${d}`); log(`${ok ? 'PASS' : 'FAIL'} ${name} ${d}`, ok ? 'ok' : 'bad'); };
+const mbs = (n) => n >= 2 ** 30 ? (n / 2 ** 30).toFixed(2) + ' GB' : (n / 2 ** 20).toFixed(1) + ' MB';
+const net = () => { const n = $('net'); n.textContent = navigator.onLine ? 'متصل بالإنترنت' : 'وضع الطيران / بلا إنترنت ✈'; n.className = navigator.onLine ? '' : 'off'; };
+addEventListener('online', net); addEventListener('offline', net); net();
+
+async function env() {
+  const e = await navigator.storage.estimate().catch(() => ({})); const p = await navigator.storage.persisted().catch(() => null);
+  $('env').textContent = `UA: ${navigator.userAgent.replace(/.*OS ([\d_]+).*/, 'iOS $1')}\nOPFS: ${!!(navigator.storage && navigator.storage.getDirectory)}\nWorker: ${typeof Worker}\nquota: ${e.quota ? mbs(e.quota) : '?'}  usage: ${e.usage != null ? mbs(e.usage) : '?'}\npersisted: ${p}\nstandalone(PWA): ${navigator.standalone === true || matchMedia('(display-mode: standalone)').matches}\nWebM: ${document.createElement('video').canPlayType('video/webm; codecs="vp9"') || 'no'}  MP4: ${document.createElement('video').canPlayType('video/mp4') || 'no'}`;
+  return e;
+}
+$('refresh').onclick = env; $('persist').onclick = async () => { const ok = await navigator.storage.persist().catch(() => false); log('persist() => ' + ok, ok ? 'ok' : 'warn'); env(); };
+env();
+$('src').onchange = () => { $('custom').hidden = $('src').value !== 'custom'; };
+
+// ---- أ) تنزيل
+let ctl = null, cur = { url: '', name: '', kind: 'mp4' };
+const nameOf = (url) => 'dl-' + (url.split('/').pop().split('?')[0] || 'file').replace(/[^\w.-]/g, '_').slice(-40);
+const bar = (id, a, b) => { $(id).style.width = Math.min(100, a / b * 100) + '%'; };
+async function runDownload() {
+  const v = $('src').value; let kind, url;
+  if (v === 'custom') { url = $('custom').value.trim(); kind = /\.webm/i.test(url) ? 'webm' : 'mp4'; } else { [kind, url] = [v.split('|')[0], v.split('|').slice(1).join('|')]; }
+  if (!/^https:/.test(url)) return log('أدخل رابط https', 'bad');
+  cur = { url, name: nameOf(url), kind }; ctl = new AbortController();
+  $('dl').disabled = true; $('pause').disabled = false; $('resume').disabled = true;
+  const t0 = performance.now(); let last = 0, lastT = t0;
+  try {
+    const r = await dl.download(url, cur.name, { kind, signal: ctl.signal, onProgress: (a, b) => { bar('dlbar', a, b); const now = performance.now(); if (now - lastT > 700) { $('dlst').textContent = `${mbs(a)} / ${mbs(b)}  (${(a / b * 100).toFixed(1)}%)  ${((a - last) / ((now - lastT) / 1000) / 1048576).toFixed(1)} MB/s`; last = a; lastT = now; } } });
+    $('dlst').textContent = JSON.stringify({ complete: r.complete, size: r.total, resumedFrom: r.resumedFrom, verified: r.verified, err: r.verifyError }, null, 1);
+    res('download-' + kind + '-' + mbs(r.total), r.ok && r.complete, `resumedFrom=${r.resumedFrom} verify=${r.verifyError || 'ok'}`);
+    $('pause').disabled = true;
+  } catch (e) {
+    $('dlst').textContent += `\n${e.name}: ${e.message}`; $('pause').disabled = true; $('resume').disabled = false;
+    if (e.name === 'AbortError') log('أُوقف مؤقتًا؛ الجزء المسجّل محفوظ. اضغط استكمال.', 'warn'); else res('download-error', false, e.message);
+  } finally { $('dl').disabled = false; }
+}
+$('dl').onclick = runDownload; $('resume').onclick = runDownload;
+$('pause').onclick = () => { ctl && ctl.abort(); };
+$('cancel').onclick = async () => { if (cur.name) { await dl.removeAll(cur.name); log('حُذف ' + cur.name, 'warn'); } };
+
+// ---- ب) ملف اصطناعي
+let fctl = null;
+async function runFill() {
+  const total = +$('gb').value * 1048576, name = 'synthetic-' + $('gb').value + 'MB.mp4';
+  const e = await env(); if (e.quota && e.usage != null && total + 256 * 1048576 > e.quota - e.usage) { res('fill-space-check-' + mbs(total), true, 'refused: not enough quota (' + mbs(e.quota - e.usage) + ' free) — message shown, nothing written'); return log('المساحة غير كافية لهذا الحجم؛ لم يُكتب شيء.', 'warn'); }
+  const sample = new Uint8Array(await (await fetch('https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4')).arrayBuffer());
+  fctl = new AbortController(); $('fill').disabled = true; $('fpause').disabled = false; $('fresume').disabled = true;
+  const t0 = performance.now(); let lastT = t0, last = 0;
+  try {
+    const r = await dl.fillSynthetic(name, sample, total, { signal: fctl.signal, onProgress: (a, b) => { bar('fbar', a, b); const now = performance.now(); if (now - lastT > 700) { $('fst').textContent = `${mbs(a)} / ${mbs(b)} (${(a / b * 100).toFixed(1)}%)  ${((a - last) / ((now - lastT) / 1000) / 1048576).toFixed(0)} MB/s`; last = a; lastT = now; } } });
+    $('fst').textContent = JSON.stringify({ complete: r.complete, size: r.total, resumedFrom: r.resumedFrom, boxes: r.verified && r.verified.boxes, seek: r.verified && r.verified.seek, err: r.verifyError, sec: ((performance.now() - t0) / 1000).toFixed(0) }, null, 1);
+    res('fill-' + mbs(total), r.ok && r.complete, `size=${r.total} resumedFrom=${r.resumedFrom} verify=${r.verifyError || 'ok'}`);
+    $('fpause').disabled = true;
+  } catch (e) {
+    $('fpause').disabled = true; $('fresume').disabled = false; $('fst').textContent += `\n${e.name}: ${e.message}`;
+    if (e.name === 'AbortError') log('أُوقف مؤقتًا؛ اضغط استكمال.', 'warn'); else res('fill-error-' + mbs(total), false, e.message + (/Quota/i.test(e.message) ? ' (QuotaExceeded: رسالة المساحة)' : ''));
+  } finally { $('fill').disabled = false; }
+}
+$('fill').onclick = runFill; $('fresume').onclick = runFill; $('fpause').onclick = () => fctl && fctl.abort();
+
+// ---- ج) الملفات
+async function listAndCheck() {
+  const t = $('files'); t.innerHTML = '<tr><th>file</th><th>size</th><th>check</th></tr>'; $('pick').innerHTML = '';
+  const files = await dl.listFiles();
+  for (const f of files) {
+    const q = await dl.quickCheck(f.name).catch((e) => ({ ok: false, why: e.message }));
+    t.insertAdjacentHTML('beforeend', `<tr><td>${f.name}</td><td>${mbs(f.size)}</td><td class="${q.ok ? 'ok' : 'bad'}">${q.ok ? 'complete+valid' : q.why}</td></tr>`);
+    if (q.ok) $('pick').insertAdjacentHTML('beforeend', `<option value="${f.name}">${f.name} (${mbs(f.size)})</option>`);
+    res('stored-' + f.name, q.ok, `${mbs(f.size)} ${q.why}`);
+  }
+  if (!files.length) log('لا ملفات مخزّنة.', 'warn');
+}
+$('list').onclick = listAndCheck;
+$('rmall').onclick = async () => { for (const f of await dl.listFiles()) await dl.removeAll(f.name); log('حُذفت كل ملفات الاختبار', 'warn'); listAndCheck(); };
+
+// ---- د) التشغيل
+const v = $('v'); let curName = '', lastT = 0;
+const pk = (n) => 'offline-test:pos:' + n;
+$('play').onclick = async () => {
+  curName = $('pick').value; if (!curName) return log('اختر ملفًا مكتملًا أولًا', 'warn');
+  if (v.dataset.url) URL.revokeObjectURL(v.dataset.url);
+  const u = await dl.fileUrl(curName); v.dataset.url = u; v.src = u; v.load();
+  const saved = +localStorage.getItem(pk(curName)) || 0;
+  v.addEventListener('loadedmetadata', () => { $('pst').textContent = `duration=${v.duration.toFixed(1)}s online=${navigator.onLine}`; res('play-metadata-' + curName, v.duration > 0, `online=${navigator.onLine} ${v.videoWidth}x${v.videoHeight}`); if (saved > 2 && saved < v.duration - 1) { v.currentTime = saved; log('استعادة الدقيقة المحفوظة ' + saved.toFixed(1) + 's'); } }, { once: true });
+  v.addEventListener('error', () => res('play-error-' + curName, false, 'media error ' + (v.error && v.error.code)), { once: true });
+};
+$('mid').onclick = () => { if (!v.duration) return; const t = v.duration / 2; v.currentTime = t; v.addEventListener('seeked', () => res('seek-mid-' + curName, Math.abs(v.currentTime - t) < 1.5, `asked=${t.toFixed(1)} at=${v.currentTime.toFixed(1)} online=${navigator.onLine}`), { once: true }); };
+$('near').onclick = () => { if (!v.duration) return; const t = Math.max(0, v.duration - 2); v.currentTime = t; v.addEventListener('seeked', () => res('seek-near-end-' + curName, Math.abs(v.currentTime - t) < 1.5, `at=${v.currentTime.toFixed(1)}`), { once: true }); };
+v.addEventListener('timeupdate', () => { if (curName && v.currentTime > 2 && Date.now() - lastT > 3000) { lastT = Date.now(); try { localStorage.setItem(pk(curName), String(v.currentTime)); } catch {} } });
+$('cp').onclick = () => navigator.clipboard && navigator.clipboard.writeText($('env').textContent + '\n' + R.join('\n')).then(() => log('نُسخ التقرير'));
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(() => log('Service Worker مسجّل: تُفتح هذه الصفحة بلا إنترنت بعد أول زيارة'), (e) => log('SW: ' + e.message, 'warn'));
+log('جاهز. ابدأ بـ أ ثم ب ثم ج ثم د. للاختبار بلا إنترنت: فعّل وضع الطيران ثم افتح هذه الصفحة واستخدم ج ود فقط.');
+</script></body></html>
