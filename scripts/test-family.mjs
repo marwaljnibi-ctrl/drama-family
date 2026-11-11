@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { recommend } from '../recommend.js';
 import { validExtMessage, validClientMessage, ARAB_ORIGIN, OK_ORIGIN } from '../bridge.js';
+import { acceptTime, canReloadNow } from '../guards.js';
 
 const mk = (id, genres) => ({ id, eps: [{ id: id + '-1' }], ...(genres ? { genres } : {}) });
 
@@ -62,4 +63,40 @@ test('bridge: ready (hello/found) and time messages validated by frame, origin a
   assert.equal(validClientMessage(ev({ source: {}, data: hello.data }), win, 'abc123', ARAB_ORIGIN), null);
   assert.deepEqual(validClientMessage(ev(), win, 'abc123', ARAB_ORIGIN), { type: 'time', t: 120, d: 2700 });
   assert.equal(validClientMessage(ev({ data: { src: 'dizi-resume-ext', type: 'time', id: 'abc123', t: 1, d: 2700 } }), win, 'abc123', ARAB_ORIGIN), null);
+});
+
+// ===== حماية التقدم من التعارض (guards.js) =====
+const now = 1_000_000;
+const cur = (o = {}) => ({ key: 's|e', time: 1800, updated: now - 5000, sid: 'A', ...o });
+test('guard: another active session cannot lower newer progress with a one-off write', () => {
+  const rej = new Map();
+  const r = acceptTime({ cur: cur(), time: 200, sid: 'B', now, rej });
+  assert.equal(r.ok, false);
+});
+test('guard: same session may rewind deliberately (even to zero)', () => {
+  assert.equal(acceptTime({ cur: cur({ sid: 'A' }), time: 120, sid: 'A', now, rej: new Map() }).ok, true);
+  assert.equal(acceptTime({ cur: cur({ sid: 'A' }), time: 0, sid: 'A', now, rej: new Map() }).ok, true);
+});
+test('guard: other session is accepted when idle for 60 s, for small drops, for forward moves and for old records', () => {
+  assert.equal(acceptTime({ cur: cur({ updated: now - 61000 }), time: 200, sid: 'B', now, rej: new Map() }).ok, true);
+  assert.equal(acceptTime({ cur: cur(), time: 1790, sid: 'B', now, rej: new Map() }).ok, true);
+  assert.equal(acceptTime({ cur: cur(), time: 2400, sid: 'B', now, rej: new Map() }).ok, true);
+  assert.equal(acceptTime({ cur: cur({ sid: undefined }), time: 200, sid: 'B', now, rej: new Map() }).ok, true);
+});
+test('guard: a consistent continuation after a rejected write is accepted as a deliberate rewind', () => {
+  const rej = new Map();
+  const first = acceptTime({ cur: cur(), time: 600, sid: 'B', now, rej });
+  assert.equal(first.ok, false); rej.set('s|e', first.remember);
+  const second = acceptTime({ cur: cur(), time: 603, sid: 'B', now: now + 3000, rej });
+  assert.equal(second.ok, true); assert.equal(second.deliberate, true);
+  const stale = acceptTime({ cur: cur(), time: 60, sid: 'B', now: now + 3000, rej });   // قفزة غير متسقة: ما زالت مرفوضة
+  assert.equal(stale.ok, false);
+});
+test('update guard: no automatic reload on the watch page or while a video plays', () => {
+  assert.equal(canReloadNow('#/home', false), true);
+  assert.equal(canReloadNow('#/watch/show/ep', false), false);
+  assert.equal(canReloadNow('#/home', true), false);
+});
+test('bridge: restore message type is accepted by origin/id check', () => {
+  assert.deepEqual(validClientMessage(ev({ data: { src: 'dizi-resume-ext', type: 'restore', id: 'abc123', ok: 'yes' } }), win, 'abc123', ARAB_ORIGIN), { type: 'restore' });
 });

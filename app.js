@@ -5,6 +5,7 @@ import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
 import { SERVERS } from './servers.js';
+import { canReloadNow } from './guards.js';
 
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
 // تشخيص للمطوّر فقط: يظهر عند فتح الموقع بـ ?arabtest=1 (ويُطفأ بـ ?arabtest=0). للقراءة فقط: لا أزرار ولا إرسال للمشغّل. لا يظهر للمستخدم العادي.
@@ -22,10 +23,13 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
+let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
+const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
 
 async function route() {
   if (cleanup) { cleanup(); cleanup = null; }
+  if (pendingReload && !reloaded && canReloadNow(location.hash, isPlaying())) { reloaded = true; location.reload(); return; }   // نفّذ التحديث المؤجل عند مغادرة صفحة المشاهدة
   view.onclick = null;
   let [, name, a, b] = (location.hash || '#/home').split('/');
   if (!name || name === 'new') name = 'home';
@@ -204,7 +208,7 @@ async function vWatch(showId, epId) {
     <div id="msg"></div>
     <div class="actions">${next ? `<a style="flex:1" href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button style="width:100%">الحلقة التالية (${esc(next.n)})</button></a>` : ''}<a style="flex:1" href="#/show/${encodeURIComponent(showId)}"><button style="width:100%">كل الحلقات</button></a></div>`;
   const pl = $('#pl'), srv = $('#srv'), act = $('#act'), msg = $('#msg');
-  const setDone = async (done) => { await progress.save(showId, ep, { done, ...(done ? {} : { time: 0 }) }); toast(done ? 'تم وضع علامة ✓' : 'أُعيدت الحلقة للبداية'); route(); };
+  const setDone = async (done) => { await progress.save(showId, ep, { done, ...(done ? {} : { time: 0 }) }, { force: true }); toast(done ? 'تم وضع علامة ✓' : 'أُعيدت الحلقة للبداية'); route(); };
   if (!p0) await progress.save(showId, ep, { done: false });
   if (stale()) return;
 
@@ -257,9 +261,10 @@ async function vWatch(showId, epId) {
     const S = SERVERS[k], id = ids[k];
     pl.innerHTML = `<iframe src="${esc(S.url(id))}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
     const ad = embedAdapter({ getFrame: () => pl.querySelector('iframe'), origin: S.origin, id });
-    let base = 0; const guardUntil = Date.now() + 30000;
+    let base = 0, restored = false; const guardUntil = Date.now() + 30000;
+    ad.onRestore(() => { restored = true; });
     ad.onReady(async () => { const q = await progress.get(showId, epId); const ok = q && !q.done && q.duration > 0 && q.time > 5; base = ok ? q.time : 0; ad.seekTo(ok ? q.time : null, ok ? q.duration : null); });
-    ad.onProgress((t, d) => { if (stale() || noSave) return; if (Date.now() < guardUntil && base && t < base - 15) return; progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); });
+    ad.onProgress((t, d) => { if (stale() || noSave) return; if (!restored && Date.now() < guardUntil && base && t < base - 15) return; progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); });
     teardown = ad.destroy;
     msg.innerHTML = S.hint ? `<div class="note">${esc(S.hint)}</div>` : '';
     if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
@@ -318,8 +323,8 @@ async function vWatch(showId, epId) {
 // ---------- تشغيل وتحديث دوري ----------
 if ('serviceWorker' in navigator) {
   // عند وصول نسخة جديدة نعيد التحميل مرة واحدة ليظهر التحديث فورًا (لا نقطع مشاهدة حلقة).
-  const hadController = !!navigator.serviceWorker.controller; let reloaded = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded && !/^#\/watch/.test(location.hash)) { reloaded = true; location.reload(); } });
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!hadController || reloaded) return; if (canReloadNow(location.hash, isPlaying())) { reloaded = true; location.reload(); } else pendingReload = true; });
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 persistStorage();

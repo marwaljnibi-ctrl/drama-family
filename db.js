@@ -40,13 +40,22 @@ export const favs = {
   has: async (id) => !!(await get('favs', id)),
   toggle: async (id) => ((await get('favs', id)) ? (await del('favs', id), false) : (await put('favs', { showId: id, at: Date.now() }), true)),
 };
+import { acceptTime, SESSION } from './guards.js';
+const rejected = new Map();   // آخر كتابة تقدم رُفضت (حماية التعارض بين الجلسات)
 export const progress = {
   all: () => all('progress'),
   get: (showId, epId) => get('progress', showId + '|' + epId),
-  async save(showId, ep, patch) {
+  // opts.force: كتابة متعمدة من المستخدم (مثل «إعادة تشغيلها») تتجاوز حماية التعارض
+  async save(showId, ep, patch, opts = {}) {
     const key = showId + '|' + ep.id;
-    const cur = (await get('progress', key)) || { key, showId, epId: ep.id, epNum: ep.n, time: 0, duration: 0, done: false };
-    const next = { ...cur, ...patch, epNum: ep.n, updated: Date.now() };
+    const rec = await get('progress', key);
+    const cur = rec || { key, showId, epId: ep.id, epNum: ep.n, time: 0, duration: 0, done: false };
+    if (!opts.force && 'time' in patch) {
+      const dec = acceptTime({ cur: rec, time: patch.time, sid: SESSION, rej: rejected });
+      if (!dec.ok) { rejected.set(key, dec.remember); return cur; }   // كاتب آخر نشط كتب تقدمًا أحدث: لا نخفضه بكتابة منفردة
+      rejected.delete(key);
+    }
+    const next = { ...cur, ...patch, epNum: ep.n, updated: Date.now(), sid: SESSION };
     if (!('hidden' in patch)) next.hidden = false; // مشاهدة جديدة تعيد المسلسل إلى آخر المشاهدات تلقائيًا
     await put('progress', next);
     return next;
