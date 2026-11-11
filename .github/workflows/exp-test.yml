@@ -11,7 +11,7 @@ jobs:
         with: { node-version: 22 }
       - name: unit tests
         run: node --test scripts/test.mjs scripts/test-family.mjs
-      - name: install playwright (apt update + retries: runner mirrors fail intermittently)
+      - name: "install playwright (apt update and retries)"
         run: |
           npm i --no-save --no-audit --no-fund playwright
           for i in 1 2 3; do sudo apt-get update -qq || true; npx playwright install --with-deps chromium && break; echo "retry $i"; sleep 15; done
