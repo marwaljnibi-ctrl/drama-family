@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { recommend } from '../recommend.js';
-import { validExtMessage, ARAB_ORIGIN } from '../bridge.js';
+import { validExtMessage, ARAB_ORIGIN, OK_ORIGIN } from '../bridge.js';
 
 const mk = (id, genres) => ({ id, eps: [{ id: id + '-1' }], ...(genres ? { genres } : {}) });
 
@@ -44,4 +44,11 @@ test('bridge: rejects wrong source, origin, id, type and bad numbers', () => {
   assert.equal(validExtMessage(ev({ data: { src: 'dizi-resume-ext', type: 'time', id: 'abc123', t: 'NaN', d: 2700 } }), win, 'abc123'), null);
   assert.equal(validExtMessage(ev({ data: { src: 'dizi-resume-ext', type: 'time', id: 'abc123', t: 5000, d: 2700 } }), win, 'abc123'), null);
   assert.equal(validExtMessage(ev(), null, 'abc123'), null);
+});
+
+test('bridge: OK origin is accepted only when requested; Arab origin rejected for OK and vice versa', () => {
+  const e = ev({ origin: OK_ORIGIN, data: { src: 'dizi-resume-ext', type: 'time', id: '17432039066210', t: 300, d: 2700 } });
+  assert.deepEqual(validExtMessage(e, win, '17432039066210', OK_ORIGIN), { t: 300, d: 2700 });
+  assert.equal(validExtMessage(e, win, '17432039066210'), null);                       // أصل ok.ru لا يُقبل كـ Arab HD
+  assert.equal(validExtMessage(ev({ origin: ARAB_ORIGIN }), win, 'abc123', OK_ORIGIN), null);  // أصل Arab HD لا يُقبل كـ OK
 });

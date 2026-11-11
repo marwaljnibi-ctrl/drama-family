@@ -3,7 +3,7 @@ import { favs, progress, downloads, persistStorage } from './db.js';
 import { $, esc, fmt, mb, toast, poster, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
-import { bindArabProgress } from './bridge.js';
+import { bindArabProgress, ARAB_ORIGIN, OK_ORIGIN } from './bridge.js';
 
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
 // تشخيص للمطوّر فقط: يظهر عند فتح الموقع بـ ?arabtest=1 (ويُطفأ بـ ?arabtest=0). للقراءة فقط: لا أزرار ولا إرسال للمشغّل. لا يظهر للمستخدم العادي.
@@ -189,11 +189,13 @@ async function vWatch(showId, epId) {
   // cloud.mail.ru لا يُضمَّن ولا يُقرأ من داخل التطبيق: رابط الملف المباشر مرتبط بعنوان IP لمن طلبه (اختُبر: 206 لنفس الجهاز، 404 لغيره)،
   // وطلبه من المتصفح يمنعه CORS. لذلك زره يفتح صفحة الملف العامة في Safari للمشاهدة أو التنزيل.
   const arab = ((ep.sv || []).find((x) => x[0] === 'a') || [])[1];
+  const okId = ((ep.sv || []).find((x) => x[0] === 'o') || [])[1];
   const exLink = ((ep.sv || []).find((x) => x[0] === 'e') || [])[1];
   const SRC = [];
   if (meta) SRC.push({ k: 'f', name: 'الملف المحفوظ', video: true });
   if (ep.v) SRC.push({ k: 'v', name: 'مباشر', video: true });
   if (arab) SRC.push({ k: 'a', name: 'Arab HD', video: false });
+  if (okId) SRC.push({ k: 'o', name: 'OK', video: false });
   if (exLink) SRC.push({ k: 'e', name: 'cloud.mail.ru ↗', video: false, href: exLink });
   const dlHref = exLink || null;
 
@@ -250,13 +252,14 @@ async function vWatch(showId, epId) {
     document.addEventListener('visibilitychange', vis); addEventListener('pagehide', vis);
     teardown = () => { save(true); clearTimeout(retryT); document.removeEventListener('visibilitychange', vis); removeEventListener('pagehide', vis); try { v.pause(); v.removeAttribute('src'); v.load(); } catch {} };
   };
-  const mountArab = () => {
-    pl.innerHTML = `<iframe src="${esc(`https://arabhd.onl/embed-${arab}.html`)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-    if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
-    // تقدم Arab HD يصل فقط عبر رسائل السكربت (إن كان مثبتًا) بعد التحقق من الإطار والأصل ومعرّف الحلقة
-    const unbind = bindArabProgress({ getFrame: () => pl.querySelector('iframe'), expectedId: arab, onTime: (t, d) => { if (!stale() && !noSave) progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); } });
+  // مشغّل مضمّن (Arab HD أو OK): iframe بسمات الاختبار الناجح، وتقدمه يصل فقط برسائل السكربت بعد التحقق من الإطار والأصل ومعرّف الحلقة
+  const mountEmbed = (url, origin, id) => {
+    pl.innerHTML = `<iframe src="${esc(url)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    const unbind = bindArabProgress({ getFrame: () => pl.querySelector('iframe'), expectedId: id, origin, onTime: (t, d) => { if (!stale() && !noSave) progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); } });
     teardown = unbind;
   };
+  const mountArab = () => { mountEmbed(`https://arabhd.onl/embed-${arab}.html`, ARAB_ORIGIN, arab); if (arabTestOn()) arabTestPanel(msg, pl, epId, showId); };
+  const mountOk = () => { mountEmbed(`https://ok.ru/videoembed/${okId}`, OK_ORIGIN, okId); msg.innerHTML = '<div class="note">إن لم يظهر الفيديو جرّب Arab HD.</div>'; };
   const drawSrv = () => {
     srv.innerHTML = SRC.map((s) => s.href
       ? `<a style="flex:1;min-width:120px" href="${esc(s.href)}" target="_blank" rel="noopener"><button style="width:100%">${esc(s.name)}</button></a>`
@@ -268,6 +271,7 @@ async function vWatch(showId, epId) {
     try { if (k === 'a') localStorage.setItem('df-sv2', k); } catch {}
     drawSrv();
     if (k === 'a') return mountArab();
+    if (k === 'o') return mountOk();
     if (startAt == null) { const p = await progress.get(showId, epId); if (stale()) return; startAt = p && !p.done ? p.time || 0 : 0; }
     if (k === 'v') return mountVideo(ep.v.src, startAt);
     if (k === 'f') {
