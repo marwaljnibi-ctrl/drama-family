@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { recommend } from '../recommend.js';
-import { validExtMessage, ARAB_ORIGIN, OK_ORIGIN } from '../bridge.js';
+import { validExtMessage, validClientMessage, ARAB_ORIGIN, OK_ORIGIN } from '../bridge.js';
 
 const mk = (id, genres) => ({ id, eps: [{ id: id + '-1' }], ...(genres ? { genres } : {}) });
 
@@ -51,4 +51,15 @@ test('bridge: OK origin is accepted only when requested; Arab origin rejected fo
   assert.deepEqual(validExtMessage(e, win, '17432039066210', OK_ORIGIN), { t: 300, d: 2700 });
   assert.equal(validExtMessage(e, win, '17432039066210'), null);                       // أصل ok.ru لا يُقبل كـ Arab HD
   assert.equal(validExtMessage(ev({ origin: ARAB_ORIGIN }), win, 'abc123', OK_ORIGIN), null);  // أصل Arab HD لا يُقبل كـ OK
+});
+
+test('bridge: ready (hello/found) and time messages validated by frame, origin and video id', () => {
+  const hello = ev({ data: { src: 'dizi-resume-ext', type: 'hello', id: 'abc123' } });
+  assert.deepEqual(validClientMessage(hello, win, 'abc123', ARAB_ORIGIN), { type: 'ready' });
+  assert.deepEqual(validClientMessage(ev({ data: { src: 'dizi-resume-ext', type: 'found', id: 'abc123' } }), win, 'abc123', ARAB_ORIGIN), { type: 'ready' });
+  assert.equal(validClientMessage(hello, win, 'other', ARAB_ORIGIN), null);
+  assert.equal(validClientMessage(hello, win, 'abc123', OK_ORIGIN), null);
+  assert.equal(validClientMessage(ev({ source: {}, data: hello.data }), win, 'abc123', ARAB_ORIGIN), null);
+  assert.deepEqual(validClientMessage(ev(), win, 'abc123', ARAB_ORIGIN), { type: 'time', t: 120, d: 2700 });
+  assert.equal(validClientMessage(ev({ data: { src: 'dizi-resume-ext', type: 'time', id: 'abc123', t: 1, d: 2700 } }), win, 'abc123', ARAB_ORIGIN), null);
 });

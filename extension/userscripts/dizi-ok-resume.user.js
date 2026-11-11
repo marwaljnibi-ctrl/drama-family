@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dizi - OK resume (test)
 // @namespace    https://github.com/marwaljnibi-ctrl/drama-family
-// @version      0.2.0
+// @version      0.3.0
 // @description  Remembers the playback position of OK (ok.ru) embeds, per video id, and restores it. Separate from the Arab HD script. Shows a temporary diagnostic badge.
 // @match        https://ok.ru/videoembed/*
 // @grant        GM.getValue
@@ -16,7 +16,7 @@
   const m = location.pathname.match(/^\/videoembed\/(\d+)/);
   if (!m) return;
   const id = m[1], KEY = 'pos:ok:' + id, MIN_DUR = 120;
-  let DEBUG = true; try { DEBUG = !!(await GM.getValue('debug', true)); } catch {}
+  let DEBUG = false; try { DEBUG = !!(await GM.getValue('debug', true)); } catch {}
   const fmt = (t) => { t = Math.floor(t || 0); const h = Math.floor(t / 3600), mi = Math.floor((t % 3600) / 60), s = t % 60; return (h ? h + ':' + String(mi).padStart(2, '0') : mi) + ':' + String(s).padStart(2, '0'); };
   const st = { gm: '?', video: 'none', dur: '-', cur: '-', saved: '-', restore: '-', writes: 0, att: 0, err: '' };
   let badge = null;
@@ -28,6 +28,10 @@
   };
   const parentOrigin = (() => { try { const o = (location.ancestorOrigins && location.ancestorOrigins[0]) || new URL(document.referrer).origin; return /(\.github\.io|\.pages\.dev)$/.test(new URL(o).hostname) ? o : null; } catch { return null; } })();
   const tell = (type, extra) => { try { if (parentOrigin && parent !== window) parent.postMessage(Object.assign({ src: 'dizi-resume-ext', type, id }, extra), parentOrigin); } catch {} };
+  // الدقيقة الموحّدة: Dizi هو المصدر الأساسي. يرسل {src:'dizi-resume-host', type:'seek', id, t, d} (t=null: لا استعادة).
+  // قبل ردّ Dizi (حتى 3 ث) لا نستعيد شيئًا من التخزين المحلي؛ إن لم يردّ إطلاقًا (Dizi قديم أو صفحة مستقلة) نرجع للمحلي.
+  const hostMode = !!parentOrigin && parent !== window; const t0 = Date.now(); let host, kick = () => {};   // host: undefined=لم يرد، null=لا استعادة، {t,d}
+  addEventListener('message', (e) => { const x = e.data; if (!hostMode || e.source !== parent || e.origin !== parentOrigin || !x || x.src !== 'dizi-resume-host' || x.id !== id || x.type !== 'seek') return; host = typeof x.t === 'number' && x.t > 0 ? { t: x.t, d: x.d } : null; kick(); });
   draw(); tell('hello', { po: !!parentOrigin });
   // اختبار GM: كتابة ثم قراءة
   try { await GM.setValue('selftest', Date.now()); const v = await GM.getValue('selftest', null); st.gm = v ? 'ok' : 'read-empty'; } catch (e) { st.gm = 'FAIL'; st.err = 'gm:' + (e && e.message || e); }
@@ -52,13 +56,20 @@
   };
   const tryRestore = () => {
     if (armed || !v || !(v.duration >= MIN_DUR)) return;
-    if (!saved || !(saved.t > 5) || saved.done || saved.t > v.duration - tail(v.duration)) { armed = true; st.restore = 'none'; draw(); tell('restore', { ok: 'none' }); return; }
-    if (Math.abs(v.currentTime - saved.t) < 3) { armed = true; st.restore = 'yes@' + fmt(saved.t); draw(); tell('restore', { ok: 'yes', t: saved.t }); return; }
+    let S = saved;                                              // احتياطي محلي
+    if (hostMode) {
+      if (host === undefined && Date.now() - t0 < 3000) { clearTimeout(retryT); retryT = setTimeout(tryRestore, 400); return; }   // ننتظر ردّ Dizi
+      // اختلاف مدة الفيديو بين السيرفرات: فرق أكثر من 90 ث يُحوَّل الموضع بالنسبة، وإلا يُستعمل الوقت نفسه
+      if (host !== undefined) S = host && { t: host.d && Math.abs(v.duration - host.d) > 90 ? host.t * v.duration / host.d : host.t, done: false };
+    }
+    if (!S || !(S.t > 5) || S.done || S.t > v.duration - tail(v.duration)) { armed = true; st.restore = 'none'; draw(); tell('restore', { ok: 'none' }); return; }
+    if (Math.abs(v.currentTime - S.t) < 3) { armed = true; st.restore = 'yes@' + fmt(S.t); draw(); tell('restore', { ok: 'yes', t: S.t }); return; }
     if (++tries > 8) { armed = true; st.restore = 'gave-up'; draw(); tell('restore', { ok: 'gave-up' }); return; }
-    st.restore = 'seek#' + tries + '->' + fmt(saved.t); draw();
-    try { v.currentTime = saved.t; } catch (e) { st.err = 'seek:' + (e && e.message || e); }
+    st.restore = 'seek#' + tries + '->' + fmt(S.t); draw();
+    try { v.currentTime = S.t; } catch (e) { st.err = 'seek:' + (e && e.message || e); }
     clearTimeout(retryT); retryT = setTimeout(tryRestore, 1500);
   };
+  kick = tryRestore;
   const reset = () => { armed = false; tries = 0; clearTimeout(retryT); };
   const attach = (el) => {
     if (ac) ac.abort(); ac = new AbortController(); const o = { signal: ac.signal };

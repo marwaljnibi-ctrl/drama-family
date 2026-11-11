@@ -3,7 +3,8 @@ import { favs, progress, downloads, persistStorage } from './db.js';
 import { $, esc, fmt, mb, toast, poster, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
-import { bindArabProgress, ARAB_ORIGIN, OK_ORIGIN } from './bridge.js';
+import { embedAdapter } from './bridge.js';
+import { SERVERS } from './servers.js';
 
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
 // تشخيص للمطوّر فقط: يظهر عند فتح الموقع بـ ?arabtest=1 (ويُطفأ بـ ?arabtest=0). للقراءة فقط: لا أزرار ولا إرسال للمشغّل. لا يظهر للمستخدم العادي.
@@ -188,14 +189,12 @@ async function vWatch(showId, epId) {
   // سيرفران فقط: Arab HD (مشغّل مضمّن) وcloud.mail.ru.
   // cloud.mail.ru لا يُضمَّن ولا يُقرأ من داخل التطبيق: رابط الملف المباشر مرتبط بعنوان IP لمن طلبه (اختُبر: 206 لنفس الجهاز، 404 لغيره)،
   // وطلبه من المتصفح يمنعه CORS. لذلك زره يفتح صفحة الملف العامة في Safari للمشاهدة أو التنزيل.
-  const arab = ((ep.sv || []).find((x) => x[0] === 'a') || [])[1];
-  const okId = ((ep.sv || []).find((x) => x[0] === 'o') || [])[1];
+  const ids = {}; for (const x of ep.sv || []) if (SERVERS[x[0]]) ids[x[0]] = x[1];   // معرّفات السيرفرات المضمّنة المعروفة لهذه الحلقة
   const exLink = ((ep.sv || []).find((x) => x[0] === 'e') || [])[1];
   const SRC = [];
   if (meta) SRC.push({ k: 'f', name: 'الملف المحفوظ', video: true });
   if (ep.v) SRC.push({ k: 'v', name: 'مباشر', video: true });
-  if (arab) SRC.push({ k: 'a', name: 'Arab HD', video: false });
-  if (okId) SRC.push({ k: 'o', name: 'OK', video: false });
+  for (const k of Object.keys(SERVERS)) if (ids[k]) SRC.push({ k, name: SERVERS[k].name, video: false });
   if (exLink) SRC.push({ k: 'e', name: 'cloud.mail.ru ↗', video: false, href: exLink });
   const dlHref = exLink || null;
 
@@ -252,14 +251,19 @@ async function vWatch(showId, epId) {
     document.addEventListener('visibilitychange', vis); addEventListener('pagehide', vis);
     teardown = () => { save(true); clearTimeout(retryT); document.removeEventListener('visibilitychange', vis); removeEventListener('pagehide', vis); try { v.pause(); v.removeAttribute('src'); v.load(); } catch {} };
   };
-  // مشغّل مضمّن (Arab HD أو OK): iframe بسمات الاختبار الناجح، وتقدمه يصل فقط برسائل السكربت بعد التحقق من الإطار والأصل ومعرّف الحلقة
-  const mountEmbed = (url, origin, id) => {
-    pl.innerHTML = `<iframe src="${esc(url)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-    const unbind = bindArabProgress({ getFrame: () => pl.querySelector('iframe'), expectedId: id, origin, onTime: (t, d) => { if (!stale() && !noSave) progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); } });
-    teardown = unbind;
+  // مشغّل مضمّن من سجل SERVERS. تقدم واحد لكل حلقة (showId + epId): Dizi هو المصدر الأساسي.
+  // السيرفر الجديد يستعيد دقيقة Dizi (يرسلها Dizi له) لا دقيقته المحلية، ولا نقبل منه دقيقة أقدم بكثير في أول 30 ث (يمنع الكتابة فوق التقدم الصحيح عند التبديل).
+  const mountServer = (k) => {
+    const S = SERVERS[k], id = ids[k];
+    pl.innerHTML = `<iframe src="${esc(S.url(id))}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    const ad = embedAdapter({ getFrame: () => pl.querySelector('iframe'), origin: S.origin, id });
+    let base = 0; const guardUntil = Date.now() + 30000;
+    ad.onReady(async () => { const q = await progress.get(showId, epId); const ok = q && !q.done && q.duration > 0 && q.time > 5; base = ok ? q.time : 0; ad.seekTo(ok ? q.time : null, ok ? q.duration : null); });
+    ad.onProgress((t, d) => { if (stale() || noSave) return; if (Date.now() < guardUntil && base && t < base - 15) return; progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); });
+    teardown = ad.destroy;
+    msg.innerHTML = S.hint ? `<div class="note">${esc(S.hint)}</div>` : '';
+    if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
   };
-  const mountArab = () => { mountEmbed(`https://arabhd.onl/embed-${arab}.html`, ARAB_ORIGIN, arab); if (arabTestOn()) arabTestPanel(msg, pl, epId, showId); };
-  const mountOk = () => { mountEmbed(`https://ok.ru/videoembed/${okId}`, OK_ORIGIN, okId); msg.innerHTML = '<div class="note">إن لم يظهر الفيديو جرّب Arab HD.</div>'; if (arabTestOn()) arabTestPanel(msg, pl, epId, showId); };
   const drawSrv = () => {
     srv.innerHTML = SRC.map((s) => s.href
       ? `<a style="flex:1;min-width:120px" href="${esc(s.href)}" target="_blank" rel="noopener"><button style="width:100%">${esc(s.name)}</button></a>`
@@ -270,8 +274,7 @@ async function vWatch(showId, epId) {
     stopCur(); msg.innerHTML = ''; cur = k;
     try { if (k === 'a') localStorage.setItem('df-sv2', k); } catch {}
     drawSrv();
-    if (k === 'a') return mountArab();
-    if (k === 'o') return mountOk();
+    if (SERVERS[k]) return mountServer(k);
     if (startAt == null) { const p = await progress.get(showId, epId); if (stale()) return; startAt = p && !p.done ? p.time || 0 : 0; }
     if (k === 'v') return mountVideo(ep.v.src, startAt);
     if (k === 'f') {

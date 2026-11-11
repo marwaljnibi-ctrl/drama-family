@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dizi - Arab HD resume (test)
 // @namespace    https://github.com/marwaljnibi-ctrl/drama-family
-// @version      0.2.0
+// @version      0.3.0
 // @description  Remembers the playback position of Arab HD embeds (per embed id) and restores it. Test version with an on-screen badge.
 // @match        https://arabhd.onl/*
 // @grant        GM.getValue
@@ -28,6 +28,10 @@
   };
   const parentOrigin = (() => { try { const o = (location.ancestorOrigins && location.ancestorOrigins[0]) || new URL(document.referrer).origin; return /(\.github\.io|\.pages\.dev)$/.test(new URL(o).hostname) ? o : null; } catch { return null; } })();
   const tell = (type, extra) => { try { if (parentOrigin && parent !== window) parent.postMessage(Object.assign({ src: 'dizi-resume-ext', type, id }, extra), parentOrigin); } catch {} };
+  // الدقيقة الموحّدة: Dizi هو المصدر الأساسي. يرسل {src:'dizi-resume-host', type:'seek', id, t, d} (t=null: لا استعادة).
+  // قبل ردّ Dizi (حتى 3 ث) لا نستعيد شيئًا من التخزين المحلي؛ إن لم يردّ إطلاقًا (Dizi قديم أو صفحة مستقلة) نرجع للمحلي.
+  const hostMode = !!parentOrigin && parent !== window; const t0 = Date.now(); let host, kick = () => {};   // host: undefined=لم يرد، null=لا استعادة، {t,d}
+  addEventListener('message', (e) => { const x = e.data; if (!hostMode || e.source !== parent || e.origin !== parentOrigin || !x || x.src !== 'dizi-resume-host' || x.id !== id || x.type !== 'seek') return; host = typeof x.t === 'number' && x.t > 0 ? { t: x.t, d: x.d } : null; kick(); });
   draw(); tell('hello');
   let saved = null;
   try { saved = await GM.getValue(KEY, null); } catch (e) { st.err = 'get:' + (e && e.message || e); }
@@ -45,13 +49,20 @@
   };
   const tryRestore = () => {
     if (armed || !v || !(v.duration > 0)) return;
-    if (!saved || !(saved.t > 5) || saved.done || saved.t > v.duration - tail(v.duration)) { armed = true; st.restore = 'none'; draw(); tell('restore', { ok: 'none' }); return; }
-    if (Math.abs(v.currentTime - saved.t) < 3) { armed = true; st.restore = 'yes@' + fmt(saved.t); draw(); tell('restore', { ok: 'yes', t: saved.t }); return; }
+    let S = saved;                                              // احتياطي محلي
+    if (hostMode) {
+      if (host === undefined && Date.now() - t0 < 3000) { clearTimeout(retryT); retryT = setTimeout(tryRestore, 400); return; }   // ننتظر ردّ Dizi
+      // اختلاف مدة الفيديو بين السيرفرات: فرق أكثر من 90 ث يُحوَّل الموضع بالنسبة، وإلا يُستعمل الوقت نفسه
+      if (host !== undefined) S = host && { t: host.d && Math.abs(v.duration - host.d) > 90 ? host.t * v.duration / host.d : host.t, done: false };
+    }
+    if (!S || !(S.t > 5) || S.done || S.t > v.duration - tail(v.duration)) { armed = true; st.restore = 'none'; draw(); tell('restore', { ok: 'none' }); return; }
+    if (Math.abs(v.currentTime - S.t) < 3) { armed = true; st.restore = 'yes@' + fmt(S.t); draw(); tell('restore', { ok: 'yes', t: S.t }); return; }
     if (++tries > 6) { armed = true; st.restore = 'gave-up'; draw(); tell('restore', { ok: 'gave-up' }); return; }
     st.restore = 'seek#' + tries; draw();
-    try { v.currentTime = saved.t; } catch {}
+    try { v.currentTime = S.t; } catch {}
     clearTimeout(retryT); retryT = setTimeout(tryRestore, 1500);
   };
+  kick = tryRestore;
   const attach = (el) => {
     v = el; st.video = 'found'; draw(); tell('found', { has: !!(saved && saved.t) });
     ['loadedmetadata', 'loadeddata', 'canplay', 'play', 'playing', 'seeked'].forEach((e) => v.addEventListener(e, tryRestore));
