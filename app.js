@@ -1,7 +1,7 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage } from './db.js';
 import { $, esc, fmt, mb, toast, poster, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
-import { continueItems, myShows, nextEp } from './store.js';
+import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { bindArabProgress } from './bridge.js';
 
@@ -109,7 +109,7 @@ async function vShow(id) {
   const show = D.byId.get(id); if (!show) return (view.innerHTML = '<div class="empty">المسلسل غير موجود.</div>');
   titleEl.textContent = show.title;
   const [fv, prog, dls] = await Promise.all([favs.has(id), progress.all(), downloads.meta()]);
-  const mine = new Map(prog.filter((p) => p.showId === id).map((p) => [p.epId, p]));
+  const mine = new Map(prog.filter((p) => p.showId === id && started(p)).map((p) => [p.epId, p]));
   const dl = new Set(dls.map((d) => d.key));
   const last = [...mine.values()].sort((a, b) => b.updated - a.updated)[0];
   const lastEp = last && findEp(show, last.epId);
@@ -207,7 +207,7 @@ async function vWatch(showId, epId) {
   if (!p0) await progress.save(showId, ep, { done: false });
   if (stale()) return;
 
-  let cur = null, curV = null, teardown = null, blobUrl = null;
+  let cur = null, curV = null, teardown = null, blobUrl = null, noSave = false; // noSave: أثناء «إزالة من آخر المشاهدات» لا يكتب المشغّل تقدمًا يلغي الإزالة
   const stopCur = () => { if (teardown) { teardown(); teardown = null; } curV = null; };
   cleanup = () => { stopCur(); if (blobUrl) URL.revokeObjectURL(blobUrl); };
 
@@ -235,6 +235,7 @@ async function vWatch(showId, epId) {
     v.addEventListener('seeked', () => { if (!armed && Math.abs(v.currentTime - startAt) <= 2) { armed = true; clearTimeout(retryT); } });
     let lastSave = 0;
     const save = (force) => {
+      if (noSave) return;
       if (!armed) { if (tries >= 2 && v.currentTime > 5) armed = true; else return; }
       if (!(v.duration > 0)) return;
       const now = Date.now(); if (!force && now - lastSave < 3000) return; lastSave = now;
@@ -253,7 +254,7 @@ async function vWatch(showId, epId) {
     pl.innerHTML = `<iframe src="${esc(`https://arabhd.onl/embed-${arab}.html`)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
     if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
     // تقدم Arab HD يصل فقط عبر رسائل السكربت (إن كان مثبتًا) بعد التحقق من الإطار والأصل ومعرّف الحلقة
-    const unbind = bindArabProgress({ getFrame: () => pl.querySelector('iframe'), expectedId: arab, onTime: (t, d) => { if (!stale()) progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); } });
+    const unbind = bindArabProgress({ getFrame: () => pl.querySelector('iframe'), expectedId: arab, onTime: (t, d) => { if (!stale() && !noSave) progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); } });
     teardown = unbind;
   };
   const drawSrv = () => {
@@ -286,7 +287,11 @@ async function vWatch(showId, epId) {
   act.innerHTML = `${dlHref ? `<a style="flex:1;min-width:120px" href="${esc(dlHref)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل</button></a>` : ''}
     ${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : ''}
     ${meta ? `<button id="exp">حفظ في الملفات</button><button id="rm">حذف الملف المحفوظ (${mb(meta.size)})</button>` : ''}`;
+  const inHistory = (await progress.all()).some((p) => p.showId === showId && started(p) && !p.hidden);
+  if (stale()) return;
+  if (inHistory) act.insertAdjacentHTML('beforeend', '<button id="rh">إزالة من آخر المشاهدات</button>');
   addImport(act, show, ep, () => route());
+  const rh = $('#rh'); if (rh) rh.onclick = async () => { if (!confirm(`إزالة «${show.title}» من آخر المشاهدات؟\nلن يُحذف تقدمك، وتعود إليها تلقائيًا عند مشاهدة أي حلقة منها.`)) return; noSave = true; stopCur(); await progress.hideShow(showId); toast('أُزيل من آخر المشاهدات'); route(); };
   const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
   const ex = $('#exp'); if (ex) ex.onclick = exportFile;
   const rm = $('#rm'); if (rm) rm.onclick = async () => { stopCur(); await downloads.remove(key); route(); };

@@ -6,15 +6,19 @@ import { findEp } from './source.js';
 // الحلقات مرتبة الأحدث أولًا؛ التالية = رقم أكبر مباشرة
 export const nextEp = (show, ep) => { const i = show.eps.findIndex((e) => e.id === ep.id); return i > 0 ? show.eps[i - 1] : null; };
 
+// بدأت المشاهدة فعلًا: سجّل المشغّل مدة (duration > 0) أو اكتملت. حلقة فُتحت فقط ولم تُشغَّل لا تُعدّ متابعة.
+export const started = (p) => !!p && (p.done || p.duration > 0);
+
 // آخر سجل تقدم لكل مسلسل
 const latestByShow = (rows) => { const by = new Map(); for (const p of rows) { const c = by.get(p.showId); if (!c || (p.updated || 0) > (c.updated || 0)) by.set(p.showId, p); } return by; };
 
 // عناصر المتابعة، الأحدث مشاهدة أولًا. all=false: تستبعد المسلسلات المكتملة حتى آخر حلقة متاحة.
 // hasMinute صحيح فقط عند وجود مدة مسجّلة فعلًا (من المشغّل أو من رسائل الاستكمال المثبتة).
 export async function continueItems(D, { all = false } = {}) {
-  const by = latestByShow(await progress.all());
+  const by = latestByShow((await progress.all()).filter(started));
   const out = [];
   for (const p of [...by.values()].sort((a, b) => (b.updated || 0) - (a.updated || 0))) {
+    if (p.hidden) continue; // أُزيل من آخر المشاهدات (لم يُحذف شيء)
     const show = D.byId.get(p.showId), ep = show && findEp(show, p.epId);
     if (!ep) continue;
     const next = p.done ? nextEp(show, ep) : null;
@@ -54,7 +58,7 @@ export function newShows(D, days = 14) {
 // حلقة جديدة: حلقة فعلية ظهرت في الفهرس بعد آخر حالة سجلناها (آخر مشاهدة أو وقت الإضافة للمفضلة) وبعد بداية التتبع.
 export async function myShows(D) {
   const [fl, prog] = await Promise.all([favs.all(), progress.all()]);
-  const by = latestByShow(prog), start = trackStart();
+  const by = latestByShow(prog.filter(started)), start = trackStart();
   return fl.sort((a, b) => (b.at || 0) - (a.at || 0)).map((f) => {
     const show = D.byId.get(f.showId); if (!show) return null;
     const p = by.get(show.id);

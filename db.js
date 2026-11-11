@@ -47,10 +47,13 @@ export const progress = {
     const key = showId + '|' + ep.id;
     const cur = (await get('progress', key)) || { key, showId, epId: ep.id, epNum: ep.n, time: 0, duration: 0, done: false };
     const next = { ...cur, ...patch, epNum: ep.n, updated: Date.now() };
+    if (!('hidden' in patch)) next.hidden = false; // مشاهدة جديدة تعيد المسلسل إلى آخر المشاهدات تلقائيًا
     await put('progress', next);
     return next;
   },
   reset: (showId, epId) => del('progress', showId + '|' + epId),
+  // «إزالة من آخر المشاهدات»: علامة إخفاء فقط على سجلات المسلسل؛ لا يُحذف أي تقدم ولا علامات الحلقات المشاهدة
+  async hideShow(showId) { for (const p of await all('progress')) if (p.showId === showId) await put('progress', { ...p, hidden: true }); },
 };
 export const downloads = {
   meta: () => all('dlmeta'),

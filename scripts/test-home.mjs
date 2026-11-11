@@ -33,7 +33,25 @@ T('section-order-continue-then-mine', order[0] === 'متابعة المشاهد�
 const cards = await page.$$eval('.ccard', (a) => a.map((x) => ({ small: x.querySelector('small').textContent, bar: !!x.querySelector('.bar') })));
 T('continue-label-is-متابعة-المشاهدة', await page.$$eval('.ccard .go', (a) => a.length > 0 && a.every((x) => x.textContent.trim() === 'متابعة المشاهدة' || x.textContent.trim() === 'شاهد التالية')));
 const withMin = cards.find((c) => /توقفت عند/.test(c.small)), opened = cards.find((c) => !/توقفت عند/.test(c.small));
-T('minute-and-bar-only-when-known', cards.length === 2 && withMin && withMin.bar && opened && !opened.bar, JSON.stringify(cards));
+T('opened-never-played-not-in-continue', cards.length === 1 && withMin && withMin.bar && !opened, JSON.stringify(cards));
+
+// T2b: إزالة من آخر المشاهدات: صفحة الحلقة ← زر إزالة ← تأكيد؛ لا يُحذف تقدم، وتعود عند مشاهدة جديدة
+await page.goto(BASE + '?demo=1#/watch/demo-a/demo-a-episode-4'); await page.reload(); await page.waitForSelector('#rh');
+let dlg = null; page.once('dialog', (d) => { dlg = d.message(); d.dismiss(); });
+await page.click('#rh'); await page.waitForTimeout(300);
+T('remove-asks-confirmation-and-cancel-keeps', /آخر المشاهدات/.test(dlg || '') && !!(await page.$('#rh')));
+page.once('dialog', (d) => d.accept());
+await page.click('#rh'); await page.waitForTimeout(800);
+T('remove-hides-button-after', !(await page.$('#rh')));
+await home();
+T('removed-not-in-continue', (await page.$$('.ccard')).length === 0);
+await page.goto(BASE + '?demo=1#/recent'); await page.reload(); await page.waitForSelector('#view');
+T('removed-not-in-recent-tab', (await page.$$eval('#view .row', (a) => a.length)) === 0);
+const kept = await page.evaluate(async () => { const db = await import('./db.js'); const p = (await db.progress.all()).find((x) => x.epId === 'demo-a-episode-4'); return !!p && p.time === 600 && p.hidden === true; });
+T('remove-keeps-progress-data', kept);
+await page.evaluate(async () => { const db = await import('./db.js'); const D = await (await fetch('data/demo.json')).json(); const A = D.shows[0]; await db.progress.save(A.id, A.eps.find((e) => e.n === 4), { time: 700, duration: 2700, done: false }); });
+await home();
+T('new-playback-brings-it-back', (await page.$$('.ccard')).length === 1);
 
 // T3: بطاقة المتابعة تفتح الحلقة
 await page.click('.ccard >> nth=0'); await page.waitForSelector('#pl');
