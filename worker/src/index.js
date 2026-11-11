@@ -111,7 +111,7 @@ async function handle(req, env, extra = {}) {
       return out({ startedAt: meta && meta.startedAt, enabled: !!(meta && meta.enabled), seen: meta ? meta.seen.length : 0, members: await c('members'), subs: await c('subs'), outbox: await c('outbox'), sent: await c('sent'), hasUmKey: !!env.UM_API_KEY });
     }
     if (p === '/admin/invite') {   // الدعوة بالبريد: فقط المدعوون يُنشئون حسابات
-      const e = String(body.email || '').trim().toLowerCase(); if (!/^[^@s]+@[^@s]+.[^@s]+$/.test(e)) return out({ error: 'bad email' }, 400);
+      const e = String(body.email || '').trim().toLowerCase(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return out({ error: 'bad email' }, 400);
       await sql(env, 'INSERT INTO invites (email, added) VALUES (?, ?) ON CONFLICT(email) DO NOTHING', e, Date.now()).run(); return out({ invited: e });
     }
     if (p === '/admin/uninvite') { const e = String(body.email || '').trim().toLowerCase(); await sql(env, 'DELETE FROM invites WHERE email = ?', e).run(); await sql(env, 'DELETE FROM sessions WHERE uid IN (SELECT id FROM users WHERE email = ?)', e).run(); return out({ uninvited: e }); }
