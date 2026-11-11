@@ -7,7 +7,7 @@ const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
 const page = await ctx.newPage();
 const errors = []; page.on('pageerror', (e) => errors.push(String(e).slice(0, 120)));
 const heads = () => page.$$eval('#view .sec-h h2', (a) => a.map((x) => x.textContent.trim()));
-const home = async () => { await page.goto(BASE + '?demo=1#/home'); await page.waitForSelector('#view .sec', { timeout: 15000 }); await page.waitForTimeout(400); };
+const home = async () => { await page.goto(BASE + '?demo=1#/home'); await page.reload(); await page.waitForSelector('#view .sec', { timeout: 15000 }); await page.waitForTimeout(400); };
 const putFav = (showId, at) => page.evaluate(({ showId, at }) => new Promise((res) => { const r = indexedDB.open('drama-family', 1); r.onsuccess = () => { const tx = r.result.transaction('favs', 'readwrite'); tx.objectStore('favs').put({ showId, at }); tx.oncomplete = res; }; }), { showId, at });
 const progKeys = () => page.evaluate(async () => { const db = await import('./db.js'); return (await db.progress.all()).map((p) => p.key + ':' + Math.round(p.time)).sort().join(); });
 const mineCount = () => page.$$eval('#view .sec', (a) => { const s = a.find((x) => x.querySelector('h2') && x.querySelector('h2').textContent.trim() === 'مسلسلاتي'); return s ? s.querySelectorAll('.card').length : 0; });
