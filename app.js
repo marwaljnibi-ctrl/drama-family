@@ -26,7 +26,7 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
-const BUILD = 'df-v24';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v25';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');

@@ -3,7 +3,7 @@
 import { setDbName } from './db.js';
 
 export const API = 'https://dizi-alerts.fufuu-crafts.workers.dev';
-export const GOOGLE_CLIENT_ID = '';   // يُملأ بعد إنشاء Client ID في Google Cloud (قيمة عامة وليست سرًا). فارغ = الدخول غير مفعّل بعد
+export const GOOGLE_CLIENT_ID = '1081945666502-7qk073lrqol1jibp6mt3drs2qhtri87j.apps.googleusercontent.com';   // يُملأ بعد إنشاء Client ID في Google Cloud (قيمة عامة وليست سرًا). فارغ = الدخول غير مفعّل بعد
 export const AUTH_REQUIRED = () => !!GOOGLE_CLIENT_ID && !new URLSearchParams(location.search).has('demo');
 
 const S = 'df-session', U = 'df-uid', MAP = 'df-dbmap', OWNER = 'df-legacy-owner';
