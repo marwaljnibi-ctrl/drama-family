@@ -20,3 +20,13 @@ test('favorite removed on another device is removed here only if the removal is 
   const keep = planMerge({ favs: [{ showId: 'x', at: 30 }], progress: [] }, { favs: [{ showId: 'x', on: false, at: 20 }], progress: [] });
   assert.equal(keep.delFav.length, 0); assert.equal(keep.pushFav[0].showId, 'x');
 });
+
+test('guest import: adds missing favorites/progress, keeps the newer progress, never mutates inputs', async () => {
+  const { mergeGuest } = await import('../sync.js');
+  const guest = { favs: [{ showId: 'a', at: 1 }, { showId: 'b', at: 2 }], progress: [P('s|1', 100, 30), P('s|2', 300, 50), P('s|3', 50, 5)] };
+  const mine = { favs: [{ showId: 'a', at: 9 }], progress: [P('s|1', 200, 90), P('s|2', 100, 10)] };
+  const add = mergeGuest(guest, mine);
+  assert.deepEqual(add.favs.map((f) => f.showId), ['b']);                       // لا تكرار، ولا استبدال لما في الحساب
+  assert.deepEqual(add.progress.map((p) => p.key).sort(), ['s|2', 's|3']);      // s|1 الأحدث في الحساب يبقى، وs|2 الأحدث عند الضيف يُضاف
+  assert.equal(guest.favs.length, 2); assert.equal(mine.favs.length, 1);
+});

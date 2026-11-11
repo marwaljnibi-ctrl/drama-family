@@ -1,5 +1,5 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
-import { favs, progress, downloads, persistStorage } from './db.js';
+import { favs, progress, downloads, persistStorage, onWrite } from './db.js';
 import { $, esc, fmt, mb, toast, poster, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
@@ -8,7 +8,7 @@ import { SERVERS, pickDefault, alternatives } from './servers.js';
 import { canReloadNow } from './guards.js';
 import { renderAlerts, bindShowAlert, askOnboarding } from './alerts.js';
 import { getSession, prepareDb, renderLogin } from './auth.js';
-import { startSync } from './sync.js';
+import { startSync, importGuest } from './sync.js';
 
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
 // تشخيص للمطوّر فقط: يظهر عند فتح الموقع بـ ?arabtest=1 (ويُطفأ بـ ?arabtest=0). للقراءة فقط: لا أزرار ولا إرسال للمشغّل. لا يظهر للمستخدم العادي.
@@ -26,7 +26,7 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
-const BUILD = 'df-v27';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v28';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -338,22 +338,32 @@ if ('serviceWorker' in navigator) {
 // ---------- الحساب (Google): جزء من الموقع، والتصفح مفتوح بلا دخول ----------
 function vLogin() {
   if (getSession()) { location.replace('#/alerts'); return; }
-  titleEl.textContent = 'تسجيل الدخول';
-  view.innerHTML = '<div class="empty-card"><b>سجّل الدخول لحفظ مفضلتك ومكان وصولك في الحلقات</b><p>ويمكنك أيضًا تفعيل تنبيهات واتساب للحلقات الجديدة. الدخول لأفراد العائلة المدعوين فقط، بضغطة واحدة بحساب Google، ولا نصل لأي شيء آخر في حسابك.</p><div id="g-btn" style="display:flex;justify-content:center;min-height:44px"></div><p id="g-err" style="margin-top:12px;color:var(--danger,#c0392b)"></p></div>';
+  titleEl.textContent = 'حسابي';
+  view.innerHTML = '<div class="empty-card" id="guest-card"><p>سجّل الدخول لحفظ مفضلتك ومكان وصولك في الحلقات.<br>ويمكنك أيضًا تفعيل تنبيهات واتساب للحلقات الجديدة.</p><div id="g-btn" style="display:flex;justify-content:center;min-height:44px"></div><p id="g-err" style="margin-top:12px;color:var(--danger,#c0392b)"></p></div>';
   const err = (c) => { document.getElementById('g-err').textContent = c === 'not_invited' ? 'هذا الحساب غير مدعو. الدخول لأفراد العائلة المدعوين فقط، اطلب دعوة من صاحب الموقع.' : c === 'network' ? 'تعذّر الاتصال، أعد المحاولة.' : 'تعذّر تسجيل الدخول، حاول مرة أخرى.'; };
-  renderLogin(document.getElementById('g-btn'), { onDone: () => { location.hash = '#/home'; location.reload(); }, onError: err }).catch(() => err('network'));
+  renderLogin(document.getElementById('g-btn'), { onDone: () => { location.hash = '#/alerts'; location.reload(); }, onError: err }).catch(() => err('network'));
 }
-prepareDb();
-{
+// إشعار لطيف مرة واحدة فقط للضيف عند أول إضافة للمفضلة (يُحفظ محليًا فلا يتكرر)؛ لا يعيق الاستخدام ويُغلق بسهولة
+function favNudge() {
+  try { if (localStorage.getItem('df-fav-nudge')) return; localStorage.setItem('df-fav-nudge', '1'); } catch { return; }
+  const d = document.createElement('div'); d.id = 'fav-nudge'; d.setAttribute('role', 'status');
+  d.style.cssText = 'position:fixed;inset-inline:12px;bottom:76px;z-index:40;background:var(--surface,#fff);color:var(--text,#222);border:1px solid var(--border,#ddd);border-radius:var(--radius,12px);box-shadow:0 4px 16px rgba(0,0,0,.15);padding:12px 14px;display:flex;gap:10px;align-items:center;font-size:14px;line-height:1.6';
+  d.innerHTML = '<span style="flex:1">سجّل دخولك لحفظ مسلسلاتك وآخر حلقة وصلت إليها، واستكمل من أي جهاز لك.</span><a href="#/alerts"><button class="pri" id="fn-go">تسجيل الدخول</button></a><button id="fn-x" aria-label="إغلاق">✕</button>';
+  document.body.append(d);
+  d.querySelector('#fn-x').onclick = () => d.remove(); d.querySelector('#fn-go').onclick = () => d.remove();
+}
+if (!getSession()) onWrite((t, v) => { if (t === 'fav' && v.on) favNudge(); });
+(async () => {
+  prepareDb(); await importGuest();
   const top = document.getElementById('top'), ac = document.createElement('a');
-  ac.id = 'acct'; ac.style.cssText = 'margin-inline-start:auto;text-decoration:none;color:inherit;padding:4px 8px;white-space:nowrap';
-  if (getSession()) { ac.href = '#/alerts'; ac.textContent = '👤'; ac.style.fontSize = '20px'; ac.setAttribute('aria-label', 'حسابي'); }
-  else { ac.href = '#/login'; ac.textContent = 'تسجيل الدخول'; ac.style.fontSize = '14px'; }
+  ac.id = 'acct'; ac.href = '#/alerts'; ac.style.cssText = 'margin-inline-start:auto;text-decoration:none;color:inherit;padding:4px 8px;white-space:nowrap';
+  if (getSession()) { ac.textContent = '👤'; ac.style.fontSize = '20px'; ac.setAttribute('aria-label', 'حسابي'); }
+  else { ac.textContent = 'تسجيل الدخول'; ac.style.fontSize = '14px'; }
   top.append(ac);
-}
-persistStorage();
-route();
-if (getSession()) startSync().then(async () => { try { askOnboarding(await (await import('./auth.js')).authApi('/api/profile'), () => (location.hash = '#/alerts')); } catch {} });
+  persistStorage();
+  route();
+  if (getSession()) startSync().then(async () => { try { askOnboarding(await (await import('./auth.js')).authApi('/api/profile'), () => (location.hash = '#/alerts')); } catch {} });
+})();
 // فحص الحلقات الجديدة كل 5 دقائق، وعند العودة إلى التطبيق
 const refresh = async () => { if (document.visibilityState !== 'visible' || !D) return; try { const reg = await navigator.serviceWorker.getRegistration(); if (reg) reg.update(); } catch {} try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(home|new|shows|latest)?$/.test(location.hash) || !location.hash) route(); } } catch {} };
 setInterval(refresh, 5 * 60 * 1000);

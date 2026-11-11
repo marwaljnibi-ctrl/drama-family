@@ -84,6 +84,24 @@ export async function persistStorage() {
   try { return navigator.storage && navigator.storage.persist ? await navigator.storage.persist() : false; } catch { return false; }
 }
 
+// قراءة بيانات الضيف من قاعدة أخرى (للقراءة فقط، لا تُنشئ ولا تعدّل ولا تحذف شيئًا)
+export function readOther(name) {
+  const empty = { favs: [], progress: [] };
+  return new Promise(async (res) => {
+    try {
+      if (indexedDB.databases && !(await indexedDB.databases()).some((d) => d.name === name)) return res(empty);
+      const r = indexedDB.open(name);
+      r.onerror = () => res(empty);
+      r.onsuccess = () => {
+        const d = r.result, out = { favs: [], progress: [] }, names = ['favs', 'progress'].filter((s) => d.objectStoreNames.contains(s));
+        if (!names.length) { d.close(); return res(out); }
+        const tx = d.transaction(names, 'readonly');
+        names.forEach((n) => { const q = tx.objectStore(n).getAll(); q.onsuccess = () => { out[n] = q.result; }; });
+        tx.oncomplete = () => { d.close(); res(out); }; tx.onerror = () => { d.close(); res(empty); };
+      };
+    } catch { res(empty); }
+  });
+}
 // كتابات خام بلا إطلاق أحداث: تستعملها المزامنة عند سحب بيانات الحساب (حتى لا تُدفع من جديد)
 export const raw = {
   favs: () => all('favs'), progress: () => all('progress'),

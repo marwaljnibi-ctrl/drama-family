@@ -52,7 +52,7 @@ export function askOnboarding(profile, go) {
 // زر الجرس في صفحة المسلسل (يظهر لكل حساب مسجّل)
 export async function bindShowAlert(btn, showId, title) {
   if (!btn) return;
-  if (!signedIn()) { btn.onclick = () => { toast('سجّل الدخول أولًا لتفعيل التنبيهات'); location.hash = '#/login'; }; return; }
+  if (!signedIn()) { btn.onclick = () => { toast('سجّل الدخول أولًا لتفعيل التنبيهات'); location.hash = '#/alerts'; }; return; }
   let me = null;
   const paint = () => { const on = !!(me && me.shows.some((s) => s.showId === showId)); btn.classList.toggle('on', on); btn.querySelector('span').textContent = on ? 'التنبيه مفعّل' : 'تنبيه واتساب'; };
   try { me = await authApi('/api/profile'); paint(); } catch { btn.hidden = true; return; }

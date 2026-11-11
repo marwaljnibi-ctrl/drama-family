@@ -1,7 +1,7 @@
 // مزامنة المفضلة وتقدم المشاهدة مع حساب المستخدم (الخادم مصدر الحقيقة بين الأجهزة، وIndexedDB نسخة محلية تعمل بلا إنترنت).
 // القاعدة: آخر كتابة أحدث تفوز (at/updated). ما يُكتب محليًا يُدفع بعد ثوانٍ، وما لم يُدفع (انقطاع) يبقى في طابور محلي ويُعاد لاحقًا.
-import { onWrite, raw } from './db.js';
-import { authApi, getSession, getUid } from './auth.js';
+import { onWrite, raw, readOther } from './db.js';
+import { authApi, getSession, getUid, lsGet, lsDel, OWNER_KEY } from './auth.js';
 
 const QK = () => 'df-syncq:' + getUid();
 const loadQ = () => { try { return JSON.parse(localStorage.getItem(QK()) || '{"f":{},"p":{}}'); } catch { return { f: {}, p: {} }; } };
@@ -57,6 +57,24 @@ export async function pull() {
   for (const p of plan.pushProg) q.p[p.key] = p;
   saveQ(q); await flush();
   return plan;
+}
+
+// أول دخول لحساب جديد على هذا الجهاز: تُدمج مفضلة الضيف وتقدمه (قاعدة drama-family) في قاعدة الحساب بلا حذف من الأصل،
+// وأحدث تقدم هو الذي يبقى. تُتخطى إن كانت drama-family مملوكة لحساب سابق (حتى لا تتسرب بيانات حساب آخر).
+export function mergeGuest(guest, mine) {
+  const lf = new Set(mine.favs.map((f) => f.showId)), lp = new Map(mine.progress.map((p) => [p.key, p]));
+  return { favs: guest.favs.filter((f) => !lf.has(f.showId)), progress: guest.progress.filter((p) => !lp.has(p.key) || (p.updated || 0) > (lp.get(p.key).updated || 0)) };
+}
+export async function importGuest() {
+  const k = 'df-import:' + getUid(); if (!getUid() || lsGet(k) !== '1') return;
+  try {
+    if (!lsGet(OWNER_KEY)) {
+      const add = mergeGuest(await readOther('drama-family'), { favs: await raw.favs(), progress: await raw.progress() });
+      for (const f of add.favs) await raw.putFav(f);
+      for (const p of add.progress) await raw.putProgress(p);
+    }
+    lsDel(k);
+  } catch { /* يُعاد في الزيارة التالية */ }
 }
 
 let started = false;

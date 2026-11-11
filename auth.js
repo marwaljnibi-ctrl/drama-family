@@ -12,15 +12,16 @@ export const getSession = () => { const t = ls.get(S); return /^[0-9a-f]{64}$/.t
 export const getUid = () => ls.get(U) || '';
 export const saveSession = (token, uid) => { ls.set(S, token); ls.set(U, uid); };
 export const clearSession = () => { ls.del(S); ls.del(U); };
+export const lsGet = ls.get, lsDel = ls.del, OWNER_KEY = OWNER;
 
 // قاعدة المستخدم المحلية: الحساب الأول على الجهاز يرث القاعدة القديمة (بياناته القديمة تُحفظ ولا تُحذف)، والباقي قواعد منفصلة (عزل)
 export function prepareDb() {
   const uid = getUid(); if (!uid) return;
   let map = {}; try { map = JSON.parse(ls.get(MAP) || '{}'); } catch {}
   if (!map[uid]) {
-    if (!ls.get(OWNER)) { ls.set(OWNER, uid); map[uid] = 'drama-family'; }
-    else map[uid] = 'dizi-u-' + uid.replace(/[^\w]/g, '').slice(0, 24);
-    ls.set(MAP, JSON.stringify(map));
+    // كل حساب جديد يأخذ قاعدته الخاصة، وبيانات الضيف في «drama-family» تُنسخ إليها مرة واحدة (بلا حذف ولا استبدال لأحدث) — انظر importGuest في sync.js
+    map[uid] = 'dizi-u-' + uid.replace(/[^\w]/g, '').slice(0, 24);
+    ls.set('df-import:' + uid, '1'); ls.set(MAP, JSON.stringify(map));
   }
   setDbName(map[uid]);
 }
@@ -50,7 +51,7 @@ export async function renderLogin(el, { onDone, onError }) {
       } catch { onError('network'); }
     },
   });
-  google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', text: 'continue_with', locale: 'ar', width: 280 });
+  google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', text: 'signin_with', locale: 'ar', width: 280 });
   try { google.accounts.id.prompt(); } catch {}
 }
 export async function logout() { try { await authApi('/auth/logout'); } catch {} clearSession(); location.reload(); }
