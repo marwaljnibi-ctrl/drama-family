@@ -42,7 +42,7 @@ table{width:100%;border-collapse:collapse;font:13px monospace;direction:ltr}td,t
 <div class="bar"><i id="fbar"></i></div><div id="fst" class="log">—</div>
 
 <h3>ج) الملفات المخزّنة (تبقى بعد إغلاق Safari وإعادة التشغيل)</h3>
-<button id="list">اعرض وافحص الملفات</button><button class="s" id="rmall">احذف كل ملفات الاختبار</button>
+<button id="list">اعرض وافحص الملفات</button><button class="s" id="reverify">أعد التحقق من غير المكتمل (بلا إعادة كتابة)</button><button class="s" id="rmall">احذف كل ملفات الاختبار</button>
 <table id="files"></table>
 
 <h3>د) التشغيل من OPFS (جرّبه في وضع الطيران)</h3>
@@ -59,6 +59,8 @@ import * as dl from './dl2.js';
 const $ = (id) => document.getElementById(id), L = $('log'); const R = [];
 const log = (m, c) => { L.innerHTML += `<div class="${c || ''}">${new Date().toLocaleTimeString('en')} ${m}</div>`; L.scrollTop = 1e9; };
 const res = (name, ok, d = '') => { R.push(`${ok ? 'PASS' : 'FAIL'} ${name} ${d}`); log(`${ok ? 'PASS' : 'FAIL'} ${name} ${d}`, ok ? 'ok' : 'bad'); };
+let busy = false;   // عملية واحدة كثيفة في كل مرة: تشغيل تنزيلين/ملء وفحص معًا أبطأ الجهاز وسبّب مهلات القفز
+const guard = async (fn) => { if (busy) return log('عملية أخرى جارية؛ انتظر حتى تنتهي ثم أعد المحاولة', 'warn'); busy = true; try { return await fn(); } finally { busy = false; } };
 const mbs = (n) => n >= 2 ** 30 ? (n / 2 ** 30).toFixed(2) + ' GB' : (n / 2 ** 20).toFixed(1) + ' MB';
 const net = () => { const n = $('net'); n.textContent = navigator.onLine ? 'متصل بالإنترنت' : 'وضع الطيران / بلا إنترنت ✈'; n.className = navigator.onLine ? '' : 'off'; };
 addEventListener('online', net); addEventListener('offline', net); net();
@@ -72,8 +74,13 @@ $('refresh').onclick = env; $('persist').onclick = async () => { const ok = awai
 async function bootRecord() {
   const BK = 'offline-test:boots'; let boots = []; try { boots = JSON.parse(localStorage.getItem(BK) || '[]'); } catch {}
   const W = dl.createWriter(); let canary = null, fresh = false;
-  try { canary = await W.call('getJson', { name: 'canary.json' }); if (!canary) { canary = { id: Math.random().toString(36).slice(2, 8), created: Date.now() }; await W.call('putJson', { name: 'canary.json', obj: canary }); fresh = true; } }
-  catch (e) { canary = { id: 'ERR:' + e.name, created: 0 }; } finally { await W.terminate(); }
+  let lastErr = '';
+  for (let i = 0; i < 6 && !canary; i++) {
+    try { canary = await W.call('getJson', { name: 'canary.json' }); if (!canary) { canary = { id: Math.random().toString(36).slice(2, 8), created: Date.now() }; await W.call('putJson', { name: 'canary.json', obj: canary }); fresh = true; } }
+    catch (e) { lastErr = e.message; canary = null; await new Promise((r) => setTimeout(r, 600)); }
+  }
+  if (!canary) canary = { id: 'UNREADABLE:' + lastErr.slice(0, 40), created: 0 };
+  await W.terminate();
   const files = await dl.listFiles().catch(() => []);
   const prev = boots[boots.length - 1];
   const rec = { at: Date.now(), online: navigator.onLine, canary: canary.id, created: canary.created, fresh, files: files.map((f) => f.name.replace(/^(synthetic-|dl-)/, '').slice(0, 14) + ':' + (f.size / 1048576).toFixed(0) + 'MB') };
@@ -106,9 +113,9 @@ async function runDownload() {
     if (e.name === 'AbortError') log('أُوقف مؤقتًا؛ الجزء المسجّل محفوظ. اضغط استكمال.', 'warn'); else res('download-error', false, e.message);
   } finally { $('dl').disabled = false; }
 }
-$('dl').onclick = runDownload; $('resume').onclick = runDownload;
+$('dl').onclick = () => guard(runDownload); $('resume').onclick = () => guard(runDownload);
 $('pause').onclick = () => { ctl && ctl.abort(); };
-$('cancel').onclick = async () => { if (cur.name) { await dl.removeAll(cur.name); log('حُذف ' + cur.name, 'warn'); } };
+$('cancel').onclick = () => guard(async () => { if (cur.name) { await dl.removeAll(cur.name); log('حُذف ' + cur.name, 'warn'); } });
 
 // ---- ب) ملف اصطناعي
 let fctl = null;
@@ -128,7 +135,7 @@ async function runFill() {
     if (e.name === 'AbortError') log('أُوقف مؤقتًا؛ اضغط استكمال.', 'warn'); else res('fill-error-' + mbs(total), false, e.message + (/Quota/i.test(e.message) ? ' (QuotaExceeded: رسالة المساحة)' : ''));
   } finally { $('fill').disabled = false; }
 }
-$('fill').onclick = runFill; $('fresume').onclick = runFill; $('fpause').onclick = () => fctl && fctl.abort();
+$('fill').onclick = () => guard(runFill); $('fresume').onclick = () => guard(runFill); $('fpause').onclick = () => fctl && fctl.abort();
 
 // ---- ج) الملفات
 async function listAndCheck() {
@@ -142,8 +149,9 @@ async function listAndCheck() {
   }
   if (!files.length) log('لا ملفات مخزّنة.', 'warn');
 }
-$('list').onclick = listAndCheck;
-$('rmall').onclick = async () => { for (const f of await dl.listFiles()) await dl.removeAll(f.name); log('حُذفت كل ملفات الاختبار', 'warn'); listAndCheck(); };
+$('list').onclick = () => guard(listAndCheck);
+$('rmall').onclick = () => guard(async () => { for (const f of await dl.listFiles()) await dl.removeAll(f.name); log('حُذفت كل ملفات الاختبار', 'warn'); await listAndCheck(); });
+$('reverify').onclick = () => guard(async () => { for (const f of await dl.listFiles()) { const q = await dl.quickCheck(f.name).catch(() => ({ ok: false })); if (q.locked) continue; if (!q.ok || (q.meta && q.meta.playable === false)) { log('إعادة التحقق: ' + f.name); try { const r = await dl.verify(f.name); res('reverify-' + f.name, r.ok && r.complete, `playable=${r.playable} ${r.verifyError || ''}`); } catch (e) { res('reverify-' + f.name, false, e.message); } } } await listAndCheck(); });
 
 // ---- د) التشغيل
 const v = $('v'); let curName = '', lastT = 0;

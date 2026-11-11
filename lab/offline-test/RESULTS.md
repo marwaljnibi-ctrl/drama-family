@@ -36,3 +36,10 @@ Caveat: the 4 GB file is a small real MP4 plus `free` padding; it proves storage
 - `FAIL stored-dl-Big_Buck_Bunny... 53.9 MB InvalidStateError`: the WebM had been deleted and was being re-downloaded (53.9 MB so far, usage 4.53 -> 4.30 GB) while the list ran; an OPFS sync handle is exclusive, so a second handle on a file being written fails. Not corruption. Design rule: never open a second handle on a file being downloaded; list shows `LOCKED_IN_USE`. Fixed in `quickCheck`.
 - Still NOT proven: survival after closing Safari / restarting the phone. The report did not say whether either happened. Added a persistent boot log + canary file (`survived-since-previous-open`) so it is provable from data.
 - SW is now network-first (offline falls back to cache) so a new lab version is never stuck behind an old cached copy.
+
+## iPhone — report 4 and fixes (v4)
+- 2.00 GB and 4.00 GB synthetic files: complete + verify (box walk + seeks) PASS on iPhone. 256 MB, 1.1 MB: PASS incl. offline seeks (mid and near end).
+- 1.00 GB: all bytes written (size==total) but verify failed with `SEEK_FAILED: timeout seeked`; WebM resumed download (from 184 MB) also ended with `SEEK_FAILED: timeout seeked`. Both happened while several heavy operations ran at the same time (list during a download, fill during a resume). Not shown to be corruption; the seek timeout (8 s) was too tight on a busy device.
+- Lab changes: `complete` now means size + structure verified; the seek test runs 3 attempts x 20 s and is recorded separately (`playable`); one heavy operation at a time (guard); a "re-verify" button (no rewrite); meta write is overwrite-then-truncate (no empty window); boot canary read retries.
+- Desktop (Chromium) anomaly: one 1 GB fill failed at ~504 MB with `short write 4294967288/8388608` and left an empty meta file; a clean rerun passed (1 GB in 8 s, verified). Not reproduced; cause unknown. The lab always checks bytes written == bytes sent.
+- `persist()` => false on iPhone (Safari tab). Survival after closing Safari / restart: still NOT proven (every `survived-since-previous-open` line so far had a gap of 1 min).

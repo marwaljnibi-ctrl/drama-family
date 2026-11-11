@@ -21,7 +21,7 @@ onmessage = async ({ data: m }) => {
       }
       case 'flush': (await open(m.name)).flush(); r = true; break;
       case 'read': { const a = await open(m.name); const b = new Uint8Array(m.len); const n = a.read(b, { at: m.at }); r = b.slice(0, n).buffer; break; }
-      case 'putJson': { const a = await open(m.name); const b = enc.encode(JSON.stringify(m.obj)); a.truncate(0); a.write(b, { at: 0 }); a.flush(); r = true; break; }
+      case 'putJson': { const a = await open(m.name); const b = enc.encode(JSON.stringify(m.obj)); const n = a.write(b, { at: 0 }); if (n !== b.byteLength) throw new Error('short meta write ' + n + '/' + b.byteLength); a.truncate(b.byteLength); a.flush(); r = true; break; }
       case 'getJson': { const a = await open(m.name); const n = a.getSize(); if (!n) { r = null; break; } const b = new Uint8Array(n); a.read(b, { at: 0 }); r = JSON.parse(dec.decode(b)); break; }
       case 'close': if (h[m.name]) { h[m.name].flush(); h[m.name].close(); delete h[m.name]; } r = true; break;
       case 'closeAll': for (const k of Object.keys(h)) { h[k].flush(); h[k].close(); delete h[k]; } r = true; break;

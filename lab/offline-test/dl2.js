@@ -96,10 +96,11 @@ export async function verify(name, W0, meta0) {
     const mp4 = meta.kind === 'webm' ? await checkEbml(W, name, size) : await checkMp4(W, name, size);
     if (!mp4.ok) return fail((meta.kind === 'webm' ? 'WEBM_INVALID: ' : 'MP4_INVALID: ') + mp4.why);
     await W.call('close', { name });
-    const seek = await seekTest(name);
-    if (!seek.ok) return fail('SEEK_FAILED: ' + seek.why);
-    meta.complete = true; delete meta.verifyError;
-    meta.verified = { size, boxes: mp4.boxes, seek: seek.points, hash: 'not-checked (no trusted source hash)', at: Date.now() };
+    // 3 محاولات بمهلة 20 ث: فشل القفز مرة واحدة (جهاز مشغول) لا يُسقط ملفًا سليم البنية والحجم. النتيجة تُسجَّل في meta.playable.
+    let seek = { ok: false, why: 'not-run' };
+    for (let i = 0; i < 3 && !seek.ok; i++) { seek = await seekTest(name, 20000); if (!seek.ok) await new Promise((r) => setTimeout(r, 1500)); }
+    meta.complete = true; delete meta.verifyError; meta.playable = !!seek.ok; if (seek.ok) delete meta.playableWhy; else meta.playableWhy = seek.why;
+    meta.verified = { size, boxes: mp4.boxes, seek: seek.points || null, hash: 'not-checked (no trusted source hash)', at: Date.now() };
     await W.call('putJson', { name: metaName(name), obj: meta });
     return { ...meta, ok: true };
   } finally { if (!W0) await W.terminate(); }
@@ -130,11 +131,11 @@ async function checkMp4(W, name, size) {
 }
 
 // تقديم وترجيع حقيقيان على الملف المحفوظ (يتضمن الوصول لنهاية الملف)
-export async function seekTest(name) {
+export async function seekTest(name, ms = 8000) {
   const fh = await (await (await navigator.storage.getDirectory()).getDirectoryHandle('dizi-dl')).getFileHandle(name);
   const url = URL.createObjectURL(await fh.getFile());
   const v = document.createElement('video'); v.muted = true; v.preload = 'auto';
-  const once = (ev, ms = 8000) => new Promise((res, rej) => { const t = setTimeout(() => rej(new Error('timeout ' + ev)), ms); v.addEventListener(ev, () => { clearTimeout(t); res(); }, { once: true }); v.addEventListener('error', () => { clearTimeout(t); rej(new Error('media error ' + (v.error && v.error.code))); }, { once: true }); });
+  const once = (ev, to = ms) => new Promise((res, rej) => { const t = setTimeout(() => rej(new Error('timeout ' + ev)), to); v.addEventListener(ev, () => { clearTimeout(t); res(); }, { once: true }); v.addEventListener('error', () => { clearTimeout(t); rej(new Error('media error ' + (v.error && v.error.code))); }, { once: true }); });
   try {
     v.src = url; await once('loadedmetadata');
     const d = v.duration; if (!isFinite(d) || d <= 0) return { ok: false, why: 'NO_DURATION' };
@@ -208,7 +209,7 @@ export async function quickCheck(name) {
     if (!meta) return { ok: false, why: 'NO_META', size };
     if (size !== meta.total) return { ok: false, why: 'SIZE ' + size + '/' + meta.total, size, meta };
     const m = meta.kind === 'webm' ? await checkEbml(W, name, size) : await checkMp4(W, name, size);
-    return { ok: !!meta.complete && m.ok, why: meta.complete ? (m.ok ? 'OK' : m.why) : 'NOT_COMPLETE', size, meta };
+    return { ok: !!meta.complete && m.ok, why: meta.complete ? (m.ok ? (meta.playable === false ? 'OK but playable=false: ' + meta.playableWhy : 'OK') : m.why) : 'NOT_COMPLETE' + (meta.verifyError ? ' (' + meta.verifyError + ')' : ''), size, meta };
   } catch (e) { if (e.locked) return { ok: false, why: 'LOCKED_IN_USE (تنزيل جارٍ على هذا الملف)', locked: true }; throw e; }
   finally { await W.terminate(); }
 }
