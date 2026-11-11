@@ -1,0 +1,26 @@
+name: bench-index
+# قياس مدة فهرسة السيرفرات عند 150 مقابل 300 حلقة لكل تشغيل. لا يكتب ولا يدفع أي بيانات (بلا commit/push).
+on:
+  push: { branches: ['ops/index-bench'] }
+jobs:
+  n150:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: run sync with 150 (no commit)
+        run: |
+          s=$(date +%s); SYNC_SERVERS_PER_RUN=150 node scripts/sync-qesset.mjs; e=$(date +%s)
+          echo "BENCH limit=150 seconds=$((e-s))"
+  n300:
+    needs: n150          # بالتتابع: لا نضاعف الضغط على المصدر
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: run sync with 300 (no commit)
+        run: |
+          s=$(date +%s); SYNC_SERVERS_PER_RUN=300 node scripts/sync-qesset.mjs; e=$(date +%s)
+          echo "BENCH limit=300 seconds=$((e-s))"
