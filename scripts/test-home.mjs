@@ -48,7 +48,8 @@ await page.goto(BASE + '?demo=1#/favs'); await page.waitForSelector('#view .grid
 const favN = await page.$$eval('#view .grid .card', (a) => a.length);
 T('favorites-single-source', mine1 === 1 && favN === 1, `home=${mine1} favs=${favN}`);
 
-// T6: إضافة من صف الاكتشاف تظهر في مسلسلاتي
+// T6: إضافة من صف الاكتشاف تظهر في مسلسلاتي (نجعل demo-b غير مشاهد ليظهر في الاكتشاف)
+await page.evaluate(async () => { const db = await import('./db.js'); for (const p of await db.progress.all()) if (p.showId === 'demo-b') await db.progress.reset(p.showId, p.epId); });
 await home();
 await page.click('#view .sec:has-text("اكتشف مسلسلات") .heart >> nth=0'); await page.waitForTimeout(1000);
 T('add-from-discover-appears-in-mine', (await mineCount()) === 2, 'mine=' + (await mineCount()));
