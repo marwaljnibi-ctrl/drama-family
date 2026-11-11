@@ -10,16 +10,20 @@ concurrency: sync
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm i --no-save --no-audit --no-fund sharp
-      - run: node scripts/sync-qesset.mjs
+      - name: sync (step timeout leaves time for the commit step)
+        timeout-minutes: 150
+        run: node scripts/sync-qesset.mjs
         env: { SYNC_FULL: '${{ github.event.inputs.full }}', SYNC_SERVERS_PER_RUN: '${{ github.event.inputs.limit || 300 }}' }
-      - name: Commit changes
+      - name: Commit changes (also after a timeout/failure: progress is checkpointed)
+        if: always()
         run: |
+          rm -f data/shows.json.tmp
           git config user.name "sync-bot"; git config user.email "sync-bot@users.noreply.github.com"
           git add data
           git diff --cached --quiet || (git commit -m "sync: update shows" && git push)
