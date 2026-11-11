@@ -7,7 +7,7 @@
 
 ## إدارة (Authorization: Bearer <ADMIN_KEY>)
 - `POST /admin/member {name, phone:+E164}` → رابط خاص يظهر مرة واحدة. `POST /admin/rotate {phone}` رابط جديد. `POST /admin/remove {phone}`.
-- `POST /admin/enable {on:true|false}` تشغيل/إيقاف الإرسال (الإيقاف يمسح الطابور). `GET /admin/status`. `POST /admin/test {phone}` رسالة تجريبية واحدة.
+- `POST /admin/enable {on:true|false}` تشغيل/إيقاف الإرسال (الإيقاف يمسح الطابور). `GET /admin/status`. `POST /admin/test {phone}` رسالة تجريبية واحدة. `POST /admin/unsee {epId}` (اختبار) يجعل حلقة موجودة تبدو جديدة. `POST /admin/wa/link` + `GET /admin/wa/qr?id=` + `GET /admin/wa/account?id=` لربط واتساب بالـQR.
 - لا إشعار لأي حلقة موجودة وقت أول تشغيل (نقطة البداية = `seen`). لا رسالة لعضو بلا موافقة صريحة يمنحها من رابطه. إلغاء الاشتراك/الموافقة يحذف المعلّق فورًا. علامة `sent:<عضو>:<حلقة>` تمنع التكرار.
 
 ## النشر

@@ -143,6 +143,10 @@ async function handle(req, env) {
       if (p === '/admin/wa/account') { const r = await umGet(env, '/account/' + id); return out(await r.json().catch(() => ({})), r.status); }
       if (p === '/admin/wa/message') { const r = await umGet(env, '/message/' + id); return out(await r.json().catch(() => ({})), r.status); }
     }
+    if (p === '/admin/unsee') {   // للاختبار: يجعل حلقة موجودة تبدو «جديدة» في الدورة التالية (يحذف معرّفها من seen)
+      const meta = await getMeta(env); if (!meta) return out({ error: 'no meta' }, 400);
+      meta.seen = meta.seen.filter((x) => x !== body.epId); await putMeta(env, meta); return out({ seen: meta.seen.length });
+    }
     if (p === '/admin/cron') return out(await runCron(env));
     return out({ error: 'not found' }, 404);
   }
