@@ -31,7 +31,7 @@ await home();
 const order = await heads();
 T('section-order-continue-then-mine', order[0] === 'متابعة المشاهدة' && order[1] === 'مسلسلاتي', order.join('|'));
 const cards = await page.$$eval('.ccard', (a) => a.map((x) => ({ small: x.querySelector('small').textContent, bar: !!x.querySelector('.bar') })));
-T('continue-label-is-متابعة-المشاهدة', await page.$eval('.ccard .go', (a) => a.length > 0 && a.every((x) => x.textContent.trim() === 'متابعة المشاهدة' || x.textContent.trim() === 'شاهد التالية')));
+T('continue-label-is-متابعة-المشاهدة', await page.$$eval('.ccard .go', (a) => a.length > 0 && a.every((x) => x.textContent.trim() === 'متابعة المشاهدة' || x.textContent.trim() === 'شاهد التالية')));
 const withMin = cards.find((c) => /توقفت عند/.test(c.small)), opened = cards.find((c) => !/توقفت عند/.test(c.small));
 T('minute-and-bar-only-when-known', cards.length === 2 && withMin && withMin.bar && opened && !opened.bar, JSON.stringify(cards));
 
