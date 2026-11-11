@@ -15,7 +15,7 @@ jobs:
         with: { node-version: 22 }
       - run: npm i --no-save --no-audit --no-fund sharp
       - run: node scripts/sync-qesset.mjs
-        env: { SYNC_FULL: '${{ github.event.inputs.full }}', SYNC_SERVERS_PER_RUN: '150' }
+        env: { SYNC_FULL: '${{ github.event.inputs.full }}', SYNC_SERVERS_PER_RUN: '300' }
       - name: Commit changes
         run: |
           git config user.name "sync-bot"; git config user.email "sync-bot@users.noreply.github.com"
