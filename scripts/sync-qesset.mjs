@@ -2,7 +2,7 @@
 // - تحترم robots.txt (الزواحف العامة مسموحة، وتعرّف بنفسها بوضوح).
 // - لا تتجاوز أي حماية: إن أعاد الموقع 403/تحدّي Cloudflare يتوقف السكربت ويترك الفهرس السابق كما هو.
 // - ضع SYNC_FULL=1 للمزامنة الكاملة، وإلا تُفحص صفحة «آخر الحلقات» فقط ثم المسلسلات المتأثرة.
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from 'node:fs';
 import { parseServers, buildKeyMap, parseLatest, resolveShowOf, epKey as slugKey, SV_VERSION } from './lib/qesset.mjs';
 const BASE = 'https://qesset.net';
 const UA = 'DramaFamilyBot/1.0 (+personal family PWA; low-rate; respects robots.txt)';
@@ -50,19 +50,24 @@ function parseEps(html) {
 const ogImage = (h) => (h.match(/property="og:image"[^>]+content="([^"]+)"/) || [])[1];
 
 // يحلّ معرّفات السيرفرات للحلقات غير المحلولة: الأحدث أولًا في كل مسلسل، بحد أقصى لكل تشغيل.
-async function resolveServers(shows) {
+async function resolveServers(shows, flush) {
   const limit = +process.env.SYNC_SERVERS_PER_RUN || 900;
   const todo = [];
-  shows.forEach((s) => s.eps.forEach((e, i) => { if (!e.sv || e.q !== SV_VERSION) todo.push({ s, e, rank: i }); }));
+  shows.forEach((s) => s.eps.forEach((e, i) => { if ((!e.sv || e.q !== SV_VERSION) && (e.qf || 0) < 3) todo.push({ s, e, rank: i }); }));   // qf: عدد مرات الفشل؛ بعد 3 نتوقف حتى يزيد SV_VERSION
   todo.sort((a, b) => a.rank - b.rank);
-  let ok = 0, empty = 0, fail = 0;
+  let ok = 0, empty = 0, fail = 0, n = 0;
   for (const { e } of todo.slice(0, limit)) {
     try {
       const sv = parseServers(await get(e.url));
       if (sv && sv.length) { e.sv = sv; ok++; } else { e.sv = []; empty++; }
-      e.q = SV_VERSION;
-    } catch (err) { if (err instanceof Blocked) throw err; fail++; }
+      e.q = SV_VERSION; delete e.qf;
+    } catch (err) {
+      if (err instanceof Blocked) { flush && flush(); throw err; }   // نحفظ ما أُنجز قبل التوقف
+      e.qf = (e.qf || 0) + 1; fail++;
+    }
+    if (flush && ++n % 50 === 0) flush();                              // نقطة حفظ: لا يضيع التقدم إن انقطع التشغيل
   }
+  if (flush && n % 50) flush();
   console.log(`servers: +${ok} resolved, ${empty} without supported servers, ${fail} failed, ${Math.max(0, todo.length - limit)} still pending`);
 }
 
@@ -144,7 +149,9 @@ async function main() {
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
   await localizePosters(shows);
-  await resolveServers(shows);
+  // كتابة ذرية (ملف مؤقت ثم إعادة تسمية): لا يُترك JSON ناقص إن انقطع التشغيل أثناء الكتابة
+  const dump = () => { const tmp = OUT + '.tmp'; writeFileSync(tmp, JSON.stringify({ updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest })); renameSync(tmp, OUT); };
+  await resolveServers(shows, dump);
   const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
   const before = JSON.stringify({ s: prev.shows, l: prev.latest });
   if (before === JSON.stringify({ s: shows, l: latest })) { console.log('no changes'); return; }
