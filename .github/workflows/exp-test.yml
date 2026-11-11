@@ -11,7 +11,11 @@ jobs:
         with: { node-version: 22 }
       - name: unit tests
         run: node --test scripts/test.mjs scripts/test-family.mjs
-      - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
+      - name: install playwright (apt update + retries: runner mirrors fail intermittently)
+        run: |
+          npm i --no-save --no-audit --no-fund playwright
+          for i in 1 2 3; do sudo apt-get update -qq || true; npx playwright install --with-deps chromium && break; echo "retry $i"; sleep 15; done
+          npx playwright --version
       - name: make test clip (H.264+AAC, 90s)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && mkdir -p test && ffmpeg -loglevel error -y -f lavfi -i testsrc=size=640x360:rate=24 -f lavfi -i sine=frequency=440 -t 90 -c:v libx264 -pix_fmt yuv420p -preset ultrafast -c:a aac -movflags +faststart test/clip.mp4
       - name: make big file (700MB = valid mp4 + padding) for the memory test

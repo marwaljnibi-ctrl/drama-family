@@ -23,7 +23,7 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
-const BUILD = 'df-v21';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v22';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -314,7 +314,7 @@ async function vWatch(showId, epId) {
   if (!SRC.length) {
     // لا سيرفر معروف لهذه الحلقة بعد: الحلقات القديمة تُفهرس تدريجيًا في الخلفية. نقول ذلك، والمصدر الخارجي خيار ثانوي
     pl.style.cssText = 'aspect-ratio:auto;background:none';
-    pl.innerHTML = `<div class="empty-card"><b>سيرفرات هذه الحلقة قيد الفهرسة</b><p>تُضاف تلقائيًا خلال ساعات. جرّب حلقة أحدث أو عد لاحقًا.</p><a href="${esc(ep.url)}" target="_blank" rel="noopener"><button>فتح الحلقة في المصدر ↗</button></a></div>`;
+    pl.innerHTML = `<div class="empty-card"><b>جارٍ فهرسة سيرفرات هذه الحلقة</b><p>جرّب حلقة أحدث أو عد لاحقًا.</p><a href="${esc(ep.url)}" target="_blank" rel="noopener"><button>فتح الحلقة في المصدر ↗</button></a></div>`;
     return;
   }
   let pref = null; try { pref = localStorage.getItem('df-sv-ok'); } catch {}
