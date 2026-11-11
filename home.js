@@ -24,12 +24,13 @@ export async function renderHome(D, view, { demoBanner = '', quiet = false } = {
   if (mine.length) parts.push(section({ title: 'مسلسلاتي', all: '#/favs' }, mine.slice(0, 12).map((m) => showCard(m.show, { fav: true, badge: m.hasNew ? 'حلقة جديدة' : '', sub: m.last ? 'وصلت إلى حلقة ' + m.last.epNum : '' })).join('')));
   else if (!firstRun) parts.push(`<section class="sec"><div class="sec-h"><h2>مسلسلاتي</h2></div><div class="hint">اضغط ♥ على أي مسلسل ليظهر هنا.</div></section>`);
 
+  // حلقات جديدة (لمسلسلات موجودة): فوق «اكتشف مسلسلات» بطلب المستخدم
+  if (epsNew.length) parts.push(section({ title: 'حلقات جديدة', sub: 'حلقات جديدة لمسلسلات موجودة', all: '#/latest' }, epsNew.map(({ show, ep }) => `<div class="card"><a href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}<span class="badge">حلقة ${esc(ep.n)}</span><div class="t">${esc(show.title)}</div></a></div>`).join('')));
   // 3) مقترحات (شخصية فقط إن توفرت بيانات كافية، وإلا «اكتشف مسلسلات» بلا ادعاء)
   if (rec.items.length) parts.push(section({ title: rec.title, sub: rec.sub }, rec.items.map((s) => showCard(s, { fav: fv.has(s.id) })).join('')));
 
   // 4) المسلسلات الجديدة (عناوين أُضيفت حديثًا) — ثم الحلقات الجديدة (حلقات لمسلسلات موجودة) كقسم فرعي منفصل
   if (fresh.length) parts.push(section({ title: 'المسلسلات الجديدة', sub: 'عناوين أُضيفت حديثًا' }, fresh.slice(0, 12).map((s) => showCard(s, { fav: fv.has(s.id), badge: 'جديد' })).join('')));
-  if (epsNew.length) parts.push(section({ title: 'حلقات جديدة', sub: 'حلقات جديدة لمسلسلات موجودة', all: '#/latest' }, epsNew.map(({ show, ep }) => `<div class="card"><a href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}<span class="badge">حلقة ${esc(ep.n)}</span><div class="t">${esc(show.title)}</div></a></div>`).join('')));
 
   view.innerHTML = parts.join('');
   view.onclick = heartClick(view, fv, () => { const y = scrollY; renderHome(D, view, { demoBanner, quiet: true }).then(() => scrollTo(0, y)); });

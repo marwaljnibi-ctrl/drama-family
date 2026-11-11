@@ -16,6 +16,7 @@ const mineCount = () => page.$$eval('#view .sec', (a) => { const s = a.find((x) 
 await home();
 const first = await page.evaluate(() => ({ text: document.getElementById('view').innerText, tabs: [...document.querySelectorAll('#tabs a')].map((a) => a.textContent.trim()) }));
 T('first-run-cta-and-no-empty-continue', /اكتشف مسلسلك الأول/.test(first.text) && !/متابعة المشاهدة/.test(first.text), first.text.slice(0, 80));
+T('back-button-visible-on-home', await page.evaluate(() => !document.getElementById('back').hidden));
 T('four-tabs-only', first.tabs.length === 4 && first.tabs[0] === 'الرئيسية', first.tabs.join('|'));
 T('discover-not-claimed-personal', /اكتشف مسلسلات/.test(first.text) && !/حسب ذوقك/.test(first.text));
 
@@ -30,6 +31,7 @@ await home();
 const order = await heads();
 T('section-order-continue-then-mine', order[0] === 'متابعة المشاهدة' && order[1] === 'مسلسلاتي', order.join('|'));
 const cards = await page.$$eval('.ccard', (a) => a.map((x) => ({ small: x.querySelector('small').textContent, bar: !!x.querySelector('.bar') })));
+T('continue-label-is-متابعة-المشاهدة', await page.$eval('.ccard .go', (a) => a.length > 0 && a.every((x) => x.textContent.trim() === 'متابعة المشاهدة' || x.textContent.trim() === 'شاهد التالية')));
 const withMin = cards.find((c) => /توقفت عند/.test(c.small)), opened = cards.find((c) => !/توقفت عند/.test(c.small));
 T('minute-and-bar-only-when-known', cards.length === 2 && withMin && withMin.bar && opened && !opened.bar, JSON.stringify(cards));
 
@@ -39,7 +41,7 @@ T('continue-opens-episode', /#\/watch\//.test(page.url()), page.url().split('#')
 
 // T4: واجهة المشاهدة نظيفة
 const watch = await page.evaluate(() => document.getElementById('view').innerText + (document.body.innerHTML.includes('DZ✓') ? ' DZ✓' : ''));
-T('watch-page-clean', !/لقطة|عاد للمكان|بدأ من الصفر|انسخ التقرير|ARAB_HD_RESUME_TEST|DZ✓/.test(watch) && !(await page.$('#snap, #resume')), watch.slice(0, 60));
+T('watch-page-clean', !/لقطة|تمت المشاهدة|عاد للمكان|بدأ من الصفر|انسخ التقرير|ARAB_HD_RESUME_TEST|DZ✓/.test(watch) && !(await page.$('#snap, #resume')), watch.slice(0, 60));
 
 // T5: المفضلة قاعدة واحدة تغذي الرئيسية وتبويب المفضلة
 await home();
@@ -68,7 +70,7 @@ T('new-episode-badge-only-after-last-state', badge >= 1 && badge2 === 0, `old-fa
 await page.evaluate(() => localStorage.setItem('df-known-shows', JSON.stringify({ base: ['demo-a', 'demo-b'], added: {} })));
 await home();
 const h2 = await heads();
-T('new-shows-distinct-from-new-episodes', h2.includes('المسلسلات الجديدة') && h2.includes('حلقات جديدة') && h2.indexOf('المسلسلات الجديدة') < h2.indexOf('حلقات جديدة'), h2.join('|'));
+T('new-shows-distinct-from-new-episodes', h2.includes('المسلسلات الجديدة') && h2.includes('حلقات جديدة') && h2.indexOf('حلقات جديدة') < h2.indexOf('المسلسلات الجديدة'), h2.join('|'));
 
 // T9: رسالة غير موثوقة (ليست من iframe) لا تغيّر سجل التقدم
 const before = await progKeys();

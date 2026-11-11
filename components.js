@@ -40,7 +40,7 @@ export const showCard = (s, o = {}) => `<div class="card"><a href="${showHref(s)
 export function continueCard(it) {
   const pct = it.hasMinute ? Math.min(100, (it.time / it.duration) * 100) : 0;
   const line = it.kind === 'next' ? `الحلقة التالية · ${it.ep.n}` : `حلقة ${it.ep.n}${it.hasMinute ? ' · توقفت عند ' + fmt(it.time) : ''}`;
-  return `<a class="ccard" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'استكمال'}</span></div></a>`;
+  return `<a class="ccard" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
 }
 
 // قسم بصف أفقي: head = { title, sub?, all? (رابط عرض الكل) }
