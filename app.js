@@ -16,13 +16,14 @@ let arabMsgH = null;
 function arabTestPanel(box, pl, epId) {
   let n = 0, last = ''; const types = {};
   box.innerHTML = '<div class="note" dir="ltr" style="direction:ltr;text-align:left"><b>dev: Arab HD bridge</b><div id="at-st" style="white-space:pre-wrap;font:12px/1.6 monospace"></div></div>';
-  const draw = () => { const el = box.querySelector('#at-st'); if (el) el.textContent = 'episode=' + epId + ' | messages from iframe=' + n + ' ' + JSON.stringify(types) + '\nlast: ' + last; };
+  const draw = () => { const el = box.querySelector('#at-st'); if (el) el.textContent = 'build=' + BUILD + ' | episode=' + epId + ' | messages from iframe=' + n + ' ' + JSON.stringify(types) + '\nlast: ' + last; };
   if (arabMsgH) removeEventListener('message', arabMsgH);
   arabMsgH = (e) => { const f = pl.querySelector('iframe'); if (f && e.source === f.contentWindow) { n++; const d = e.data || {}; const t = d.type; types[t] = (types[t] || 0) + 1; last = JSON.stringify({ type: d.type, id: d.id, t: d.t && Math.round(d.t), d: d.d && Math.round(d.d), ok: d.ok, origin: e.origin }); draw(); } };
   addEventListener('message', arabMsgH); draw();
 }
 let D;
 let cleanup = null;
+const BUILD = 'df-v20';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -330,7 +331,7 @@ if ('serviceWorker' in navigator) {
 persistStorage();
 route();
 // فحص الحلقات الجديدة كل 5 دقائق، وعند العودة إلى التطبيق
-const refresh = async () => { if (document.visibilityState !== 'visible' || !D) return; try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(home|new|shows|latest)?$/.test(location.hash) || !location.hash) route(); } } catch {} };
+const refresh = async () => { if (document.visibilityState !== 'visible' || !D) return; try { const reg = await navigator.serviceWorker.getRegistration(); if (reg) reg.update(); } catch {} try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(home|new|shows|latest)?$/.test(location.hash) || !location.hash) route(); } } catch {} };
 setInterval(refresh, 5 * 60 * 1000);
 document.addEventListener('visibilitychange', refresh);
 
