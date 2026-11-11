@@ -1,0 +1,27 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>فحص وصول OK وTurk</title>
+<style>body{font:15px/1.7 system-ui,sans-serif;margin:0;padding:14px;max-width:720px;margin-inline:auto}
+table{width:100%;border-collapse:collapse;font:13px monospace;direction:ltr}td{border-bottom:1px solid #eee;padding:5px;text-align:left}
+.ok{color:#0a7a2f;font-weight:700}.bad{color:#b00020;font-weight:700}button{padding:10px 14px;border-radius:10px;border:1px solid #9E2B35;background:#9E2B35;color:#fff;font:14px system-ui;margin:6px 0}</style></head><body>
+<h3>فحص وصول هذا الجهاز إلى مواقع OK وTurk</h3>
+<p>يختبر كل موقع وكل خادم يحتاجه المشغّل (سكربتات المشغّل وملف الفيديو). المقصود معرفة أي خادم لا يصل على شبكتك. لا يحمّل فيديو.</p>
+<button id="run">ابدأ الفحص (≈ 60 ثانية)</button><table id="t"></table><div id="sum"></div><button id="cp">انسخ النتيجة</button>
+<script>
+const H=[
+ ['control','cdnjs.cloudflare.com','/ajax/libs/jquery/3.7.1/jquery.min.js','Cloudflare (ضابط)'],
+ ['control','arabhd.onl','/favicon.ico','Arab HD (يعمل عندك)'],
+ ['OK','ok.ru','/favicon.ico','صفحة المشغّل'],
+ ['OK','st.okcdn.ru','/favicon.ico','ملفات المشغّل (JS/CSS) — الأكثر استخدامًا'],
+ ['OK','st-ok.cdn-vk.ru','/favicon.ico','سكربتات المشغّل'],
+ ['OK','iv.okcdn.ru','/favicon.ico','صور/معاينة'],
+ ['OK','api.ok.ru','/','واجهة OK'],
+ ['OK','ok6-29.vkuser.net','/','خادم ملف الفيديو'],
+ ['Turk','arabveturk.com','/favicon.ico','صفحة المشغّل (20 ث)']];
+const R=[];const t=document.getElementById('t');
+async function probe(h,p,ms){const t0=performance.now();try{await fetch('https://'+h+p,{mode:'no-cors',cache:'no-store',signal:AbortSignal.timeout(ms)});return{ok:true,ms:Math.round(performance.now()-t0)}}catch(e){return{ok:false,ms:Math.round(performance.now()-t0),e:e.name}}}
+document.getElementById('run').onclick=async()=>{t.innerHTML='';R.length=0;
+ const res=await Promise.all(H.map(async([g,h,p,d])=>({g,h,d,...await probe(h,p,h==='arabveturk.com'?20000:12000)})));
+ for(const r of res){R.push(`${r.g} ${r.h} ${r.ok?'REACHABLE '+r.ms+'ms':'FAILED '+r.e+' '+r.ms+'ms'} (${r.d})`);t.insertAdjacentHTML('beforeend',`<tr><td>${r.g}</td><td>${r.h}</td><td class="${r.ok?'ok':'bad'}">${r.ok?'REACHABLE '+r.ms+'ms':'FAILED '+r.e}</td><td dir="rtl">${r.d}</td></tr>`)}
+ const bad=res.filter(r=>!r.ok&&r.g!=='control').map(r=>r.h);document.getElementById('sum').innerHTML=bad.length?'<p class="bad">لا تصل على هذا الجهاز: '+bad.join(' ، ')+'</p>':'<p class="ok">كل الخوادم تصل</p>';};
+document.getElementById('cp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(R.join('\n'));
+</script></body></html>
