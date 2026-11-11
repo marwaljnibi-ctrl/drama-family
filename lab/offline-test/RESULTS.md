@@ -29,3 +29,10 @@ Environment: OPFS true, Worker true, quota 38.4 GB, usage 4.53 GB, persisted=fal
 | Play metadata online | PASS |
 | Seek in the player UI while offline, pause/resume on iPhone, survive Safari close + phone restart, persist(), PWA mode, storage-pressure eviction | NOT YET TESTED |
 Caveat: the 4 GB file is a small real MP4 plus `free` padding; it proves storage/blob-URL handling, not decoding 4 GB of real video.
+
+## iPhone — report 3 (user, 2026-11-11) and fixes
+- `offline seek-mid` (256 MB, online=false): PASS (asked 2.5 s, at 2.5 s).
+- Lines `FAIL download-... resumedFrom=<total> verify=ok`: false FAIL from the lab itself (already-complete file returned without `ok`); it actually shows an already complete file is NOT downloaded again. Fixed (`ok:true, alreadyComplete`).
+- `FAIL stored-dl-Big_Buck_Bunny... 53.9 MB InvalidStateError`: the WebM had been deleted and was being re-downloaded (53.9 MB so far, usage 4.53 -> 4.30 GB) while the list ran; an OPFS sync handle is exclusive, so a second handle on a file being written fails. Not corruption. Design rule: never open a second handle on a file being downloaded; list shows `LOCKED_IN_USE`. Fixed in `quickCheck`.
+- Still NOT proven: survival after closing Safari / restarting the phone. The report did not say whether either happened. Added a persistent boot log + canary file (`survived-since-previous-open`) so it is provable from data.
+- SW is now network-first (offline falls back to cache) so a new lab version is never stuck behind an old cached copy.

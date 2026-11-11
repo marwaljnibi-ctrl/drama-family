@@ -22,6 +22,9 @@ table{width:100%;border-collapse:collapse;font:13px monospace;direction:ltr}td,t
 <div id="env" class="log"></div>
 <button id="persist">اطلب تخزينًا دائمًا (persist)</button><button class="s" id="refresh">حدّث</button>
 
+<h3>سجل الفتحات: يثبت بقاء الملفات بعد إغلاق Safari وإعادة التشغيل</h3>
+<p>عند كل فتح تُسجَّل قائمة الملفات و«حارس» صغير كُتب في OPFS أول مرة. بعد إعادة التشغيل افتح الصفحة (حتى بلا إنترنت): إن ظهر الحارس نفسه والملفات نفسها فقد بقيت البيانات. إن تغيّر الحارس فمُسحت البيانات.</p>
+<table id="boots"></table>
 <h3>أ) تنزيل من مصدر حقيقي (CORS + Range) إلى OPFS</h3>
 <select id="src">
   <option value="mp4|https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">MP4 صغير 1.1 م.ب (MDN، CC0)</option>
@@ -65,8 +68,21 @@ async function env() {
   $('env').textContent = `UA: ${navigator.userAgent.replace(/.*OS ([\d_]+).*/, 'iOS $1')}\nOPFS: ${!!(navigator.storage && navigator.storage.getDirectory)}\nWorker: ${typeof Worker}\nquota: ${e.quota ? mbs(e.quota) : '?'}  usage: ${e.usage != null ? mbs(e.usage) : '?'}\npersisted: ${p}\nstandalone(PWA): ${navigator.standalone === true || matchMedia('(display-mode: standalone)').matches}\nWebM: ${document.createElement('video').canPlayType('video/webm; codecs="vp9"') || 'no'}  MP4: ${document.createElement('video').canPlayType('video/mp4') || 'no'}`;
   return e;
 }
-$('refresh').onclick = env; $('persist').onclick = async () => { const ok = await navigator.storage.persist().catch(() => false); log('persist() => ' + ok, ok ? 'ok' : 'warn'); env(); };
-env();
+$('refresh').onclick = env; $('persist').onclick = async () => { const ok = await navigator.storage.persist().catch(() => false); res('persist-granted', !!ok, 'persist() => ' + ok); env(); };
+async function bootRecord() {
+  const BK = 'offline-test:boots'; let boots = []; try { boots = JSON.parse(localStorage.getItem(BK) || '[]'); } catch {}
+  const W = dl.createWriter(); let canary = null, fresh = false;
+  try { canary = await W.call('getJson', { name: 'canary.json' }); if (!canary) { canary = { id: Math.random().toString(36).slice(2, 8), created: Date.now() }; await W.call('putJson', { name: 'canary.json', obj: canary }); fresh = true; } }
+  catch (e) { canary = { id: 'ERR:' + e.name, created: 0 }; } finally { await W.terminate(); }
+  const files = await dl.listFiles().catch(() => []);
+  const prev = boots[boots.length - 1];
+  const rec = { at: Date.now(), online: navigator.onLine, canary: canary.id, created: canary.created, fresh, files: files.map((f) => f.name.replace(/^(synthetic-|dl-)/, '').slice(0, 14) + ':' + (f.size / 1048576).toFixed(0) + 'MB') };
+  boots.push(rec); boots = boots.slice(-15); try { localStorage.setItem(BK, JSON.stringify(boots)); } catch {}
+  const t = $('boots'); t.innerHTML = '<tr><th>وقت الفتح</th><th>أونلاين</th><th>الحارس (عمره)</th><th>الملفات</th></tr>' + boots.map((b, i) => '<tr><td>' + new Date(b.at).toLocaleString('en', { hour12: false }) + '</td><td>' + b.online + '</td><td>' + b.canary + ' (' + Math.round((b.at - b.created) / 60000) + ' دقيقة)</td><td>' + b.files.length + ': ' + b.files.join(', ') + '</td></tr>').join('');
+  if (prev) res('survived-since-previous-open', prev.canary === rec.canary && !fresh, 'canary ' + prev.canary + ' -> ' + rec.canary + '; files ' + prev.files.length + ' -> ' + rec.files.length + '; gap=' + Math.round((rec.at - prev.at) / 60000) + ' min');
+  else log('أول فتح مسجّل: الحارس ' + rec.canary + '. أعد فتح الصفحة بعد إغلاق Safari/إعادة التشغيل لتظهر النتيجة.', 'warn');
+}
+env(); bootRecord();
 $('src').onchange = () => { $('custom').hidden = $('src').value !== 'custom'; };
 
 // ---- أ) تنزيل

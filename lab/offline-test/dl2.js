@@ -41,7 +41,7 @@ export async function download(url, name, { chunk = 8 << 20, signal, onProgress,
       await W.call('truncate', { name, size: 0 });
       await W.call('putJson', { name: metaName(name), obj: meta });
     }
-    if (meta.complete) return { ...meta, resumedFrom: meta.total };
+    if (meta.complete) return { ...meta, resumedFrom: meta.total, ok: true, alreadyComplete: true };
     // نثق فقط بالبايتات التي سُجّلت بعد flush؛ أي زيادة على القرص (قطعة مقطوعة) تُحذف
     const disk = await W.call('size', { name });
     if (disk < meta.written) meta.written = disk;
@@ -202,12 +202,15 @@ export async function listFiles() {
 export async function quickCheck(name) {
   const W = createWriter();
   try {
+    // ملف مفتوح للكتابة (تنزيل جارٍ) لا يمكن فتح مقبض ثانٍ عليه: ليس تلفًا
+    await W.call('size', { name }).catch((e) => { if (/InvalidState|NoModification/.test(e.message)) throw Object.assign(new Error('LOCKED'), { locked: true }); throw e; });
     const meta = await W.call('getJson', { name: metaName(name) }); const size = await W.call('size', { name });
     if (!meta) return { ok: false, why: 'NO_META', size };
     if (size !== meta.total) return { ok: false, why: 'SIZE ' + size + '/' + meta.total, size, meta };
     const m = meta.kind === 'webm' ? await checkEbml(W, name, size) : await checkMp4(W, name, size);
     return { ok: !!meta.complete && m.ok, why: meta.complete ? (m.ok ? 'OK' : m.why) : 'NOT_COMPLETE', size, meta };
-  } finally { await W.terminate(); }
+  } catch (e) { if (e.locked) return { ok: false, why: 'LOCKED_IN_USE (تنزيل جارٍ على هذا الملف)', locked: true }; throw e; }
+  finally { await W.terminate(); }
 }
 export async function fileUrl(name) {
   const fh = await (await (await navigator.storage.getDirectory()).getDirectoryHandle('dizi-dl')).getFileHandle(name);
