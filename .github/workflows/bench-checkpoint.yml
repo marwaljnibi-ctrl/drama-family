@@ -1,0 +1,21 @@
+name: bench-checkpoint
+# يتحقق من نقطة الحفظ: يقتل التشغيل في منتصفه ثم يعدّ الحلقات المنجزة في الملف. لا commit/push.
+on:
+  push: { branches: ['ops/index-bench2'] }
+jobs:
+  chk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i --no-save --no-audit --no-fund sharp
+      - name: kill mid-run and count checkpointed progress
+        run: |
+          cnt() { node -e "const d=JSON.parse(require('fs').readFileSync('data/shows.json','utf8'));let n=0;for(const s of d.shows)for(const e of s.eps)if(e.sv)n++;console.log(n)"; }
+          B=$(cnt); echo "before=$B"
+          SYNC_SERVERS_PER_RUN=300 timeout 120 node scripts/sync-qesset.mjs || echo "killed (exit $?)"
+          A=$(cnt); echo "after_kill=$A"
+          echo "CHECKPOINT resolved_before_kill=$((A-B))"
+          ls data | grep -c '\.tmp' || true
+          node -e "JSON.parse(require('fs').readFileSync('data/shows.json','utf8'));console.log('shows.json valid JSON')"
