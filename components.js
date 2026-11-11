@@ -44,7 +44,9 @@ export function continueCard(it) {
 }
 
 // قسم بصف أفقي: head = { title, sub?, all? (رابط عرض الكل) }
-export const section = (head, inner, cls = '') => `<section class="sec"><div class="sec-h"><h2>${esc(head.title)}</h2>${head.all ? `<a class="all" href="${head.all}">عرض الكل</a>` : ''}</div>${head.sub ? `<p class="sec-s">${esc(head.sub)}</p>` : ''}<div class="rail ${cls}">${inner}</div></section>`;
+// الصور الأولى في كل صف تُحمَّل فورًا (التحميل الكسول داخل صفوف أفقية قد يتأخر على Safari)، والباقي كسول
+const eager = (html) => { let n = 0; return html.replace(/loading="lazy"/g, (m) => (n++ < 6 ? 'loading="eager"' : m)); };
+export const section = (head, inner, cls = '') => `<section class="sec"><div class="sec-h"><h2>${esc(head.title)}</h2>${head.all ? `<a class="all" href="${head.all}">عرض الكل</a>` : ''}</div>${head.sub ? `<p class="sec-s">${esc(head.sub)}</p>` : ''}<div class="rail ${cls}">${eager(inner)}</div></section>`;
 
 export const skeletonHome = () => `<div class="sk"><div class="sk-h"></div><div class="rail"><div class="sk-c wide"></div><div class="sk-c wide"></div></div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div></div>`;
 export const skeletonGrid = (n = 9) => `<div class="grid sk">${'<div class="sk-c grid-c"></div>'.repeat(n)}</div>`;

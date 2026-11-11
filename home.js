@@ -21,7 +21,7 @@ export async function renderHome(D, view, { demoBanner = '', quiet = false } = {
   else parts.push(`<section class="sec first">${emptyState('اكتشف مسلسلك الأول', 'اختر مسلسلًا وابدأ المشاهدة. سيظهر هنا فورًا لتستكمله بضغطة واحدة.', { href: '#/shows', label: 'تصفّح المسلسلات' })}</section>`);
 
   // 2) مسلسلاتي (المفضلة)
-  if (mine.length) parts.push(section({ title: 'مسلسلاتي', all: '#/favs' }, mine.slice(0, 12).map((m) => showCard(m.show, { fav: true, badge: m.hasNew ? 'حلقة جديدة' : '', sub: m.last ? 'آخر ما شاهدته: حلقة ' + m.last.epNum : '' })).join('')));
+  if (mine.length) parts.push(section({ title: 'مسلسلاتي', all: '#/favs' }, mine.slice(0, 12).map((m) => showCard(m.show, { fav: true, badge: m.hasNew ? 'حلقة جديدة' : '', sub: m.last ? 'وصلت إلى حلقة ' + m.last.epNum : '' })).join('')));
   else if (!firstRun) parts.push(`<section class="sec"><div class="sec-h"><h2>مسلسلاتي</h2></div><div class="hint">اضغط ♥ على أي مسلسل ليظهر هنا.</div></section>`);
 
   // 3) مقترحات (شخصية فقط إن توفرت بيانات كافية، وإلا «اكتشف مسلسلات» بلا ادعاء)

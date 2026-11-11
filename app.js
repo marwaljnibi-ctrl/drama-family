@@ -87,7 +87,7 @@ async function vFavs() {
   const fv = new Set((await favs.all()).map((f) => f.showId));
   const draw = async () => {
     const list = await myShows(D);
-    view.innerHTML = demoBanner() + (list.length ? `<div class="grid">${list.map((m) => showCard(m.show, { fav: true, badge: m.hasNew ? 'حلقة جديدة' : '', sub: m.last ? 'آخر ما شاهدته: حلقة ' + m.last.epNum : '' })).join('')}</div>` : emptyState('لم تضف أي مسلسل بعد', 'اضغط ♥ على أي مسلسل ليظهر هنا.', { href: '#/shows', label: 'تصفّح المسلسلات' }));
+    view.innerHTML = demoBanner() + (list.length ? `<div class="grid">${list.map((m) => showCard(m.show, { fav: true, badge: m.hasNew ? 'حلقة جديدة' : '', sub: m.last ? 'وصلت إلى حلقة ' + m.last.epNum : '' })).join('')}</div>` : emptyState('لم تضف أي مسلسل بعد', 'اضغط ♥ على أي مسلسل ليظهر هنا.', { href: '#/shows', label: 'تصفّح المسلسلات' }));
     view.onclick = heartClick(view, fv, draw);
   };
   await draw();
