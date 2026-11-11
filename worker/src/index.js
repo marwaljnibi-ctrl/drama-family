@@ -4,7 +4,8 @@
 // - الأعضاء مفاتيحهم SHA-256 لرابطهم الخاص (الرابط نفسه لا يُخزَّن). الإرسال: UnlimitedMessaging REST. الأسرار في Cloudflare Secrets. الإرسال معطّل افتراضيًا.
 import { E164, sha, newToken, parseLatestTail, epNum, detectNew, messageText, watchLink, validShowId } from './logic.js';
 
-const UM = 'https://api.unlimitedmessaging.app/message';
+const UMB = 'https://api.unlimitedmessaging.app', UM = UMB + '/message';
+const umGet = (env, path) => fetch(UMB + path, { headers: { authorization: 'Bearer ' + env.UM_API_KEY } });
 const json = (o, status = 200, h = {}) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...h } });
 const cors = (env, req) => {
   const o = req.headers.get('origin') || ''; const ok = (env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean).includes(o);
@@ -20,7 +21,8 @@ const putMeta = (env, m) => sql(env, "INSERT INTO meta (k, v) VALUES ('meta', ?)
 async function sendWA(env, phone, text) {
   try {
     const r = await fetch(UM, { method: 'POST', headers: { authorization: 'Bearer ' + env.UM_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify({ recipient: phone, text }) });
-    return { ok: r.status === 201 || r.status === 200, status: r.status };
+    const j = await r.json().catch(() => ({}));
+    return { ok: r.status === 201 || r.status === 200, status: r.status, id: j && j.id };
   } catch { return { ok: false, status: 0 }; }
 }
 
@@ -129,7 +131,17 @@ async function handle(req, env) {
     if (p === '/admin/test') {   // رسالة واحدة إلى رقم معتمد صراحةً (رقم المالك)
       if (!E164.test(body.phone || '')) return out({ error: 'E.164 phone required' }, 400);
       const r = await sendWA(env, body.phone, '✅ رسالة تجريبية من Dizi: تنبيهات الحلقات الجديدة جاهزة.');
-      return out({ sent: r.ok, status: r.status }, r.ok ? 200 : 502);
+      return out({ sent: r.ok, status: r.status, messageId: r.id || null }, r.ok ? 200 : 502);
+    }
+    // ربط واتساب عبر QR (مرة واحدة): المفتاح يبقى في Cloudflare Secrets ولا يخرج منه
+    if (p.startsWith('/admin/wa/')) {
+      if (!env.UM_API_KEY) return out({ error: 'UM_API_KEY not set' }, 503);
+      const id = url.searchParams.get('id') || body.id || '';
+      if (p === '/admin/wa/link') { const r = await umGet(env, '/account/link'); return out(await r.json().catch(() => ({})), r.status); }
+      if (!/^[\w-]{6,80}$/.test(id)) return out({ error: 'bad id' }, 400);
+      if (p === '/admin/wa/qr') { const r = await umGet(env, '/account/' + id + '/qrcode.png'); return new Response(r.body, { status: r.status, headers: { 'content-type': r.headers.get('content-type') || 'image/png', 'cache-control': 'no-store', ...C } }); }
+      if (p === '/admin/wa/account') { const r = await umGet(env, '/account/' + id); return out(await r.json().catch(() => ({})), r.status); }
+      if (p === '/admin/wa/message') { const r = await umGet(env, '/message/' + id); return out(await r.json().catch(() => ({})), r.status); }
     }
     if (p === '/admin/cron') return out(await runCron(env));
     return out({ error: 'not found' }, 404);
