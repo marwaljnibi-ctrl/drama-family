@@ -5,7 +5,7 @@ import { authApi, getSession, logout } from './auth.js';
 export const alertApi = authApi;
 export const signedIn = () => !!getSession();
 
-const ERR = { 'consent required': 'يلزم الموافقة أولًا', 'bad phone': 'اكتب الرقم بصيغة دولية مثل ‎+9715XXXXXXXX', 'phone in use': 'هذا الرقم مرتبط بحساب آخر', 'too many requests': 'محاولات كثيرة، جرّب بعد قليل', 'send failed': 'تعذّر إرسال الرمز، جرّب لاحقًا', expired: 'انتهت صلاحية الرمز، اطلب رمزًا جديدًا', 'wrong code': 'الرمز غير صحيح', 'too many attempts': 'محاولات كثيرة، اطلب رمزًا جديدًا' };
+const ERR = { 'consent required': 'يلزم الموافقة أولًا', 'bad phone': 'اكتب الرقم بصيغة دولية مثل ‎+9715XXXXXXXX', 'phone in use': 'هذا الرقم مرتبط بحساب آخر', 'too many requests': 'محاولات كثيرة، جرّب بعد قليل', 'slow down': 'انتظر دقيقة قبل طلب رمز جديد', busy: 'الخدمة مشغولة الآن، جرّب لاحقًا', 'send failed': 'تعذّر إرسال الرمز، جرّب لاحقًا', expired: 'انتهت صلاحية الرمز، اطلب رمزًا جديدًا', 'wrong code': 'الرمز غير صحيح', 'too many attempts': 'محاولات كثيرة، اطلب رمزًا جديدًا' };
 const errMsg = (e) => ERR[e.message] || 'تعذّر الحفظ';
 
 // صفحة حسابي (#/alerts)

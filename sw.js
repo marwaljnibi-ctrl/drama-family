@@ -1,4 +1,4 @@
-const V = 'df-v26';
+const V = 'df-v27';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'db.js', 'source.js', 'components.js', 'store.js', 'home.js', 'recommend.js', 'bridge.js', 'servers.js', 'guards.js', 'alerts.js', 'auth.js', 'sync.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png', 'icons/icon-167.png', 'icons/icon-152.png', 'icons/icon-32.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(V).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((k) => Promise.all(k.filter((x) => x !== V && x !== 'df-img').map((x) => caches.delete(x)))).then(() => self.clients.claim())); });

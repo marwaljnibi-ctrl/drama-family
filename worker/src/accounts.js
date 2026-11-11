@@ -6,6 +6,7 @@ import { verifyGoogle, newSession, sessionUser, isSessionToken, SESSION_MS } fro
 const sql = (env, s, ...a) => env.DB.prepare(s).bind(...a);
 const mid = (uid) => 'u:' + uid;
 const mask = (p) => (p ? p.slice(0, 4) + '•'.repeat(Math.max(0, p.length - 7)) + p.slice(-3) : null);
+const OTP_COOLDOWN = 60000, OTP_PER_PHONE = 3, OTP_PER_IP = 10, OTP_DAILY_CAP = 40;
 const OTP_TTL = 10 * 60000, OTP_MAX_SENDS = 3, OTP_WINDOW = 3600000, OTP_MAX_TRIES = 5;
 
 export async function profile(env, uid) {
@@ -51,6 +52,16 @@ export async function handleAccounts({ env, req, p, body, out, sendWA, now = Dat
     const old = await sql(env, 'SELECT sends, window_start FROM otp WHERE uid = ?', uid).first();
     let sends = 1, ws = now;
     if (old && now - old.window_start < OTP_WINDOW) { if (old.sends >= OTP_MAX_SENDS) return out({ error: 'too many requests' }, 429); sends = old.sends + 1; ws = old.window_start; }
+    // حدود حماية رقم الإرسال: فاصل 60ث لكل مستخدم، 3/ساعة لكل رقم (من أي حساب)، 10/ساعة لكل IP، وسقف عام يومي
+    const ip = (req.headers.get('cf-connecting-ip') || 'unknown').slice(0, 64);
+    const cnt = async (col, val, since) => (await sql(env, `SELECT COUNT(*) AS n FROM otp_log WHERE ${col} = ? AND at > ?`, val, since).first()).n;
+    const last = await sql(env, 'SELECT MAX(at) AS t FROM otp_log WHERE uid = ?', uid).first();
+    if (last && last.t && now - last.t < OTP_COOLDOWN) return out({ error: 'slow down' }, 429);
+    if ((await cnt('phone', body.phone, now - OTP_WINDOW)) >= OTP_PER_PHONE) return out({ error: 'too many requests' }, 429);
+    if ((await cnt('ip', ip, now - OTP_WINDOW)) >= OTP_PER_IP) return out({ error: 'too many requests' }, 429);
+    if ((await sql(env, 'SELECT COUNT(*) AS n FROM otp_log WHERE at > ?', now - 86400000).first()).n >= (+env.OTP_DAILY_CAP || OTP_DAILY_CAP)) return out({ error: 'busy' }, 429);
+    await sql(env, 'INSERT INTO otp_log (at, uid, phone, ip) VALUES (?, ?, ?, ?)', now, uid, body.phone, ip).run();
+    await sql(env, 'DELETE FROM otp_log WHERE at < ?', now - 2 * 86400000).run();
     const code = otpCode();
     await sql(env, 'INSERT INTO otp (uid, phone, code_h, expires, attempts, sends, window_start) VALUES (?, ?, ?, ?, 0, ?, ?) ON CONFLICT(uid) DO UPDATE SET phone=excluded.phone, code_h=excluded.code_h, expires=excluded.expires, attempts=0, sends=excluded.sends, window_start=excluded.window_start',
       uid, body.phone, await sha(uid + ':' + body.phone + ':' + code), now + OTP_TTL, sends, ws).run();

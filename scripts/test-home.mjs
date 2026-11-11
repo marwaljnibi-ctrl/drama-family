@@ -106,6 +106,7 @@ const TOK = 'b'.repeat(64); const WA = { prompt: null, phone: null, verified: fa
 await page.route('https://dizi-alerts.fufuu-crafts.workers.dev/**', async (route) => {
   const req = route.request(); const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization,content-type', 'content-type': 'application/json' };
   if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: H });
+  if (WA.offline) return route.abort('internetdisconnected');
   const p = new URL(req.url()).pathname; const b = req.postDataJSON() || {}; WA.calls.push({ p, b, auth: req.headers()['authorization'] });
   if (p === '/api/wa/prompt') WA.prompt = b.answer;
   if (p === '/api/wa/phone') { if (b.agree !== true) return route.fulfill({ status: 400, headers: H, body: '{"error":"consent required"}' }); WA.pending = b.phone; }
@@ -150,6 +151,16 @@ await page.goto(BASE + '?demo=1#/alerts'); await page.reload(); await page.waitF
 T('stop-all-alerts', WA.consent === false);
 await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav'); await page.click('#fav'); await page.waitForTimeout(5500);
 T('favorite-synced-to-account', WA.favs.some((f) => f.showId === 'demo-a' && f.on === true));
+
+// T12: ضعف الإنترنت: التغييرات لا تضيع (طابور محلي) وتصل عند عودة الاتصال
+WA.offline = true; WA.favs = [];
+await page.goto(BASE + '?demo=1#/show/demo-b'); await page.reload(); await page.waitForSelector('#fav'); await page.click('#fav'); await page.waitForTimeout(5500);
+const q1 = await page.evaluate(() => localStorage.getItem('df-syncq:g_1'));
+T('offline-change-kept-in-queue', /demo-b/.test(q1 || '') && !WA.favs.length, q1);
+WA.offline = false; await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForTimeout(1500);
+T('offline-change-delivered-after-reconnect', WA.favs.some((f) => f.showId === 'demo-b' && f.on === JSON.parse(q1).f['demo-b'].on), JSON.stringify(WA.favs));
+const q2 = await page.evaluate(() => localStorage.getItem('df-syncq:g_1')); T('queue-emptied-after-delivery', !/demo-b/.test(q2 || ''), q2);
+await page.reload(); await page.waitForSelector('#fav'); T('favorite-still-local-after-reload', (await page.evaluate(() => document.querySelector('#fav').classList.contains('on'))) === JSON.parse(q1).f['demo-b'].on);
 
 T('no-page-errors', errors.length === 0, errors.join(' | '));
 await b.close();

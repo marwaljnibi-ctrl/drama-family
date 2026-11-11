@@ -1,0 +1,22 @@
+// اختبار منطق دمج المزامنة (آخر كتابة أحدث تفوز) بلا متصفح
+import test from 'node:test';
+import assert from 'node:assert/strict';
+const { planMerge } = await import('../sync.js');
+
+const P = (key, updated, time = 10) => ({ key, showId: 's', epId: key.split('|')[1], epNum: 1, time, duration: 100, done: false, hidden: false, updated });
+
+test('server-only data is pulled; local-only data is pushed (legacy data is preserved, never dropped)', () => {
+  const r = planMerge({ favs: [{ showId: 'L', at: 5 }], progress: [P('s|L1', 50)] }, { favs: [{ showId: 'S', on: true, at: 6 }], progress: [P('s|S1', 60)] });
+  assert.deepEqual(r.putFav.map((f) => f.showId), ['S']); assert.deepEqual(r.putProg.map((p) => p.key), ['s|S1']);
+  assert.deepEqual(r.pushFav.map((f) => f.showId), ['L']); assert.deepEqual(r.pushProg.map((p) => p.key), ['s|L1']);
+  assert.equal(r.delFav.length, 0);
+});
+test('newer wins both ways: older server value does not overwrite newer local, newer server replaces older local', () => {
+  const r = planMerge({ favs: [], progress: [P('s|a', 200, 90), P('s|b', 100, 10)] }, { favs: [], progress: [P('s|a', 100, 5), P('s|b', 300, 70)] });
+  assert.deepEqual(r.pushProg.map((p) => p.key), ['s|a']); assert.deepEqual(r.putProg.map((p) => p.key), ['s|b']); assert.equal(r.putProg[0].time, 70);
+});
+test('favorite removed on another device is removed here only if the removal is newer', () => {
+  assert.deepEqual(planMerge({ favs: [{ showId: 'x', at: 10 }], progress: [] }, { favs: [{ showId: 'x', on: false, at: 20 }], progress: [] }).delFav, ['x']);
+  const keep = planMerge({ favs: [{ showId: 'x', at: 30 }], progress: [] }, { favs: [{ showId: 'x', on: false, at: 20 }], progress: [] });
+  assert.equal(keep.delFav.length, 0); assert.equal(keep.pushFav[0].showId, 'x');
+});

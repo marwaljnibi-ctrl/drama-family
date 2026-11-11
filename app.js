@@ -26,7 +26,7 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
-const BUILD = 'df-v26';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v27';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -339,8 +339,8 @@ if ('serviceWorker' in navigator) {
 function vLogin() {
   if (getSession()) { location.replace('#/alerts'); return; }
   titleEl.textContent = 'تسجيل الدخول';
-  view.innerHTML = '<div class="empty-card"><b>سجّل الدخول لحفظ مفضلتك ومكان وصولك في الحلقات</b><p>ويمكنك أيضًا تفعيل تنبيهات واتساب للحلقات الجديدة. بضغطة واحدة بحساب Google، ولا نصل لأي شيء آخر في حسابك.</p><div id="g-btn" style="display:flex;justify-content:center;min-height:44px"></div><p id="g-err" style="margin-top:12px;color:var(--danger,#c0392b)"></p></div>';
-  const err = (c) => { document.getElementById('g-err').textContent = c === 'network' ? 'تعذّر الاتصال، أعد المحاولة.' : 'تعذّر تسجيل الدخول، حاول مرة أخرى.'; };
+  view.innerHTML = '<div class="empty-card"><b>سجّل الدخول لحفظ مفضلتك ومكان وصولك في الحلقات</b><p>ويمكنك أيضًا تفعيل تنبيهات واتساب للحلقات الجديدة. الدخول لأفراد العائلة المدعوين فقط، بضغطة واحدة بحساب Google، ولا نصل لأي شيء آخر في حسابك.</p><div id="g-btn" style="display:flex;justify-content:center;min-height:44px"></div><p id="g-err" style="margin-top:12px;color:var(--danger,#c0392b)"></p></div>';
+  const err = (c) => { document.getElementById('g-err').textContent = c === 'not_invited' ? 'هذا الحساب غير مدعو. الدخول لأفراد العائلة المدعوين فقط، اطلب دعوة من صاحب الموقع.' : c === 'network' ? 'تعذّر الاتصال، أعد المحاولة.' : 'تعذّر تسجيل الدخول، حاول مرة أخرى.'; };
   renderLogin(document.getElementById('g-btn'), { onDone: () => { location.hash = '#/home'; location.reload(); }, onError: err }).catch(() => err('network'));
 }
 prepareDb();
