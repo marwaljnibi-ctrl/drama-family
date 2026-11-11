@@ -101,6 +101,28 @@ for (const [h, sel] of [['shows', '#view .grid'], ['recent', '#view .list']]) {
   const ok = await page.goto(BASE + '?demo=1#/' + h).then(() => page.waitForSelector(sel, { timeout: 8000 })).then(() => true, () => false);
   T('tab-' + h + '-renders', ok);
 }
+// T11: تنبيهات واتساب (الـWorker مُحاكى): الرمز يُحفظ ويُخفى من الرابط، الموافقة، تفعيل/إلغاء مسلسل، والزر لا يظهر بلا رمز
+const TOK = 'a'.repeat(32); const WA = { consent: false, shows: [], calls: [] };
+await page.route('https://dizi-alerts.fufuu-crafts.workers.dev/**', async (route) => {
+  const req = route.request(); const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization,content-type', 'content-type': 'application/json' };
+  if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: H });
+  const p = new URL(req.url()).pathname; const b = req.postDataJSON() || {}; WA.calls.push({ p, b, auth: req.headers()['authorization'] });
+  if (p === '/api/consent') WA.consent = b.agree === true;
+  if (p === '/api/shows') WA.shows = b.on ? [...WA.shows.filter((s) => s.showId !== b.showId), { showId: b.showId, title: b.title }] : WA.shows.filter((s) => s.showId !== b.showId);
+  return route.fulfill({ status: 200, headers: H, body: JSON.stringify({ name: 'علي', consent: WA.consent, shows: WA.shows }) });
+});
+await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav');
+T('alert-button-hidden-without-token', !(await page.$('#wa')));
+await page.goto(BASE + '?demo=1#/alerts/' + TOK); await page.reload(); await page.waitForSelector('#al-on', { timeout: 8000 });
+T('alert-token-stored-and-hidden-from-url', /#\/alerts$/.test(page.url()) && (await page.evaluate(() => localStorage.getItem('df-alert-token'))) === TOK, page.url().split('#')[1]);
+await page.click('#al-on'); await page.waitForSelector('#al-off');
+T('alert-consent-saved', WA.consent === true && WA.calls.some((c) => c.p === '/api/consent' && c.auth === 'Bearer ' + TOK));
+await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#wa');
+await page.click('#wa'); await page.waitForTimeout(500);
+T('alert-subscribe-sends-showId-title', WA.shows.length === 1 && WA.shows[0].showId === 'demo-a' && !!WA.shows[0].title, JSON.stringify(WA.shows));
+await page.click('#wa'); await page.waitForTimeout(500);
+T('alert-unsubscribe', WA.shows.length === 0);
+
 T('no-page-errors', errors.length === 0, errors.join(' | '));
 await b.close();
 console.log('SUMMARY', out.filter(Boolean).length + '/' + out.length, 'passed');

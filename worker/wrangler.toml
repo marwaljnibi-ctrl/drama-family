@@ -1,0 +1,19 @@
+name = "dizi-alerts"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# مساحة التخزين المجانية. الربط اسمه KV في الكود.
+[[kv_namespaces]]
+binding = "KV"
+id = "a12f6665afea4ea8850fa992c595e00e"
+
+# كل 5 دقائق: اكتشاف الحلقات الجديدة من data/shows.json (النظام الموجود) ثم الإرسال
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+DATA_URL = "https://marwaljnibi-ctrl.github.io/drama-family/data/shows.json"
+DIZI_URL = "https://marwaljnibi-ctrl.github.io/drama-family/"
+SETTINGS_URL = "https://exp-whatsapp-alerts.dizi-preview.pages.dev/"
+ALLOWED_ORIGINS = "https://exp-whatsapp-alerts.dizi-preview.pages.dev,https://exp-family-v1.dizi-preview.pages.dev,https://marwaljnibi-ctrl.github.io"
+# الأسرار (لا تُكتب هنا): UM_API_KEY و ADMIN_KEY عبر: npx wrangler secret put <NAME>
