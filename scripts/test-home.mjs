@@ -119,7 +119,10 @@ await page.route('https://dizi-alerts.fufuu-crafts.workers.dev/**', async (route
   return route.fulfill({ status: 200, headers: H, body: JSON.stringify({ name: 'علي', email: 'a@x.com', wa: { prompt: WA.prompt, phone: WA.phone, verified: WA.verified, consent: WA.consent }, shows: WA.shows }) });
 });
 await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav');
-T('bell-hidden-without-session', !(await page.$('#wa')));
+T('guest-browses-without-login', !!(await page.$('#fav')) && (await page.textContent('#acct')).includes('تسجيل الدخول'));
+await page.click('#wa'); await page.waitForTimeout(400);
+T('guest-bell-goes-to-login', page.url().endsWith('#/login'));
+await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav');
 await page.evaluate((tok) => { localStorage.setItem('df-session', tok); localStorage.setItem('df-uid', 'g_1'); }, TOK);
 await page.reload(); await page.waitForSelector('#wa'); await page.waitForSelector('#ob-y', { timeout: 8000 });
 T('onboarding-asked-with-two-choices', (await page.textContent('body')).includes('هل تريد تلقي إشعارات الحلقات الجديدة عبر واتساب؟') && !!(await page.$('#ob-n')));
