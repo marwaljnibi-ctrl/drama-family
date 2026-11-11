@@ -10,7 +10,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: unit tests
-        run: node --test scripts/test.mjs scripts/test-family.mjs worker/test/worker.test.mjs
+        run: node --test scripts/test.mjs scripts/test-family.mjs worker/spec/worker.test.mjs worker/spec/accounts.test.mjs
       - name: "install playwright (apt update and retries)"
         run: |
           npm i --no-save --no-audit --no-fund playwright

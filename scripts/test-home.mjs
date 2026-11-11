@@ -101,27 +101,52 @@ for (const [h, sel] of [['shows', '#view .grid'], ['recent', '#view .list']]) {
   const ok = await page.goto(BASE + '?demo=1#/' + h).then(() => page.waitForSelector(sel, { timeout: 8000 })).then(() => true, () => false);
   T('tab-' + h + '-renders', ok);
 }
-// T11: تنبيهات واتساب (الـWorker مُحاكى): الرمز يُحفظ ويُخفى من الرابط، الموافقة، تفعيل/إلغاء مسلسل، والزر لا يظهر بلا رمز
-const TOK = 'a'.repeat(32); const WA = { consent: false, shows: [], calls: [] };
+// T11: حسابات + واتساب (الـWorker مُحاكى): بلا جلسة لا يظهر الجرس، السؤال الأول مرة واحدة، رقم+موافقة+رمز، جرس، إيقاف الكل، مزامنة
+const TOK = 'b'.repeat(64); const WA = { prompt: null, phone: null, verified: false, consent: false, shows: [], calls: [], favs: [], progress: [] };
 await page.route('https://dizi-alerts.fufuu-crafts.workers.dev/**', async (route) => {
   const req = route.request(); const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization,content-type', 'content-type': 'application/json' };
   if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: H });
   const p = new URL(req.url()).pathname; const b = req.postDataJSON() || {}; WA.calls.push({ p, b, auth: req.headers()['authorization'] });
-  if (p === '/api/consent') WA.consent = b.agree === true;
+  if (p === '/api/wa/prompt') WA.prompt = b.answer;
+  if (p === '/api/wa/phone') { if (b.agree !== true) return route.fulfill({ status: 400, headers: H, body: '{"error":"consent required"}' }); WA.pending = b.phone; }
+  if (p === '/api/wa/verify') { if (b.code !== '123456') return route.fulfill({ status: 400, headers: H, body: '{"error":"wrong code"}' }); WA.phone = '+971••••••446'; WA.verified = true; WA.consent = true; WA.prompt = 'yes'; }
+  if (p === '/api/wa/stop') WA.consent = false;
+  if (p === '/api/wa/resume') WA.consent = true;
   if (p === '/api/shows') WA.shows = b.on ? [...WA.shows.filter((s) => s.showId !== b.showId), { showId: b.showId, title: b.title }] : WA.shows.filter((s) => s.showId !== b.showId);
-  return route.fulfill({ status: 200, headers: H, body: JSON.stringify({ name: 'علي', consent: WA.consent, shows: WA.shows }) });
+  if (p === '/api/fav') WA.favs.push(b);
+  if (p === '/api/progress') WA.progress.push(...(b.items || []));
+  if (p === '/api/sync') return route.fulfill({ status: 200, headers: H, body: JSON.stringify({ favs: [], progress: [] }) });
+  return route.fulfill({ status: 200, headers: H, body: JSON.stringify({ name: 'علي', email: 'a@x.com', wa: { prompt: WA.prompt, phone: WA.phone, verified: WA.verified, consent: WA.consent }, shows: WA.shows }) });
 });
 await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav');
-T('alert-button-hidden-without-token', !(await page.$('#wa')));
-await page.goto(BASE + '?demo=1#/alerts/' + TOK); await page.reload(); await page.waitForSelector('#al-on', { timeout: 8000 });
-T('alert-token-stored-and-hidden-from-url', /#\/alerts$/.test(page.url()) && (await page.evaluate(() => localStorage.getItem('df-alert-token'))) === TOK, page.url().split('#')[1]);
-await page.click('#al-on'); await page.waitForSelector('#al-off');
-T('alert-consent-saved', WA.consent === true && WA.calls.some((c) => c.p === '/api/consent' && c.auth === 'Bearer ' + TOK));
+T('bell-hidden-without-session', !(await page.$('#wa')));
+await page.evaluate((tok) => { localStorage.setItem('df-session', tok); localStorage.setItem('df-uid', 'g_1'); }, TOK);
+await page.reload(); await page.waitForSelector('#wa'); await page.waitForSelector('#ob-y', { timeout: 8000 });
+T('onboarding-asked-with-two-choices', (await page.textContent('body')).includes('هل تريد تلقي إشعارات الحلقات الجديدة عبر واتساب؟') && !!(await page.$('#ob-n')));
+await page.click('#ob-n'); await page.waitForTimeout(400);
+T('onboarding-answer-saved-no', WA.prompt === 'no' && WA.calls.some((c) => c.p === '/api/wa/prompt' && c.auth === 'Bearer ' + TOK));
+await page.reload(); await page.waitForSelector('#wa'); await page.waitForTimeout(800);
+T('onboarding-not-repeated', !(await page.$('#ob-y')));
+await page.click('#wa'); await page.waitForSelector('#al-send', { timeout: 5000 });
+T('bell-without-whatsapp-goes-to-account', /#\/alerts$/.test(page.url()));
+await page.click('#al-send'); await page.waitForTimeout(300);
+T('phone-requires-explicit-consent', !WA.calls.some((c) => c.p === '/api/wa/phone'));
+await page.fill('#al-phone', '+971 50 123 4567'); await page.check('#al-agree'); await page.click('#al-send'); await page.waitForSelector('#al-code');
+T('phone-sent-with-agree-flag', WA.pending === '+971501234567');
+await page.fill('#al-code', '000000'); await page.click('#al-verify'); await page.waitForTimeout(400);
+T('wrong-code-rejected', WA.verified === false);
+await page.fill('#al-code', '123456'); await page.click('#al-verify'); await page.waitForSelector('#al-stop');
+T('phone-shown-masked-only', !(await page.textContent('body')).includes('501234567') && (await page.textContent('body')).includes('••••'));
 await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#wa');
 await page.click('#wa'); await page.waitForTimeout(500);
 T('alert-subscribe-sends-showId-title', WA.shows.length === 1 && WA.shows[0].showId === 'demo-a' && !!WA.shows[0].title, JSON.stringify(WA.shows));
 await page.click('#wa'); await page.waitForTimeout(500);
 T('alert-unsubscribe', WA.shows.length === 0);
+await page.click('#wa'); await page.waitForTimeout(400);
+await page.goto(BASE + '?demo=1#/alerts'); await page.reload(); await page.waitForSelector('#al-stop'); await page.click('#al-stop'); await page.waitForSelector('#al-resume');
+T('stop-all-alerts', WA.consent === false);
+await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav'); await page.click('#fav'); await page.waitForTimeout(5500);
+T('favorite-synced-to-account', WA.favs.some((f) => f.showId === 'demo-a' && f.on === true));
 
 T('no-page-errors', errors.length === 0, errors.join(' | '));
 await b.close();

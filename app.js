@@ -6,7 +6,9 @@ import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
 import { SERVERS, pickDefault, alternatives } from './servers.js';
 import { canReloadNow } from './guards.js';
-import { alertToken, setAlertToken, renderAlerts, bindShowAlert } from './alerts.js';
+import { renderAlerts, bindShowAlert, askOnboarding, signedIn } from './alerts.js';
+import { AUTH_REQUIRED, getSession, prepareDb, renderLogin } from './auth.js';
+import { startSync } from './sync.js';
 
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
 // تشخيص للمطوّر فقط: يظهر عند فتح الموقع بـ ?arabtest=1 (ويُطفأ بـ ?arabtest=0). للقراءة فقط: لا أزرار ولا إرسال للمشغّل. لا يظهر للمستخدم العادي.
@@ -24,7 +26,7 @@ function arabTestPanel(box, pl, epId) {
 }
 let D;
 let cleanup = null;
-const BUILD = 'df-v23';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v24';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -44,7 +46,6 @@ async function route() {
     if (name === 'home') { const { skeletonHome } = await import('./components.js'); view.innerHTML = skeletonHome(); }
     try { D = await loadData(); } catch { view.innerHTML = '<div class="empty">تعذّر تحميل قائمة المسلسلات.<br>تأكد من الاتصال ثم أعد المحاولة.</div>'; return; }
   }
-  if (name === 'alerts' && a) { setAlertToken(a); location.replace('#/alerts'); return; }
   const R = { alerts: () => renderAlerts(view), home: vHome, latest: vLatest, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
   titleEl.textContent = { home: 'Dizi', latest: 'الحلقات الجديدة', shows: 'المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات', alerts: 'تنبيهات واتساب' }[name] || 'Dizi';
   await (R[name] || vHome)();
@@ -124,7 +125,7 @@ async function vShow(id) {
   const cont = lastEp ? (last.done ? nextEp(show, lastEp) || lastEp : lastEp) : null;
   const dlAble = show.eps.filter((e) => e.v && e.v.type === 'mp4');
   view.innerHTML = `${demoBanner()}<div class="hero">${poster(show)}<div><h2>${esc(show.title)}</h2><small style="color:var(--mute)">${show.eps.length} حلقة</small>
-    <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button>${alertToken() ? '<button id="wa" class="favbtn">🔔 <span>تنبيه واتساب</span></button>' : ''}</div></div></div>
+    <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button>${signedIn() ? '<button id="wa" class="favbtn">🔔 <span>تنبيه واتساب</span></button>' : ''}</div></div></div>
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'متابعة المشاهدة · حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
     <div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>`;
@@ -334,8 +335,25 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => { if (!hadController || reloaded) return; if (canReloadNow(location.hash, isPlaying())) { reloaded = true; location.reload(); } else pendingReload = true; });
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
-persistStorage();
-route();
+// ---------- الدخول (Google) ----------
+function showGate(msg) {
+  document.getElementById('tabs').style.display = 'none'; backBtn.hidden = true; titleEl.textContent = 'Dizi';
+  view.innerHTML = '<div class="empty-card" style="margin-top:40px"><b>أهلًا بك في Dizi</b><p>موقع العائلة. سجّل الدخول بحساب Google الذي دعوناك به.</p><div id="g-btn" style="display:flex;justify-content:center;min-height:44px"></div><p id="g-err" style="margin-top:12px;color:var(--danger,#c0392b)">' + (msg || '') + '</p></div>';
+  const err = (c) => { document.getElementById('g-err').textContent = c === 'not_invited' ? 'هذا الحساب غير مدعو. اطلب دعوة من صاحب الموقع.' : c === 'network' ? 'تعذّر الاتصال، أعد المحاولة.' : 'تعذّر تسجيل الدخول، حاول مرة أخرى.'; };
+  renderLogin(document.getElementById('g-btn'), { onDone: () => location.reload(), onError: err }).catch(() => err('network'));
+}
+if (AUTH_REQUIRED() && !getSession()) showGate();
+else {
+  prepareDb();
+  if (getSession()) {
+    const top = document.getElementById('top'), ac = document.createElement('a');
+    ac.id = 'acct'; ac.href = '#/alerts'; ac.textContent = '👤'; ac.setAttribute('aria-label', 'حسابي'); ac.style.cssText = 'margin-inline-start:auto;text-decoration:none;font-size:20px;padding:4px 8px';
+    top.append(ac);
+  }
+  persistStorage();
+  route();
+  if (getSession()) startSync().then(async () => { try { askOnboarding(await (await import('./auth.js')).authApi('/api/profile'), () => (location.hash = '#/alerts')); } catch {} });
+}
 // فحص الحلقات الجديدة كل 5 دقائق، وعند العودة إلى التطبيق
 const refresh = async () => { if (document.visibilityState !== 'visible' || !D) return; try { const reg = await navigator.serviceWorker.getRegistration(); if (reg) reg.update(); } catch {} try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(home|new|shows|latest)?$/.test(location.hash) || !location.hash) route(); } } catch {} };
 setInterval(refresh, 5 * 60 * 1000);

@@ -1,6 +1,11 @@
 // IndexedDB محلي لكل جهاز: المفضلة، التقدم، الحلقات المحمّلة. لا خادم ولا حسابات.
-const DB_NAME = 'drama-family', VER = 1;
+let DB_NAME = 'drama-family'; const VER = 1;
 let _db;
+// اسم القاعدة لكل مستخدم (يُضبط قبل أول استخدام): الحساب الأول على الجهاز يرث قاعدة «drama-family» القديمة كما هي (لا حذف ولا نسخ)، والبقية قواعد منفصلة.
+export const setDbName = (n) => { if (!_db) DB_NAME = n; };
+const listeners = new Set();
+export const onWrite = (cb) => listeners.add(cb);
+const emit = (t, v) => listeners.forEach((cb) => { try { cb(t, v); } catch {} });
 function open() {
   if (_db) return _db;
   _db = new Promise((res, rej) => {
@@ -38,7 +43,11 @@ const del = (s, k) => tx(s, 'readwrite', (st) => st.delete(k));
 export const favs = {
   all: () => all('favs'),
   has: async (id) => !!(await get('favs', id)),
-  toggle: async (id) => ((await get('favs', id)) ? (await del('favs', id), false) : (await put('favs', { showId: id, at: Date.now() }), true)),
+  toggle: async (id) => {
+    const at = Date.now();
+    if (await get('favs', id)) { await del('favs', id); emit('fav', { showId: id, on: false, at }); return false; }
+    await put('favs', { showId: id, at }); emit('fav', { showId: id, on: true, at }); return true;
+  },
 };
 import { acceptTime, SESSION } from './guards.js';
 const rejected = new Map();   // آخر كتابة تقدم رُفضت (حماية التعارض بين الجلسات)
@@ -57,12 +66,12 @@ export const progress = {
     }
     const next = { ...cur, ...patch, epNum: ep.n, updated: Date.now(), sid: SESSION };
     if (!('hidden' in patch)) next.hidden = false; // مشاهدة جديدة تعيد المسلسل إلى آخر المشاهدات تلقائيًا
-    await put('progress', next);
+    await put('progress', next); emit('progress', next);
     return next;
   },
   reset: (showId, epId) => del('progress', showId + '|' + epId),
   // «إزالة من آخر المشاهدات»: علامة إخفاء فقط على سجلات المسلسل؛ لا يُحذف أي تقدم ولا علامات الحلقات المشاهدة
-  async hideShow(showId) { for (const p of await all('progress')) if (p.showId === showId) await put('progress', { ...p, hidden: true }); },
+  async hideShow(showId) { for (const p of await all('progress')) if (p.showId === showId) { const n = { ...p, hidden: true, updated: Date.now() }; await put('progress', n); emit('progress', n); } },
 };
 export const downloads = {
   meta: () => all('dlmeta'),
@@ -74,3 +83,9 @@ export const downloads = {
 export async function persistStorage() {
   try { return navigator.storage && navigator.storage.persist ? await navigator.storage.persist() : false; } catch { return false; }
 }
+
+// كتابات خام بلا إطلاق أحداث: تستعملها المزامنة عند سحب بيانات الحساب (حتى لا تُدفع من جديد)
+export const raw = {
+  favs: () => all('favs'), progress: () => all('progress'),
+  putFav: (v) => put('favs', v), delFav: (id) => del('favs', id), putProgress: (v) => put('progress', v),
+};

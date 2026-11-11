@@ -2,6 +2,7 @@
 // - الكشف: آخر قائمة latest من data/shows.json (نظام الاكتشاف الموجود). لا فهرسة ثانية. الحلقات القديمة لا تُنبَّه أبدًا (نقطة بداية = seen).
 // - التخزين: D1 (متسق فورًا؛ KV غير مناسب لأن قراءاته قد تتأخر دقيقة فلا يُوقف الإلغاء الرسائل فورًا).
 // - الأعضاء مفاتيحهم SHA-256 لرابطهم الخاص (الرابط نفسه لا يُخزَّن). الإرسال: UnlimitedMessaging REST. الأسرار في Cloudflare Secrets. الإرسال معطّل افتراضيًا.
+import { handleAccounts } from './accounts.js';
 import { E164, sha, newToken, parseLatestTail, epNum, detectNew, messageText, watchLink, validShowId } from './logic.js';
 
 const UMB = 'https://api.unlimitedmessaging.app', UM = UMB + '/message';
@@ -91,7 +92,7 @@ const memberView = async (env, h) => {
 const link = (env, token) => (env.SETTINGS_URL || '').replace(/\/?$/, '/') + '#/alerts/' + token;
 
 // ===== HTTP =====
-async function handle(req, env) {
+async function handle(req, env, extra = {}) {
   const url = new URL(req.url); const C = cors(env, req);
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: C });
   const out = (o, s = 200) => json(o, s, C);
@@ -99,12 +100,22 @@ async function handle(req, env) {
   if (p === '/api/health') return out({ ok: true });
   let body = {}; if (req.method === 'POST') { try { body = await req.json(); } catch {} }
 
+  if (p === '/auth/google' || p === '/auth/logout' || p.startsWith('/api/')) {   // حسابات Google والجلسات (تُعيد null لروابط الأعضاء القديمة)
+    const acc = await handleAccounts({ env, req, p, body, out, sendWA, now: extra.now || Date.now(), getKeys: extra.getKeys });
+    if (acc) return acc;
+  }
   if (p.startsWith('/admin/')) {
     if (!env.ADMIN_KEY || !timingEq(bearer(req), env.ADMIN_KEY)) return out({ error: 'unauthorized' }, 401);
     if (p === '/admin/status') {
       const meta = await getMeta(env); const c = async (t) => (await sql(env, `SELECT COUNT(*) AS n FROM ${t}`).first()).n;
       return out({ startedAt: meta && meta.startedAt, enabled: !!(meta && meta.enabled), seen: meta ? meta.seen.length : 0, members: await c('members'), subs: await c('subs'), outbox: await c('outbox'), sent: await c('sent'), hasUmKey: !!env.UM_API_KEY });
     }
+    if (p === '/admin/invite') {   // الدعوة بالبريد: فقط المدعوون يُنشئون حسابات
+      const e = String(body.email || '').trim().toLowerCase(); if (!/^[^@s]+@[^@s]+.[^@s]+$/.test(e)) return out({ error: 'bad email' }, 400);
+      await sql(env, 'INSERT INTO invites (email, added) VALUES (?, ?) ON CONFLICT(email) DO NOTHING', e, Date.now()).run(); return out({ invited: e });
+    }
+    if (p === '/admin/uninvite') { const e = String(body.email || '').trim().toLowerCase(); await sql(env, 'DELETE FROM invites WHERE email = ?', e).run(); await sql(env, 'DELETE FROM sessions WHERE uid IN (SELECT id FROM users WHERE email = ?)', e).run(); return out({ uninvited: e }); }
+    if (p === '/admin/users') return out({ invites: (await sql(env, 'SELECT email FROM invites ORDER BY added').all()).results.map((r) => r.email), users: (await sql(env, 'SELECT email, name, wa_prompt, phone_verified_at IS NOT NULL AS verified FROM users ORDER BY created').all()).results });
     if (p === '/admin/enable') {
       const meta = (await getMeta(env)) || { startedAt: Date.now(), enabled: false, seen: [] }; meta.enabled = body.on === true; await putMeta(env, meta);
       if (!meta.enabled) await sql(env, 'DELETE FROM outbox').run();   // الإيقاف يمسح الطابور
@@ -176,7 +187,8 @@ async function handle(req, env) {
   return out({ error: 'not found' }, 404);
 }
 
+export { handle };
 export default {
-  fetch: (req, env) => handle(req, env),
+  fetch: (req, env, ctx, extra) => handle(req, env, extra),
   scheduled: (ev, env, ctx) => ctx.waitUntil(runCron(env)),
 };
