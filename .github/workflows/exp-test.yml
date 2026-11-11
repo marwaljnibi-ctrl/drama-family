@@ -10,7 +10,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: unit tests
-        run: node --test scripts/test.mjs
+        run: node --test scripts/test.mjs scripts/test-family.mjs
       - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
       - name: make test clip (H.264+AAC, 90s)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && mkdir -p test && ffmpeg -loglevel error -y -f lavfi -i testsrc=size=640x360:rate=24 -f lavfi -i sine=frequency=440 -t 90 -c:v libx264 -pix_fmt yuv420p -preset ultrafast -c:a aac -movflags +faststart test/clip.mp4
@@ -21,6 +21,7 @@ jobs:
           node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
           sleep 2
           node scripts/test-import.mjs
+          node scripts/test-home.mjs
       - name: import e2e (published preview, only if scripts/preview-url.txt exists)
         run: |
           if [ -f scripts/preview-url.txt ]; then BASE="$(cat scripts/preview-url.txt)" node scripts/test-import.mjs; else echo "no preview url"; fi

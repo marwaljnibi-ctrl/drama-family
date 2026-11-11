@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dizi - Arab HD resume (test)
 // @namespace    https://github.com/marwaljnibi-ctrl/drama-family
-// @version      0.1.0
+// @version      0.2.0
 // @description  Remembers the playback position of Arab HD embeds (per embed id) and restores it. Test version with an on-screen badge.
 // @match        https://arabhd.onl/*
 // @grant        GM.getValue
@@ -15,7 +15,9 @@
   'use strict';
   const m = location.pathname.match(/^\/embed-([a-z0-9]+)\.html$/i);
   if (!m) return;
-  const id = m[1], KEY = 'pos:' + id, DEBUG = true;
+  const id = m[1], KEY = 'pos:' + id;
+  // شارة التشخيص مطفأة افتراضيًا للعائلة. للمطوّر: GM.setValue('debug', true) أو غيّر القيمة الافتراضية أدناه.
+  let DEBUG = false; try { DEBUG = !!(await GM.getValue('debug', false)); } catch {}
   const fmt = (t) => { t = Math.floor(t || 0); const h = Math.floor(t / 3600), mi = Math.floor((t % 3600) / 60), s = t % 60; return (h ? h + ':' + String(mi).padStart(2, '0') : mi) + ':' + String(s).padStart(2, '0'); };
   // --- on-screen badge (proves the script runs INSIDE the iframe) ---
   let badge = null; const st = { frame: window !== top ? 'iframe' : 'top', video: 'waiting', saved: '-', restore: '-', writes: 0, err: '' };

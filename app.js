@@ -1,69 +1,60 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage } from './db.js';
+import { $, esc, fmt, mb, toast, poster, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
+import { continueItems, myShows, nextEp } from './store.js';
+import { renderHome } from './home.js';
+import { bindArabProgress } from './bridge.js';
 
-const $ = (s, r = document) => r.querySelector(s);
 const view = $('#view'), titleEl = $('#title'), backBtn = $('#back');
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const fmt = (t) => { t = Math.floor(t || 0); const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
-const mb = (b) => (b / 1048576).toFixed(0) + ' MB';
-function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 3200); }
-// ARAB_HD_RESUME_TEST: لوحة تشخيص مؤقتة، تظهر فقط عند التفعيل بـ ?arabtest=1 (وتُطفأ بـ ?arabtest=0). لا ترسل شيئًا للمشغّل.
+// تشخيص للمطوّر فقط: يظهر عند فتح الموقع بـ ?arabtest=1 (ويُطفأ بـ ?arabtest=0). للقراءة فقط: لا أزرار ولا إرسال للمشغّل. لا يظهر للمستخدم العادي.
 const arabTestOn = () => {
   try { const q = new URLSearchParams(location.search).get('arabtest'); if (q === '1') localStorage.setItem('ARAB_HD_RESUME_TEST', '1'); if (q === '0') localStorage.removeItem('ARAB_HD_RESUME_TEST'); return localStorage.getItem('ARAB_HD_RESUME_TEST') === '1'; } catch { return false; }
 };
 let arabMsgH = null;
-function arabTestPanel(box, pl, epId, showId) {
-  const K = 'arabtest:' + epId; let S = {};
-  try { S = JSON.parse(localStorage.getItem(K) || '{}'); } catch {}
-  const prev = { opens: S.opens || 0, last: S.last || null };
-  S.opens = prev.opens + 1; S.last = new Date().toISOString(); S.msgs = 0; S.types = {}; S.obs = S.obs || [];
-  const nav = performance.getEntriesByType('navigation')[0];
-  const save = () => { try { localStorage.setItem(K, JSON.stringify(S)); } catch {} };
-  const safe = (x) => typeof x === 'string' ? (/^[\w.:-]{1,40}$/.test(x) ? x : 'string(len=' + x.length + ')') : x && typeof x === 'object' ? 'object{' + Object.keys(x).slice(0, 8).join(',') + '}' : typeof x;
-  box.innerHTML = `<div class="note" dir="ltr" style="direction:ltr;text-align:left"><b>ARAB_HD_RESUME_TEST</b><div id="at-st" style="white-space:pre-wrap;font:12px/1.6 monospace"></div></div>
-    <div class="actions"><button id="at-y">عاد للمكان</button><button id="at-n">بدأ من الصفر</button><button id="at-c">انسخ التقرير</button></div>`;
-  const draw = () => { const el = box.querySelector('#at-st'); if (el) el.textContent = `iOS: ${navigator.userAgent.replace(/.*OS ([\d_]+).*/, '$1')} | nav=${nav && nav.type}${S.bfc ? ' | bfcache=' + S.bfc : ''}\nepisode=${epId}\nopens(this ep)=${S.opens} | previous open=${prev.last || '-'}\niframe origin=https://arabhd.onl\npostMessage from iframe=${S.msgs} ${JSON.stringify(S.types)}\ncurrentTime read=${S.msgs ? 'see types' : 'no (no messages)'} | seek=not sent\nobservations=${S.obs.map((o) => (o.r ? 'resumed' : 'zero') + '@' + o.opens).join(', ') || '-'}`; };
+function arabTestPanel(box, pl, epId) {
+  let n = 0; const types = {};
+  box.innerHTML = '<div class="note" dir="ltr" style="direction:ltr;text-align:left"><b>dev: Arab HD bridge</b><div id="at-st" style="white-space:pre-wrap;font:12px/1.6 monospace"></div></div>';
+  const draw = () => { const el = box.querySelector('#at-st'); if (el) el.textContent = 'episode=' + epId + ' | messages from iframe=' + n + ' ' + JSON.stringify(types); };
   if (arabMsgH) removeEventListener('message', arabMsgH);
-  arabMsgH = (e) => { const f = pl.querySelector('iframe'); if (f && e.source === f.contentWindow) { S.msgs++; const t = safe(e.data); S.types[t] = (S.types[t] || 0) + 1; save(); draw(); } };
-  addEventListener('message', arabMsgH);
-  addEventListener('pageshow', (e) => { if (e.persisted) { S.bfc = (S.bfc || 0) + 1; save(); draw(); } });
-  const obs = (r) => { S.obs.push({ r, opens: S.opens, at: new Date().toISOString(), nav: nav && nav.type }); save(); draw(); toast('سُجّلت الملاحظة'); };
-  box.querySelector('#at-y').onclick = () => obs(1); box.querySelector('#at-n').onclick = () => obs(0);
-  box.querySelector('#at-c').onclick = () => navigator.clipboard && navigator.clipboard.writeText(box.querySelector('#at-st').textContent).then(() => toast('نُسخ'));
-  save(); draw();
+  arabMsgH = (e) => { const f = pl.querySelector('iframe'); if (f && e.source === f.contentWindow) { n++; const t = e.data && e.data.type; types[t] = (types[t] || 0) + 1; draw(); } };
+  addEventListener('message', arabMsgH); draw();
 }
-// الصور: النسخة الأوضح (img2، 600px) إن وُجدت، ثم القديمة، ثم رابط المصدر
-const poster = (s, cls = '') => { const src = asset(s.img2 || s.img) || s.poster; return src ? `<img class="${cls}" loading="lazy" referrerpolicy="no-referrer" src="${esc(src)}" alt="">` : `<div class="ph ${cls}"></div>`; };
-// قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
-const HEART = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
-const heartBtn = (id, on) => `<button class="heart ${on ? 'on' : ''}" data-id="${esc(id)}" aria-pressed="${on}" aria-label="مفضلة">${HEART}</button>`;
-const pop = (el) => { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); };
-
 let D;
 let cleanup = null;
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
 
 async function route() {
   if (cleanup) { cleanup(); cleanup = null; }
-  const [, name, a, b] = (location.hash || '#/new').split('/');
-  document.querySelectorAll('#tabs a').forEach((x) => x.classList.toggle('on', x.dataset.t === name || (name === 'show' && x.dataset.t === 'shows') || (name === 'watch' && x.dataset.t === 'shows')));
-  backBtn.hidden = false; // زر رجوع في كل صفحة
+  view.onclick = null;
+  let [, name, a, b] = (location.hash || '#/home').split('/');
+  if (!name || name === 'new') name = 'home';
+  const TAB = { home: 'home', latest: 'home', shows: 'shows', show: 'shows', watch: 'shows', favs: 'favs', recent: 'recent' }[name];
+  document.querySelectorAll('#tabs a').forEach((x) => x.classList.toggle('on', x.dataset.t === TAB));
+  backBtn.hidden = name === 'home'; // الرئيسية بلا زر رجوع؛ باقي الصفحات فيها زر رجوع
   window.scrollTo(0, 0);
   if (!D) {
+    view.innerHTML = name === 'home' ? '' : skeletonGrid();
+    if (name === 'home') { const { skeletonHome } = await import('./components.js'); view.innerHTML = skeletonHome(); }
     try { D = await loadData(); } catch { view.innerHTML = '<div class="empty">تعذّر تحميل قائمة المسلسلات.<br>تأكد من الاتصال ثم أعد المحاولة.</div>'; return; }
   }
-  const R = { new: vNew, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
-  titleEl.textContent = { new: 'الحلقات الجديدة', shows: 'قائمة المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات' }[name] || 'Dizi';
-  await (R[name] || vNew)();
+  const R = { home: vHome, latest: vLatest, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
+  titleEl.textContent = { home: 'Dizi', latest: 'الحلقات الجديدة', shows: 'المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات' }[name] || 'Dizi';
+  await (R[name] || vHome)();
 }
-backBtn.onclick = () => { if (history.length > 1) history.back(); else location.hash = '#/new'; };
+backBtn.onclick = () => { if (history.length > 1) history.back(); else location.hash = '#/home'; };
 addEventListener('hashchange', route);
 
 const emptyData = () => '<div class="empty">لم تتم مزامنة فهرس المسلسلات بعد.<br>عند أول تحديث ناجح من المصدر ستظهر المسلسلات هنا.</div>';
 const demoBanner = () => (D.demo ? '<div class="note">وضع تجريبي: بيانات وهمية لاختبار الواجهة فقط وليست من المصدر.</div>' : '');
 
-// ---------- الحلقات الجديدة ----------
-async function vNew() {
+// ---------- الرئيسية ----------
+async function vHome() {
+  if (!D.shows.length) return (view.innerHTML = emptyData());
+  await renderHome(D, view, { demoBanner: demoBanner() });
+}
+
+// ---------- كل الحلقات الجديدة (حلقات لمسلسلات موجودة) ----------
+async function vLatest() {
   if (!D.shows.length) return (view.innerHTML = emptyData());
   const [pa, fa] = await Promise.all([progress.all(), favs.all()]);
   const prog = new Map(pa.map((p) => [p.key, p])), fv = new Set(fa.map((f) => f.showId));
@@ -71,68 +62,47 @@ async function vNew() {
   view.innerHTML = demoBanner() + (items.length ? `<div class="grid">${items.map(({ show, ep }) => {
     const p = prog.get(show.id + '|' + ep.id);
     const isNew = ep.ts && Date.now() - ep.ts < 3 * 864e5 && !(p && p.done);
-    return `<div class="card"><a href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}${isNew ? '<span class="badge">جديد</span>' : ''}<div class="t">${esc(show.title)}</div><div class="s">حلقة ${esc(ep.n)}${p && p.done ? ' ✓' : ''}</div></a>${heartBtn(show.id, fv.has(show.id))}</div>`;
+    return `<div class="card"><a href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(ep.id)}">${poster(show)}${isNew ? '<span class="badge">حلقة جديدة</span>' : ''}<div class="t">${esc(show.title)}</div><div class="s">حلقة ${esc(ep.n)}${p && p.done ? ' ✓' : ''}</div></a>${heartBtn(show.id, fv.has(show.id))}</div>`;
   }).join('')}</div>` : '<div class="empty">لا حلقات جديدة.</div>');
-  const g = $('.grid'); if (g) g.onclick = heartClick(fv);
+  view.onclick = heartClick(view, fv);
 }
 
 // ---------- قائمة المسلسلات ----------
 async function vShows() {
   if (!D.shows.length) return (view.innerHTML = emptyData());
   const fv = new Set((await favs.all()).map((f) => f.showId));
-  view.innerHTML = demoBanner() + '<input class="search" id="q" type="search" placeholder="ابحث عن مسلسل" autocomplete="off"><div class="grid" id="g"></div>';
+  view.innerHTML = demoBanner() + '<input class="search" id="q" type="search" placeholder="ابحث عن مسلسل" enterkeyhint="search" autocomplete="off"><div class="grid" id="g"></div>';
   const g = $('#g');
   const norm = (s) => s.replace(/[ً-ٟـ]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').toLowerCase();
   const draw = () => {
     const q = norm($('#q').value.trim());
     const list = D.shows.filter((s) => !q || norm(s.title).includes(q));
-    g.innerHTML = list.length ? list.map((s) => cardHtml(s, fv)).join('') : '<div class="empty" style="grid-column:1/-1">لا نتائج.</div>';
+    g.innerHTML = list.length ? list.map((s) => showCard(s, { fav: fv.has(s.id) })).join('') : '<div class="empty" style="grid-column:1/-1">لا نتائج.</div>';
   };
   $('#q').oninput = draw; draw();
-  g.onclick = heartClick(fv);
+  g.onclick = heartClick(view, fv);
 }
-const cardHtml = (s, fv) => `<div class="card"><a href="#/show/${encodeURIComponent(s.id)}">${poster(s)}<div class="t">${esc(s.title)}</div></a>${heartBtn(s.id, fv.has(s.id))}</div>`;
-function heartClick(fv, after) {
-  return async (e) => {
-    const b = e.target.closest('.heart'); if (!b) return;
-    e.preventDefault();
-    const on = await favs.toggle(b.dataset.id);
-    on ? fv.add(b.dataset.id) : fv.delete(b.dataset.id);
-    // كل قلوب المسلسل نفسه في الصفحة تتحدث معًا
-    view.querySelectorAll('.heart[data-id]').forEach((x) => { if (x.dataset.id === b.dataset.id) { x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); } });
-    pop(b);
-    if (after) after();
-  };
-}
-
 // ---------- المفضلة ----------
 async function vFavs() {
   const fv = new Set((await favs.all()).map((f) => f.showId));
-  const draw = () => {
-    const list = D.shows.filter((s) => fv.has(s.id));
-    view.innerHTML = demoBanner() + (list.length ? `<div class="grid">${list.map((s) => cardHtml(s, fv)).join('')}</div>` : '<div class="empty">لم تضف أي مسلسل بعد.<br>اضغط على القلب في أي مسلسل لإضافته.</div>');
-    const g = $('.grid'); if (g) g.onclick = heartClick(fv, draw);
+  const draw = async () => {
+    const list = await myShows(D);
+    view.innerHTML = demoBanner() + (list.length ? `<div class="grid">${list.map((m) => showCard(m.show, { fav: true, badge: m.hasNew ? 'حلقة جديدة' : '', sub: m.last ? 'آخر ما شاهدته: حلقة ' + m.last.epNum : '' })).join('')}</div>` : emptyState('لم تضف أي مسلسل بعد', 'اضغط ♥ على أي مسلسل ليظهر هنا.', { href: '#/shows', label: 'تصفّح المسلسلات' }));
+    view.onclick = heartClick(view, fv, draw);
   };
-  draw();
+  await draw();
 }
 
-// ---------- آخر المشاهدات ----------
+// ---------- آخر المشاهدات (سجل المتابعة الكامل) ----------
 async function vRecent() {
-  const all = await progress.all();
-  const by = new Map();
-  for (const p of all) { const c = by.get(p.showId); if (!c || p.updated > c.updated) by.set(p.showId, p); }
-  const rows = [...by.values()].sort((a, b) => b.updated - a.updated).map((p) => ({ p, show: D.byId.get(p.showId) })).filter((x) => x.show);
-  if (!rows.length) return (view.innerHTML = demoBanner() + '<div class="empty">لم تبدأ مشاهدة أي مسلسل بعد.</div>');
-  view.innerHTML = demoBanner() + `<div class="list">${rows.map(({ p, show }) => {
-    const ep = findEp(show, p.epId), next = p.done && ep ? nextEp(show, ep) : null;
-    const target = next || ep;
-    const pct = p.duration ? Math.min(100, (p.time / p.duration) * 100) : 0;
-    const info = p.done ? `حلقة ${p.epNum} مكتملة ✓${next ? ' · التالية: ' + next.n : ' · آخر حلقة متاحة'}` : p.duration ? `حلقة ${p.epNum} · توقفت عند ${fmt(p.time)}` : `حلقة ${p.epNum} · قيد المشاهدة`;
-    return `<div class="row">${poster(show)}<div class="m"><b>${esc(show.title)}</b><small>${info}</small>${!p.done && p.duration ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}</div>${target ? `<a href="#/watch/${encodeURIComponent(show.id)}/${encodeURIComponent(target.id)}"><button class="pri">${p.done ? 'التالية' : 'استكمال'}</button></a>` : ''}</div>`;
+  const items = await continueItems(D, { all: true });
+  if (!items.length) return (view.innerHTML = demoBanner() + emptyState('لم تبدأ مشاهدة أي مسلسل بعد', 'ما تشاهده يظهر هنا لتستكمله بضغطة واحدة.', { href: '#/shows', label: 'تصفّح المسلسلات' }));
+  view.innerHTML = demoBanner() + `<div class="list">${items.map((it) => {
+    const pct = it.hasMinute ? Math.min(100, (it.time / it.duration) * 100) : 0;
+    const info = it.kind === 'finished' ? `حلقة ${it.epNum} مكتملة ✓ · آخر حلقة متاحة` : it.kind === 'next' ? `حلقة ${it.epNum} مكتملة ✓ · التالية: ${it.ep.n}` : `حلقة ${it.ep.n}${it.hasMinute ? ' · توقفت عند ' + fmt(it.time) : ' · قيد المشاهدة'}`;
+    return `<div class="row"><a href="#/show/${encodeURIComponent(it.show.id)}" style="display:contents">${poster(it.show)}</a><div class="m"><b>${esc(it.show.title)}</b><small>${esc(info)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}</div><a href="#/watch/${encodeURIComponent(it.show.id)}/${encodeURIComponent(it.ep.id)}"><button class="pri">${it.kind === 'next' ? 'التالية' : it.kind === 'finished' ? 'إعادة' : 'استكمال'}</button></a></div>`;
   }).join('')}</div>`;
 }
-// الحلقات مرتبة الأحدث أولًا؛ التالية = رقم أكبر مباشرة
-const nextEp = (show, ep) => { const i = show.eps.findIndex((e) => e.id === ep.id); return i > 0 ? show.eps[i - 1] : null; };
 
 // ---------- صفحة المسلسل ----------
 async function vShow(id) {
@@ -205,16 +175,6 @@ function addImport(container, show, ep, onDone) {
   container.append(btn, inp);
 }
 
-// يحوّل «23:10» أو «1:02:05» أو «23» (دقائق) إلى ثوانٍ؛ يقبل الأرقام العربية.
-const parseTime = (s) => {
-  s = String(s || '').replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
-  if (!s) return null;
-  const p = s.split(/[:.،,]/).map((x) => x.trim()).filter((x) => x !== '').map(Number);
-  if (!p.length || p.length > 3 || p.some((x) => !Number.isFinite(x) || x < 0)) return null;
-  return p.length === 1 ? p[0] * 60 : p.reduce((a, x) => a * 60 + x, 0);
-};
-const ago = (at) => { try { return new Date(at).toLocaleString('ar', { weekday: 'short', hour: 'numeric', minute: '2-digit' }); } catch { return ''; } };
-
 async function vWatch(showId, epId) {
   const show = D.byId.get(showId), ep = show && findEp(show, epId);
   if (!ep) return (view.innerHTML = '<div class="empty">الحلقة غير موجودة.</div>');
@@ -240,11 +200,9 @@ async function vWatch(showId, epId) {
   view.innerHTML = `${demoBanner()}<div class="player" id="pl"></div>
     <div class="actions" id="srv"></div>
     <div class="actions" id="act"></div>
-    <div class="snaps" id="snaps"></div>
     <div id="msg"></div>
-    <div class="note">لا تنسَ حفظ اللقطة قبل الخروج من الصفحة لكي تستطيع الرجوع لها بسهولة.</div>
     <div class="actions">${next ? `<a style="flex:1" href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button style="width:100%">الحلقة التالية (${esc(next.n)})</button></a>` : ''}<a style="flex:1" href="#/show/${encodeURIComponent(showId)}"><button style="width:100%">كل الحلقات</button></a></div>`;
-  const pl = $('#pl'), srv = $('#srv'), act = $('#act'), msg = $('#msg'), snapsEl = $('#snaps');
+  const pl = $('#pl'), srv = $('#srv'), act = $('#act'), msg = $('#msg');
   const setDone = async (done) => { await progress.save(showId, ep, { done, ...(done ? {} : { time: 0 }) }); toast(done ? 'تم وضع علامة ✓' : 'أُعيدت الحلقة للبداية'); route(); };
   if (!p0) await progress.save(showId, ep, { done: false });
   if (stale()) return;
@@ -294,6 +252,9 @@ async function vWatch(showId, epId) {
   const mountArab = () => {
     pl.innerHTML = `<iframe src="${esc(`https://arabhd.onl/embed-${arab}.html`)}" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
     if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
+    // تقدم Arab HD يصل فقط عبر رسائل السكربت (إن كان مثبتًا) بعد التحقق من الإطار والأصل ومعرّف الحلقة
+    const unbind = bindArabProgress({ getFrame: () => pl.querySelector('iframe'), expectedId: arab, onTime: (t, d) => { if (!stale()) progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); } });
+    teardown = unbind;
   };
   const drawSrv = () => {
     srv.innerHTML = SRC.map((s) => s.href
@@ -314,32 +275,6 @@ async function vWatch(showId, epId) {
     }
   };
 
-  // اللقطات: آخر 3 مواضع حفظتها بنفسك (مع وقت الحفظ)
-  const drawSnaps = (snaps) => {
-    snaps = snaps || [];
-    const rb = $('#resume'); if (rb) rb.disabled = !snaps.length;
-    snapsEl.innerHTML = snaps.length ? `<div class="snaps-t">آخر اللقطات</div>${snaps.map((s, i) => `<button class="snap" data-i="${i}">⏱ ${fmt(s.t)}<small>${esc(ago(s.at))}</small></button>`).join('')}` : '';
-    snapsEl.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => playFrom(snaps[+b.dataset.i].t)));
-  };
-  const playFrom = (t) => {
-    const vk = SRC.some((s) => s.video && s.k === cur) ? cur : (SRC.find((s) => s.k === 'f') || SRC.find((s) => s.k === 'v') || {}).k;
-    if (!vk) return toast(`انتقل في المشغّل إلى ${fmt(t)} (Arab HD لا يسمح بالتحكم من التطبيق)`);
-    if (curV && cur === vk && curV.duration > 0) { curV.currentTime = t; curV.play().catch(() => {}); toast('تشغيل من ' + fmt(t)); }
-    else select(vk, t);
-  };
-  const saveSnap = async () => {
-    let t;
-    if (curV && curV.duration > 0) t = curV.currentTime;
-    else {
-      const s = prompt('مشغّل Arab HD لا يسمح للتطبيق بقراءة الوقت.\nاكتب الدقيقة التي توقفت عندها (مثال 23:10):');
-      if (s == null) return;
-      t = parseTime(s); if (t == null) return toast('صيغة الوقت غير صحيحة. مثال: 23:10');
-    }
-    const p = (await progress.get(showId, epId)) || {};
-    const snaps = [{ t, at: Date.now(), src: cur }, ...(p.snaps || [])].slice(0, 3);
-    await progress.save(showId, ep, { snaps, time: t, done: false });
-    toast('حُفظت اللقطة عند ' + fmt(t)); drawSnaps(snaps);
-  };
   const exportFile = async () => {
     const b = await downloads.getBlob(key); if (!b) return toast('الملف المحفوظ غير موجود');
     const name = `${show.title} - الحلقة ${ep.n}.mp4`.replace(/[\\/:*?"<>|]/g, ' ');
@@ -349,17 +284,13 @@ async function vWatch(showId, epId) {
   };
 
   act.innerHTML = `${dlHref ? `<a style="flex:1;min-width:120px" href="${esc(dlHref)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل</button></a>` : ''}
-    <button id="snap">احفظ آخر لقطة</button><button id="resume">تشغيل من آخر لقطة</button>
     ${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : '<button id="ok">تمت المشاهدة ✓</button>'}
     ${meta ? `<button id="exp">حفظ في الملفات</button><button id="rm">حذف الملف المحفوظ (${mb(meta.size)})</button>` : ''}`;
   addImport(act, show, ep, () => route());
-  $('#snap').onclick = saveSnap;
-  $('#resume').onclick = async () => { const p = await progress.get(showId, epId); const s = p && p.snaps && p.snaps[0]; if (s) playFrom(s.t); };
   const ok = $('#ok'); if (ok) ok.onclick = () => setDone(true);
   const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
   const ex = $('#exp'); if (ex) ex.onclick = exportFile;
   const rm = $('#rm'); if (rm) rm.onclick = async () => { stopCur(); await downloads.remove(key); route(); };
-  drawSnaps(p0 && p0.snaps);
 
   if (!SRC.length) {
     // لا سيرفر معروف بعد لهذه الحلقة: زر يفتح صفحة المصدر
@@ -383,7 +314,7 @@ if ('serviceWorker' in navigator) {
 persistStorage();
 route();
 // فحص الحلقات الجديدة كل 5 دقائق، وعند العودة إلى التطبيق
-const refresh = async () => { if (document.visibilityState !== 'visible' || !D) return; try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(new|shows)?$/.test(location.hash) || !location.hash) route(); } } catch {} };
+const refresh = async () => { if (document.visibilityState !== 'visible' || !D) return; try { const n = await loadData(true); if (n.updated !== D.updated) { D = n; if (/#\/(home|new|shows|latest)?$/.test(location.hash) || !location.hash) route(); } } catch {} };
 setInterval(refresh, 5 * 60 * 1000);
 document.addEventListener('visibilitychange', refresh);
 
