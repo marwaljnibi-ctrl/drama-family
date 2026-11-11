@@ -4,20 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       full: { description: 'مزامنة كاملة (1)', required: false, default: '0' }
+      limit: { description: 'عدد الحلقات لفهرسة سيرفراتها في هذا التشغيل (للفهرسة الدفعية اليدوية)', required: false, default: '' }
 permissions: { contents: write }
 concurrency: sync
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 345
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm i --no-save --no-audit --no-fund sharp
-      - run: node scripts/sync-qesset.mjs
-        env: { SYNC_FULL: '${{ github.event.inputs.full }}', SYNC_SERVERS_PER_RUN: '150' }
-      - name: Commit changes
-        run: |
-          git config user.name "sync-bot"; git config user.email "sync-bot@users.noreply.github.com"
-          git add data
-          git diff --cached --quiet || (git commit -m "sync: update shows" && git push)
+      - name: sync in chunks (each chunk is committed and pushed)
+        timeout-minutes: 330
+        env: { SYNC_FULL: '${{ github.event.inputs.full }}', LIMIT: '${{ github.event.inputs.limit || 300 }}' }
+        run: bash scripts/sync-run.sh
