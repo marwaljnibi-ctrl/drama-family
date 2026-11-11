@@ -12,11 +12,11 @@ const arabTestOn = () => {
 };
 let arabMsgH = null;
 function arabTestPanel(box, pl, epId) {
-  let n = 0; const types = {};
+  let n = 0, last = ''; const types = {};
   box.innerHTML = '<div class="note" dir="ltr" style="direction:ltr;text-align:left"><b>dev: Arab HD bridge</b><div id="at-st" style="white-space:pre-wrap;font:12px/1.6 monospace"></div></div>';
-  const draw = () => { const el = box.querySelector('#at-st'); if (el) el.textContent = 'episode=' + epId + ' | messages from iframe=' + n + ' ' + JSON.stringify(types); };
+  const draw = () => { const el = box.querySelector('#at-st'); if (el) el.textContent = 'episode=' + epId + ' | messages from iframe=' + n + ' ' + JSON.stringify(types) + '\nlast: ' + last; };
   if (arabMsgH) removeEventListener('message', arabMsgH);
-  arabMsgH = (e) => { const f = pl.querySelector('iframe'); if (f && e.source === f.contentWindow) { n++; const t = e.data && e.data.type; types[t] = (types[t] || 0) + 1; draw(); } };
+  arabMsgH = (e) => { const f = pl.querySelector('iframe'); if (f && e.source === f.contentWindow) { n++; const d = e.data || {}; const t = d.type; types[t] = (types[t] || 0) + 1; last = JSON.stringify({ type: d.type, id: d.id, t: d.t && Math.round(d.t), d: d.d && Math.round(d.d), ok: d.ok, origin: e.origin }); draw(); } };
   addEventListener('message', arabMsgH); draw();
 }
 let D;
@@ -259,7 +259,7 @@ async function vWatch(showId, epId) {
     teardown = unbind;
   };
   const mountArab = () => { mountEmbed(`https://arabhd.onl/embed-${arab}.html`, ARAB_ORIGIN, arab); if (arabTestOn()) arabTestPanel(msg, pl, epId, showId); };
-  const mountOk = () => { mountEmbed(`https://ok.ru/videoembed/${okId}`, OK_ORIGIN, okId); msg.innerHTML = '<div class="note">إن لم يظهر الفيديو جرّب Arab HD.</div>'; };
+  const mountOk = () => { mountEmbed(`https://ok.ru/videoembed/${okId}`, OK_ORIGIN, okId); msg.innerHTML = '<div class="note">إن لم يظهر الفيديو جرّب Arab HD.</div>'; if (arabTestOn()) arabTestPanel(msg, pl, epId, showId); };
   const drawSrv = () => {
     srv.innerHTML = SRC.map((s) => s.href
       ? `<a style="flex:1;min-width:120px" href="${esc(s.href)}" target="_blank" rel="noopener"><button style="width:100%">${esc(s.name)}</button></a>`
