@@ -1,0 +1,6 @@
+-- مخطط D1 لتنبيهات واتساب. D1 متسق فورًا (على عكس KV): إلغاء الاشتراك يُرى مباشرة عند الإرسال التالي.
+CREATE TABLE IF NOT EXISTS members (h TEXT PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL UNIQUE, consent_at INTEGER, created INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS subs (h TEXT NOT NULL, show_id TEXT NOT NULL, title TEXT NOT NULL, since INTEGER NOT NULL, PRIMARY KEY (h, show_id));
+CREATE TABLE IF NOT EXISTS outbox (h TEXT NOT NULL, ep_id TEXT NOT NULL, show_id TEXT NOT NULL, created INTEGER NOT NULL, tries INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (h, ep_id));
+CREATE TABLE IF NOT EXISTS sent (h TEXT NOT NULL, ep_id TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (h, ep_id));
+CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);

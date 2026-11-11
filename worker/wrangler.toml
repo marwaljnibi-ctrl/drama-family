@@ -2,10 +2,11 @@ name = "dizi-alerts"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
 
-# مساحة التخزين المجانية. الربط اسمه KV في الكود.
-[[kv_namespaces]]
-binding = "KV"
-id = "a12f6665afea4ea8850fa992c595e00e"
+# قاعدة D1 المجانية (متسقة فورًا). الربط اسمه DB في الكود. المخطط في schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "dizi-alerts"
+database_id = "689ab4af-a598-4706-895a-4cee430a5e8a"
 
 # كل 5 دقائق: اكتشاف الحلقات الجديدة من data/shows.json (النظام الموجود) ثم الإرسال
 [triggers]
