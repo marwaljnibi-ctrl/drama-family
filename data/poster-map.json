@@ -15,7 +15,12 @@
   "score": 0.814,
   "status": "matched",
   "path": "data/posters/v3/364d63cdd7cc.webp",
-  "prev": "data/posters/v2/364d63cdd7cc.webp"
+  "prev": "data/posters/v2/364d63cdd7cc.webp",
+  "bg": {
+   "path": "data/posters/v4/364d63cdd7cc.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/557700.jpg"
+  }
  },
  "hayat-mucizelere-gebe-tqvms": {
   "at": 1794444337710,
@@ -33,7 +38,8 @@
   "score": 0.833,
   "status": "matched",
   "path": "data/posters/v3/1599ef002e73.webp",
-  "prev": "data/posters/v2/1599ef002e73.webp"
+  "prev": "data/posters/v2/1599ef002e73.webp",
+  "bg": null
  },
  "kuzey-guney-lfmpq": {
   "at": 1794444339127,
@@ -51,7 +57,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/3bd91829ff10.webp",
-  "prev": "data/posters/v2/3bd91829ff10.webp"
+  "prev": "data/posters/v2/3bd91829ff10.webp",
+  "bg": null
  },
  "kara-para-ask-kqvts": {
   "at": 1794444341005,
@@ -69,10 +76,15 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/b24f62922f2b.webp",
-  "prev": "data/posters/v2/b24f62922f2b.webp"
+  "prev": "data/posters/v2/b24f62922f2b.webp",
+  "bg": {
+   "path": "data/posters/v4/b24f62922f2b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/226/566032.jpg"
+  }
  },
  "kucuk-gelin-prvsm": {
-  "at": 1794445792497,
+  "at": 1794453269879,
   "tries": 1,
   "q": "kucuk gelin",
   "conf": "high",
@@ -105,7 +117,8 @@
   "score": 0.841,
   "status": "matched",
   "path": "data/posters/v3/e8c34b9146a7.webp",
-  "prev": "data/posters/v2/e8c34b9146a7.webp"
+  "prev": "data/posters/v2/e8c34b9146a7.webp",
+  "bg": null
  },
  "dolunay-kqvts": {
   "at": 1794444351447,
@@ -123,7 +136,12 @@
   "score": 0.993,
   "status": "matched",
   "path": "data/posters/v3/1c0601957c19.webp",
-  "prev": "data/posters/v2/1c0601957c19.webp"
+  "prev": "data/posters/v2/1c0601957c19.webp",
+  "bg": {
+   "path": "data/posters/v4/1c0601957c19.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/557886.jpg"
+  }
  },
  "yasak-elma-nqvps": {
   "at": 1794444354854,
@@ -141,16 +159,21 @@
   "score": 0.972,
   "status": "matched",
   "path": "data/posters/v3/9e06c10fa97a.webp",
-  "prev": "data/posters/v2/9e06c10fa97a.webp"
+  "prev": "data/posters/v2/9e06c10fa97a.webp",
+  "bg": {
+   "path": "data/posters/v4/9e06c10fa97a.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/219/547534.jpg"
+  }
  },
  "fi-kqtmv": {
-  "at": 1794445794883,
+  "at": 1794453272458,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for fi-kqtmv"
  },
  "46-bvqms": {
-  "at": 1794445795597,
+  "at": 1794453273176,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for 46-bvqms"
@@ -171,7 +194,12 @@
   "score": 0.966,
   "status": "matched",
   "path": "data/posters/v3/eb2fd72f5e69.webp",
-  "prev": "data/posters/v2/eb2fd72f5e69.webp"
+  "prev": "data/posters/v2/eb2fd72f5e69.webp",
+  "bg": {
+   "path": "data/posters/v4/eb2fd72f5e69.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034751.jpg"
+  }
  },
  "gulumse-kaderine-vqtrs": {
   "at": 1794444852758,
@@ -189,7 +217,12 @@
   "score": 0.85,
   "status": "matched",
   "path": "data/posters/v3/d2b7efac36a7.webp",
-  "prev": "data/posters/v2/d2b7efac36a7.webp"
+  "prev": "data/posters/v2/d2b7efac36a7.webp",
+  "bg": {
+   "path": "data/posters/v4/d2b7efac36a7.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/405/1013587.jpg"
+  }
  },
  "kardes-cocuklari-kqvmt": {
   "at": 1794444854556,
@@ -207,10 +240,15 @@
   "score": 0.817,
   "status": "matched",
   "path": "data/posters/v3/5f8135e0b6c2.webp",
-  "prev": "data/posters/v2/5f8135e0b6c2.webp"
+  "prev": "data/posters/v2/5f8135e0b6c2.webp",
+  "bg": {
+   "path": "data/posters/v4/5f8135e0b6c2.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/557582.jpg"
+  }
  },
  "ebnat-alsafir-hzqmt": {
-  "at": 1794445796310,
+  "at": 1794453273880,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ebnat-alsafir-hzqmt"
@@ -231,7 +269,12 @@
   "score": 0.805,
   "status": "matched",
   "path": "data/posters/v3/b7667dfb6236.webp",
-  "prev": "data/posters/v2/b7667dfb6236.webp"
+  "prev": "data/posters/v2/b7667dfb6236.webp",
+  "bg": {
+   "path": "data/posters/v4/b7667dfb6236.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/558436.jpg"
+  }
  },
  "oglum-vksrp": {
   "at": 1794444858245,
@@ -249,7 +292,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/e7b07efe45de.webp",
-  "prev": "data/posters/v2/e7b07efe45de.webp"
+  "prev": "data/posters/v2/e7b07efe45de.webp",
+  "bg": {
+   "path": "data/posters/v4/e7b07efe45de.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/395/988030.jpg"
+  }
  },
  "baba-hqvts": {
   "at": 1794444859306,
@@ -267,7 +315,8 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/ac944adb7f2e.webp",
-  "prev": "data/posters/v2/ac944adb7f2e.webp"
+  "prev": "data/posters/v2/ac944adb7f2e.webp",
+  "bg": null
  },
  "babam-ve-ailesi-tqsmv": {
   "at": 1794444860506,
@@ -285,16 +334,17 @@
   "score": 0.735,
   "status": "matched",
   "path": "data/posters/v3/e31daa830422.webp",
-  "prev": "data/posters/v2/e31daa830422.webp"
+  "prev": "data/posters/v2/e31daa830422.webp",
+  "bg": null
  },
  "mudeer-aamali-kvmts": {
-  "at": 1794445797719,
+  "at": 1794453275284,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for mudeer-aamali-kvmts"
  },
  "mbtyu-rqsvn": {
-  "at": 1794445799146,
+  "at": 1794453276700,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for mbtyu-rqsvn"
@@ -317,7 +367,8 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/d21270ad279b.webp",
-  "prev": "data/posters/v2/d21270ad279b.webp"
+  "prev": "data/posters/v2/d21270ad279b.webp",
+  "bg": null
  },
  "kardeslerim-vqstm": {
   "at": 1794444865724,
@@ -335,13 +386,32 @@
   "score": 0.799,
   "status": "matched",
   "path": "data/posters/v3/4d0a63e9cd8c.webp",
-  "prev": "data/posters/v2/4d0a63e9cd8c.webp"
+  "prev": "data/posters/v2/4d0a63e9cd8c.webp",
+  "bg": null
  },
  "abi-lurev": {
-  "at": 1794445802935,
+  "at": 1794453278116,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for abi-lurev"
+  "q": "abi",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "89666",
+  "name": "A.B.İ.",
+  "premiered": "2026",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/640/1601824.jpg",
+  "w": 805,
+  "h": 1200,
+  "sharp": 71.82,
+  "ent": 7.08,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/61fddd61cae3.webp",
+  "prev": "data/posters/v2/61fddd61cae3.webp",
+  "bg": {
+   "path": "data/posters/v4/61fddd61cae3.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/607/1517777.jpg"
+  }
  },
  "kanunsuz-topraklar-hvtqm": {
   "at": 1794444868157,
@@ -359,16 +429,21 @@
   "score": 0.96,
   "status": "matched",
   "path": "data/posters/v3/60af54ff6dd1.webp",
-  "prev": "data/posters/v2/60af54ff6dd1.webp"
+  "prev": "data/posters/v2/60af54ff6dd1.webp",
+  "bg": {
+   "path": "data/posters/v4/60af54ff6dd1.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/355/888834.jpg"
+  }
  },
  "guzel-ask-hqvmt": {
-  "at": 1794445803641,
+  "at": 1794453282809,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for guzel-ask-hqvmt"
  },
  "azhar-thalj-vqstm": {
-  "at": 1794445805062,
+  "at": 1794453284218,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for azhar-thalj-vqstm"
@@ -389,10 +464,11 @@
   "score": 0.869,
   "status": "matched",
   "path": "data/posters/v3/af4ed93f307d.webp",
-  "prev": "data/posters/v2/af4ed93f307d.webp"
+  "prev": "data/posters/v2/af4ed93f307d.webp",
+  "bg": null
  },
  "alzalimah-wqnts": {
-  "at": 1794445806485,
+  "at": 1794453285646,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alzalimah-wqnts"
@@ -415,7 +491,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/19be00ec115f.webp",
-  "prev": "data/posters/v2/19be00ec115f.webp"
+  "prev": "data/posters/v2/19be00ec115f.webp",
+  "bg": null
  },
  "cam-tavanlar-hqvns": {
   "at": 1794444877081,
@@ -433,16 +510,21 @@
   "score": 0.911,
   "status": "matched",
   "path": "data/posters/v3/919b5e4cdba6.webp",
-  "prev": "data/posters/v2/919b5e4cdba6.webp"
+  "prev": "data/posters/v2/919b5e4cdba6.webp",
+  "bg": {
+   "path": "data/posters/v4/919b5e4cdba6.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/320/800412.jpg"
+  }
  },
  "ismaani-kvnts": {
-  "at": 1794445810857,
+  "at": 1794453287088,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ismaani-kvnts"
  },
  "adisevgi-ltqmp": {
-  "at": 1794445812272,
+  "at": 1794453288515,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for adisevgi-ltqmp"
@@ -463,7 +545,12 @@
   "score": 0.807,
   "status": "matched",
   "path": "data/posters/v3/c19420dad0fe.webp",
-  "prev": "data/posters/v2/c19420dad0fe.webp"
+  "prev": "data/posters/v2/c19420dad0fe.webp",
+  "bg": {
+   "path": "data/posters/v4/c19420dad0fe.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/420/1052310.jpg"
+  }
  },
  "benim-adim-gultepe-kqvsm": {
   "at": 1794444882910,
@@ -481,16 +568,17 @@
   "score": 0.733,
   "status": "matched",
   "path": "data/posters/v3/3cce7fa17cc1.webp",
-  "prev": "data/posters/v2/3cce7fa17cc1.webp"
+  "prev": "data/posters/v2/3cce7fa17cc1.webp",
+  "bg": null
  },
  "ismi-farah-kmvqt": {
-  "at": 1794445813709,
+  "at": 1794453290115,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ismi-farah-kmvqt"
  },
  "fariha-lqvts": {
-  "at": 1794445815126,
+  "at": 1794453291689,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for fariha-lqvts"
@@ -513,7 +601,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/705bb37eb0f6.webp",
-  "prev": "data/posters/v2/705bb37eb0f6.webp"
+  "prev": "data/posters/v2/705bb37eb0f6.webp",
+  "bg": {
+   "path": "data/posters/v4/705bb37eb0f6.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/78/197303.jpg"
+  }
  },
  "carpisma-kqvtn": {
   "at": 1794444888527,
@@ -531,10 +624,15 @@
   "score": 0.839,
   "status": "matched",
   "path": "data/posters/v3/55ef5375fd73.webp",
-  "prev": "data/posters/v2/55ef5375fd73.webp"
+  "prev": "data/posters/v2/55ef5375fd73.webp",
+  "bg": {
+   "path": "data/posters/v4/55ef5375fd73.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/559563.jpg"
+  }
  },
  "hayat-sarkisi-mnbqt": {
-  "at": 1794445819027,
+  "at": 1794453293139,
   "tries": 1,
   "q": "hayat sarkisi",
   "conf": "high",
@@ -568,7 +666,12 @@
   "score": 0.712,
   "status": "matched",
   "path": "data/posters/v3/a8c5a94f9868.webp",
-  "prev": "data/posters/v2/a8c5a94f9868.webp"
+  "prev": "data/posters/v2/a8c5a94f9868.webp",
+  "bg": {
+   "path": "data/posters/v4/a8c5a94f9868.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1193368.jpg"
+  }
  },
  "kucuk-aga-rqvmp": {
   "at": 1794444894209,
@@ -586,13 +689,32 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/3937379f964a.webp",
-  "prev": "data/posters/v2/3937379f964a.webp"
+  "prev": "data/posters/v2/3937379f964a.webp",
+  "bg": null
  },
  "bereketli-topraklar-raden": {
-  "at": 1794445822052,
+  "at": 1794453295314,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for bereketli-topraklar-raden"
+  "q": "bereketli topraklar",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "87354",
+  "name": "Bereketli Topraklar",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/590/1475554.jpg",
+  "w": 694,
+  "h": 1002,
+  "sharp": 67.66,
+  "ent": 7.52,
+  "score": 0.845,
+  "status": "matched",
+  "path": "data/posters/v3/47b79ed7d3f1.webp",
+  "prev": "data/posters/v2/47b79ed7d3f1.webp",
+  "bg": {
+   "path": "data/posters/v4/47b79ed7d3f1.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/590/1475555.jpg"
+  }
  },
  "yaban-cicekleri-kvpts": {
   "at": 1794444896226,
@@ -610,7 +732,8 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/9148d8120a2f.webp",
-  "prev": "data/posters/v2/9148d8120a2f.webp"
+  "prev": "data/posters/v2/9148d8120a2f.webp",
+  "bg": null
  },
  "kirgin-cicekler-vzmtp": {
   "at": 1794444897505,
@@ -628,17 +751,22 @@
   "score": 0.802,
   "status": "matched",
   "path": "data/posters/v3/067b05967000.webp",
-  "prev": "data/posters/v2/067b05967000.webp"
+  "prev": "data/posters/v2/067b05967000.webp",
+  "bg": {
+   "path": "data/posters/v4/067b05967000.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/225/563264.jpg"
+  }
  },
  "efsane-wqjtm": {
-  "at": 1794445822760,
+  "at": 1794453299285,
   "tries": 1,
   "q": "efsane",
   "status": "review",
   "note": "partial ambiguous: Adı Efsane | Efsane T"
  },
  "icimdekifirtina-pzvrl": {
-  "at": 1794445823475,
+  "at": 1794453300014,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for icimdekifirtina-pzvrl"
@@ -661,7 +789,8 @@
   "score": 0.715,
   "status": "matched",
   "path": "data/posters/v3/48876c261bb5.webp",
-  "prev": "data/posters/v2/48876c261bb5.webp"
+  "prev": "data/posters/v2/48876c261bb5.webp",
+  "bg": null
  },
  "umuda-hqrfv": {
   "at": 1794445827968,
@@ -681,7 +810,8 @@
   "score": 0.951,
   "status": "matched",
   "path": "data/posters/v3/1e409b571083.webp",
-  "prev": "data/posters/v2/1e409b571083.webp"
+  "prev": "data/posters/v2/1e409b571083.webp",
+  "bg": null
  },
  "analar-ve-anneler-vqfms": {
   "at": 1794444903835,
@@ -699,7 +829,12 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/9ed5c890456b.webp",
-  "prev": "data/posters/v2/9ed5c890456b.webp"
+  "prev": "data/posters/v2/9ed5c890456b.webp",
+  "bg": {
+   "path": "data/posters/v4/9ed5c890456b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/76/191715.jpg"
+  }
  },
  "tatli-intikam-bqzfm": {
   "at": 1794444905272,
@@ -717,7 +852,8 @@
   "score": 0.823,
   "status": "matched",
   "path": "data/posters/v3/d47b0a370255.webp",
-  "prev": "data/posters/v2/d47b0a370255.webp"
+  "prev": "data/posters/v2/d47b0a370255.webp",
+  "bg": null
  },
  "dokuz-oguz-vqsmr": {
   "at": 1794444906402,
@@ -735,10 +871,15 @@
   "score": 0.675,
   "status": "matched",
   "path": "data/posters/v3/11fe50c60255.webp",
-  "prev": "data/posters/v2/11fe50c60255.webp"
+  "prev": "data/posters/v2/11fe50c60255.webp",
+  "bg": {
+   "path": "data/posters/v4/11fe50c60255.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/441/1103242.jpg"
+  }
  },
  "alp-arslan-kqvdr": {
-  "at": 1794445830019,
+  "at": 1794453301447,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alp-arslan-kqvdr"
@@ -759,29 +900,34 @@
   "score": 0.697,
   "status": "matched",
   "path": "data/posters/v3/191f47cdf0d0.webp",
-  "prev": "data/posters/v2/191f47cdf0d0.webp"
+  "prev": "data/posters/v2/191f47cdf0d0.webp",
+  "bg": {
+   "path": "data/posters/v4/191f47cdf0d0.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/478/1195523.jpg"
+  }
  },
  "baraa-kvnms": {
-  "at": 1794445831431,
+  "at": 1794453302871,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for baraa-kvnms"
  },
  "baraem-hamra-tqvns": {
-  "at": 1794445832833,
+  "at": 1794453304307,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for baraem-hamra-tqvns"
  },
  "barbaros-kqvmp": {
-  "at": 1794445834243,
+  "at": 1794453305726,
   "tries": 1,
   "q": "barbaros",
   "status": "review",
   "note": "partial ambiguous: Barbaroslar: Akdeniz'in Kılıcı | Barbaros Hayreddin: Sultanın Fermanı"
  },
  "kizilelma-vsrqm": {
-  "at": 1794445834963,
+  "at": 1794453306485,
   "tries": 1,
   "q": "kizilelma",
   "status": "review",
@@ -790,7 +936,7 @@
   "url": "https://static.tvmaze.com/uploads/images/original_untouched/470/1177021.jpg"
  },
  "kara-dut-vqrsm": {
-  "at": 1794445836382,
+  "at": 1794453307924,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for kara-dut-vqrsm"
@@ -811,7 +957,8 @@
   "score": 0.798,
   "status": "matched",
   "path": "data/posters/v3/9c43f3e0e858.webp",
-  "prev": "data/posters/v2/9c43f3e0e858.webp"
+  "prev": "data/posters/v2/9c43f3e0e858.webp",
+  "bg": null
  },
  "muhtesem-ikili-kqvmt": {
   "at": 1794445837820,
@@ -830,10 +977,11 @@
   "score": 0.729,
   "status": "matched",
   "path": "data/posters/v3/9e698dc44304.webp",
-  "prev": "data/posters/v2/9e698dc44304.webp"
+  "prev": "data/posters/v2/9e698dc44304.webp",
+  "bg": null
  },
  "ilk-ask-lpvrm": {
-  "at": 1794445839368,
+  "at": 1794453309346,
   "tries": 1,
   "q": "ilk ask",
   "status": "review",
@@ -859,7 +1007,12 @@
   "score": 0.84,
   "status": "matched",
   "path": "data/posters/v3/fe2b43a94916.webp",
-  "prev": "data/posters/v2/fe2b43a94916.webp"
+  "prev": "data/posters/v2/fe2b43a94916.webp",
+  "bg": {
+   "path": "data/posters/v4/fe2b43a94916.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/79/197863.jpg"
+  }
  },
  "ask-aglatir-kqvms": {
   "at": 1794444924672,
@@ -877,7 +1030,8 @@
   "score": 0.812,
   "status": "matched",
   "path": "data/posters/v3/82787fcac5c5.webp",
-  "prev": "data/posters/v2/82787fcac5c5.webp"
+  "prev": "data/posters/v2/82787fcac5c5.webp",
+  "bg": null
  },
  "gizli-bahce-vmrqs": {
   "at": 1794444925858,
@@ -895,16 +1049,39 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/95913a276520.webp",
-  "prev": "data/posters/v2/95913a276520.webp"
+  "prev": "data/posters/v2/95913a276520.webp",
+  "bg": {
+   "path": "data/posters/v4/95913a276520.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/535/1339130.jpg"
+  }
  },
  "kiskanmak-bexal": {
-  "at": 1794445842804,
+  "at": 1794453310786,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for kiskanmak-bexal"
+  "q": "kiskanmak",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "86958",
+  "name": "Kıskanmak",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/586/1466602.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 63.2,
+  "ent": 7.55,
+  "score": 0.847,
+  "status": "matched",
+  "path": "data/posters/v3/6dbc31d27023.webp",
+  "prev": "data/posters/v2/6dbc31d27023.webp",
+  "bg": {
+   "path": "data/posters/v4/6dbc31d27023.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/586/1466601.jpg"
+  }
  },
  "hofra-kqmvt": {
-  "at": 1794445843507,
+  "at": 1794453315384,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hofra-kqmvt"
@@ -925,17 +1102,22 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/6684e7cc0325.webp",
-  "prev": "data/posters/v2/6684e7cc0325.webp"
+  "prev": "data/posters/v2/6684e7cc0325.webp",
+  "bg": {
+   "path": "data/posters/v4/6684e7cc0325.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/120/300876.jpg"
+  }
  },
  "hayat-vqrnt": {
-  "at": 1794445844943,
+  "at": 1794453316832,
   "tries": 1,
   "q": "hayat",
   "status": "review",
   "note": "partial ambiguous: Hayat Şarkısı | Hayat Sırları | Yeni Hayat | Tatlı Hayat | Hayat Yolunda | Hayat Bilgisi | Acı Hayat | O Hayat Benim | Hayat Sevince Güzel | Hayat Bazen Tatlıdır"
  },
  "lissw-hqvnt": {
-  "at": 1794445845650,
+  "at": 1794453317569,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lissw-hqvnt"
@@ -956,7 +1138,8 @@
   "score": 0.684,
   "status": "matched",
   "path": "data/posters/v3/4bac0c4b58bc.webp",
-  "prev": "data/posters/v2/4bac0c4b58bc.webp"
+  "prev": "data/posters/v2/4bac0c4b58bc.webp",
+  "bg": null
  },
  "kara-ekmek-plsuv": {
   "at": 1794444935806,
@@ -974,13 +1157,33 @@
   "score": 0.815,
   "status": "matched",
   "path": "data/posters/v3/131ab954f57d.webp",
-  "prev": "data/posters/v2/131ab954f57d.webp"
+  "prev": "data/posters/v2/131ab954f57d.webp",
+  "bg": {
+   "path": "data/posters/v4/131ab954f57d.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/227/568661.jpg"
+  }
  },
  "halef-laxem": {
-  "at": 1794445847054,
+  "at": 1794453319016,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for halef-laxem"
+  "q": "halef",
+  "note": "partial name, episodes 43≈41",
+  "conf": "medium",
+  "src": "tvmaze",
+  "ref": "86549",
+  "name": "Halef: Köklerin Çağrısı",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/585/1462678.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 71.54,
+  "ent": 7.77,
+  "score": 0.847,
+  "status": "matched",
+  "path": "data/posters/v3/ecabd7d59b84.webp",
+  "prev": "data/posters/v2/ecabd7d59b84.webp",
+  "bg": null
  },
  "cember-lqtsv": {
   "at": 1794444938283,
@@ -998,7 +1201,8 @@
   "score": 0.843,
   "status": "matched",
   "path": "data/posters/v3/2bad855ea86c.webp",
-  "prev": "data/posters/v2/2bad855ea86c.webp"
+  "prev": "data/posters/v2/2bad855ea86c.webp",
+  "bg": null
  },
  "kotu-kan-vqsmr": {
   "at": 1794444939654,
@@ -1016,10 +1220,15 @@
   "score": 0.803,
   "status": "matched",
   "path": "data/posters/v3/952154654d0a.webp",
-  "prev": "data/posters/v2/952154654d0a.webp"
+  "prev": "data/posters/v2/952154654d0a.webp",
+  "bg": {
+   "path": "data/posters/v4/952154654d0a.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/535/1338792.jpg"
+  }
  },
  "sancak-vqmrs": {
-  "at": 1794445847755,
+  "at": 1794453323121,
   "tries": 1,
   "q": "sancak",
   "status": "review",
@@ -1043,7 +1252,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/9159a219268d.webp",
-  "prev": "data/posters/v2/9159a219268d.webp"
+  "prev": "data/posters/v2/9159a219268d.webp",
+  "bg": null
  },
  "kursun-tlqmv": {
   "at": 1794444943225,
@@ -1061,7 +1271,12 @@
   "score": 0.871,
   "status": "matched",
   "path": "data/posters/v3/34e8d67088d7.webp",
-  "prev": "data/posters/v2/34e8d67088d7.webp"
+  "prev": "data/posters/v2/34e8d67088d7.webp",
+  "bg": {
+   "path": "data/posters/v4/34e8d67088d7.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/212/532185.jpg"
+  }
  },
  "kara-tahta-mvqps": {
   "at": 1794444944436,
@@ -1079,7 +1294,12 @@
   "score": 0.829,
   "status": "matched",
   "path": "data/posters/v3/d5142f7eca17.webp",
-  "prev": "data/posters/v2/d5142f7eca17.webp"
+  "prev": "data/posters/v2/d5142f7eca17.webp",
+  "bg": {
+   "path": "data/posters/v4/d5142f7eca17.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/402/1005805.jpg"
+  }
  },
  "mahkum-kqvns": {
   "at": 1794444945679,
@@ -1097,22 +1317,41 @@
   "score": 0.835,
   "status": "matched",
   "path": "data/posters/v3/db1e71d03995.webp",
-  "prev": "data/posters/v2/db1e71d03995.webp"
+  "prev": "data/posters/v2/db1e71d03995.webp",
+  "bg": {
+   "path": "data/posters/v4/db1e71d03995.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/382/956566.jpg"
+  }
  },
  "sadd-kpvqs": {
-  "at": 1794445849186,
+  "at": 1794453324564,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for sadd-kpvqs"
  },
  "aile-saadeti-puren": {
-  "at": 1794445850623,
+  "at": 1794453326016,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for aile-saadeti-puren"
+  "q": "aile saadeti",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "85401",
+  "name": "Aile Saadeti",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/574/1436716.jpg",
+  "w": 1632,
+  "h": 2448,
+  "sharp": 78.48,
+  "ent": 7.8,
+  "score": 1,
+  "status": "matched",
+  "path": "data/posters/v3/0c051f95a6c1.webp",
+  "prev": "data/posters/v2/0c051f95a6c1.webp",
+  "bg": null
  },
  "alsallah-vqmts": {
-  "at": 1794445851329,
+  "at": 1794453329802,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alsallah-vqmts"
@@ -1135,7 +1374,8 @@
   "score": 0.838,
   "status": "matched",
   "path": "data/posters/v3/4d4d39352390.webp",
-  "prev": "data/posters/v2/4d4d39352390.webp"
+  "prev": "data/posters/v2/4d4d39352390.webp",
+  "bg": null
  },
  "piyasa-vqstm": {
   "at": 1794444952021,
@@ -1153,7 +1393,12 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/488414d4d23f.webp",
-  "prev": "data/posters/v2/488414d4d23f.webp"
+  "prev": "data/posters/v2/488414d4d23f.webp",
+  "bg": {
+   "path": "data/posters/v4/488414d4d23f.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/557/1392631.jpg"
+  }
  },
  "bay-yanlis-hqvts": {
   "at": 1794444953856,
@@ -1171,7 +1416,12 @@
   "score": 0.928,
   "status": "matched",
   "path": "data/posters/v3/841f2867d77c.webp",
-  "prev": "data/posters/v2/841f2867d77c.webp"
+  "prev": "data/posters/v2/841f2867d77c.webp",
+  "bg": {
+   "path": "data/posters/v4/841f2867d77c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/268/670463.jpg"
+  }
  },
  "dila-hanim-kqvms": {
   "at": 1794444955261,
@@ -1189,7 +1439,8 @@
   "score": 0.739,
   "status": "matched",
   "path": "data/posters/v3/01036ca9f1a9.webp",
-  "prev": "data/posters/v2/01036ca9f1a9.webp"
+  "prev": "data/posters/v2/01036ca9f1a9.webp",
+  "bg": null
  },
  "delikanli": {
   "at": 1794444956252,
@@ -1207,7 +1458,12 @@
   "score": 0.813,
   "status": "matched",
   "path": "data/posters/v3/3771590b8fa4.webp",
-  "prev": "data/posters/v2/3771590b8fa4.webp"
+  "prev": "data/posters/v2/3771590b8fa4.webp",
+  "bg": {
+   "path": "data/posters/v4/3771590b8fa4.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/619/1548829.jpg"
+  }
  },
  "holding-hqmvp": {
   "at": 1794444957319,
@@ -1225,10 +1481,11 @@
   "score": 0.938,
   "status": "matched",
   "path": "data/posters/v3/773648e35b9c.webp",
-  "prev": "data/posters/v2/773648e35b9c.webp"
+  "prev": "data/posters/v2/773648e35b9c.webp",
+  "bg": null
  },
  "sayf-akhir-fqvms": {
-  "at": 1794445855186,
+  "at": 1794453331239,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for sayf-akhir-fqvms"
@@ -1249,29 +1506,34 @@
   "score": 0.911,
   "status": "matched",
   "path": "data/posters/v3/268bbd5c977d.webp",
-  "prev": "data/posters/v2/268bbd5c977d.webp"
+  "prev": "data/posters/v2/268bbd5c977d.webp",
+  "bg": {
+   "path": "data/posters/v4/268bbd5c977d.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1193361.jpg"
+  }
  },
  "altayer-alrafraf-mqvts": {
-  "at": 1794445856615,
+  "at": 1794453332658,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for altayer-alrafraf-mqvts"
  },
  "sosyete-jrqmv": {
-  "at": 1794445858039,
+  "at": 1794453334255,
   "tries": 1,
   "q": "sosyete",
   "status": "review",
   "note": "partial ambiguous: Yüksek Sosyete | Jet Sosyete"
  },
  "tabeeb-zplon": {
-  "at": 1794445858809,
+  "at": 1794453335117,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tabeeb-zplon"
  },
  "tabeeb-moejiza-kvmqs": {
-  "at": 1794445860497,
+  "at": 1794453336603,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tabeeb-moejiza-kvmqs"
@@ -1292,7 +1554,8 @@
   "score": 0.837,
   "status": "matched",
   "path": "data/posters/v3/89d1f216d198.webp",
-  "prev": "data/posters/v2/89d1f216d198.webp"
+  "prev": "data/posters/v2/89d1f216d198.webp",
+  "bg": null
  },
  "annenin-sirridir-kvqmt": {
   "at": 1794445862239,
@@ -1312,7 +1575,12 @@
   "score": 0.826,
   "status": "matched",
   "path": "data/posters/v3/2ceca631d125.webp",
-  "prev": "data/posters/v2/2ceca631d125.webp"
+  "prev": "data/posters/v2/2ceca631d125.webp",
+  "bg": {
+   "path": "data/posters/v4/2ceca631d125.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/403/1008159.jpg"
+  }
  },
  "iyilik-hqvmp": {
   "at": 1794444970467,
@@ -1330,10 +1598,15 @@
   "score": 0.85,
   "status": "matched",
   "path": "data/posters/v3/6dd9ed706c34.webp",
-  "prev": "data/posters/v2/6dd9ed706c34.webp"
+  "prev": "data/posters/v2/6dd9ed706c34.webp",
+  "bg": {
+   "path": "data/posters/v4/6dd9ed706c34.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/405/1013586.jpg"
+  }
  },
  "alaila-aqvnt": {
-  "at": 1794445865739,
+  "at": 1794453338188,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alaila-aqvnt"
@@ -1356,10 +1629,11 @@
   "score": 0.916,
   "status": "matched",
   "path": "data/posters/v3/d55e4a2271ac.webp",
-  "prev": "data/posters/v2/d55e4a2271ac.webp"
+  "prev": "data/posters/v2/d55e4a2271ac.webp",
+  "bg": null
  },
  "abqari-kntvs": {
-  "at": 1794445869670,
+  "at": 1794453340137,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for abqari-kntvs"
@@ -1380,7 +1654,12 @@
   "score": 0.841,
   "status": "matched",
   "path": "data/posters/v3/f164073ac14a.webp",
-  "prev": "data/posters/v2/f164073ac14a.webp"
+  "prev": "data/posters/v2/f164073ac14a.webp",
+  "bg": {
+   "path": "data/posters/v4/f164073ac14a.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/557792.jpg"
+  }
  },
  "ask-mqvrs": {
   "at": 1794444978359,
@@ -1398,7 +1677,8 @@
   "score": 0.836,
   "status": "matched",
   "path": "data/posters/v3/06dceb2fb7c1.webp",
-  "prev": "data/posters/v2/06dceb2fb7c1.webp"
+  "prev": "data/posters/v2/06dceb2fb7c1.webp",
+  "bg": null
  },
  "aci-ask-kvrmt": {
   "at": 1794445871127,
@@ -1418,10 +1698,11 @@
   "status": "matched",
   "path": "data/posters/v3/d967f2695a89.webp",
   "prev": "data/posters/v2/d967f2695a89.webp",
-  "lowres": true
+  "lowres": true,
+  "bg": null
  },
  "forbd-lqxem": {
-  "at": 1794445872124,
+  "at": 1794453341772,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for forbd-lqxem"
@@ -1442,7 +1723,12 @@
   "score": 0.665,
   "status": "matched",
   "path": "data/posters/v3/6ca4b18c3fcb.webp",
-  "prev": "data/posters/v2/6ca4b18c3fcb.webp"
+  "prev": "data/posters/v2/6ca4b18c3fcb.webp",
+  "bg": {
+   "path": "data/posters/v4/6ca4b18c3fcb.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/559202.jpg"
+  }
  },
  "ask-yeniden-vmgld": {
   "at": 1794444983624,
@@ -1460,7 +1746,8 @@
   "score": 0.935,
   "status": "matched",
   "path": "data/posters/v3/58a67f1d988d.webp",
-  "prev": "data/posters/v2/58a67f1d988d.webp"
+  "prev": "data/posters/v2/58a67f1d988d.webp",
+  "bg": null
  },
  "darisi-basimiza-bqsmv": {
   "at": 1794445873540,
@@ -1479,7 +1766,8 @@
   "score": 0.758,
   "status": "matched",
   "path": "data/posters/v3/debd0193df8e.webp",
-  "prev": "data/posters/v2/debd0193df8e.webp"
+  "prev": "data/posters/v2/debd0193df8e.webp",
+  "bg": null
  },
  "kordugum-bvfst": {
   "at": 1794444989207,
@@ -1497,7 +1785,8 @@
   "score": 0.931,
   "status": "matched",
   "path": "data/posters/v3/388ffd6d91b9.webp",
-  "prev": "data/posters/v2/388ffd6d91b9.webp"
+  "prev": "data/posters/v2/388ffd6d91b9.webp",
+  "bg": null
  },
  "kehribar-mqvts": {
   "at": 1794444991087,
@@ -1515,10 +1804,11 @@
   "score": 0.844,
   "status": "matched",
   "path": "data/posters/v3/caf046406ef6.webp",
-  "prev": "data/posters/v2/caf046406ef6.webp"
+  "prev": "data/posters/v2/caf046406ef6.webp",
+  "bg": null
  },
  "alanqaa-lqvms": {
-  "at": 1794445874746,
+  "at": 1794453343212,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alanqaa-lqvms"
@@ -1539,10 +1829,15 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/c85940c2d285.webp",
-  "prev": "data/posters/v2/c85940c2d285.webp"
+  "prev": "data/posters/v2/c85940c2d285.webp",
+  "bg": {
+   "path": "data/posters/v4/c85940c2d285.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/224/561703.jpg"
+  }
  },
  "ghaddar-fqvsm": {
-  "at": 1794445876153,
+  "at": 1794453344628,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ghaddar-fqvsm"
@@ -1563,10 +1858,11 @@
   "score": 0.799,
   "status": "matched",
   "path": "data/posters/v3/450c6b51b686.webp",
-  "prev": "data/posters/v2/450c6b51b686.webp"
+  "prev": "data/posters/v2/450c6b51b686.webp",
+  "bg": null
  },
  "alghurfah-kvstm": {
-  "at": 1794445878031,
+  "at": 1794453346049,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alghurfah-kvstm"
@@ -1587,10 +1883,15 @@
   "score": 0.826,
   "status": "matched",
   "path": "data/posters/v3/c1262e413c00.webp",
-  "prev": "data/posters/v2/c1262e413c00.webp"
+  "prev": "data/posters/v2/c1262e413c00.webp",
+  "bg": {
+   "path": "data/posters/v4/c1262e413c00.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/392/980843.jpg"
+  }
  },
  "yan-oda-vqmts": {
-  "at": 1794445879556,
+  "at": 1794453347470,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yan-oda-vqmts"
@@ -1611,7 +1912,12 @@
   "score": 0.826,
   "status": "matched",
   "path": "data/posters/v3/6d7b4336e1bd.webp",
-  "prev": "data/posters/v2/6d7b4336e1bd.webp"
+  "prev": "data/posters/v2/6d7b4336e1bd.webp",
+  "bg": {
+   "path": "data/posters/v4/6d7b4336e1bd.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/478/1196272.jpg"
+  }
  },
  "ceylan-vqstm": {
   "at": 1794445881296,
@@ -1631,10 +1937,11 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/34234c05551c.webp",
-  "prev": "data/posters/v2/34234c05551c.webp"
+  "prev": "data/posters/v2/34234c05551c.webp",
+  "bg": null
  },
  "zengin-kqvmt": {
-  "at": 1794445883656,
+  "at": 1794453348900,
   "tries": 1,
   "q": "zengin",
   "status": "review",
@@ -1656,7 +1963,12 @@
   "score": 1,
   "status": "matched",
   "path": "data/posters/v3/36b46224a4b5.webp",
-  "prev": "data/posters/v2/36b46224a4b5.webp"
+  "prev": "data/posters/v2/36b46224a4b5.webp",
+  "bg": {
+   "path": "data/posters/v4/36b46224a4b5.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/225/563321.jpg"
+  }
  },
  "hakim-mqvts": {
   "at": 1794445008487,
@@ -1674,7 +1986,12 @@
   "score": 1,
   "status": "matched",
   "path": "data/posters/v3/774f33aa6ea1.webp",
-  "prev": "data/posters/v2/774f33aa6ea1.webp"
+  "prev": "data/posters/v2/774f33aa6ea1.webp",
+  "bg": {
+   "path": "data/posters/v4/774f33aa6ea1.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/403/1007585.jpg"
+  }
  },
  "dip-nqtmv": {
   "at": 1794445009760,
@@ -1692,7 +2009,8 @@
   "score": 0.829,
   "status": "matched",
   "path": "data/posters/v3/36eb92eeb03b.webp",
-  "prev": "data/posters/v2/36eb92eeb03b.webp"
+  "prev": "data/posters/v2/36eb92eeb03b.webp",
+  "bg": null
  },
  "karadayi-npvtq": {
   "at": 1794445884364,
@@ -1711,7 +2029,8 @@
   "score": 0.779,
   "status": "matched",
   "path": "data/posters/v3/9540af3cb8b0.webp",
-  "prev": "data/posters/v2/9540af3cb8b0.webp"
+  "prev": "data/posters/v2/9540af3cb8b0.webp",
+  "bg": null
  },
  "cirkin": {
   "at": 1794445011804,
@@ -1729,10 +2048,11 @@
   "score": 0.927,
   "status": "matched",
   "path": "data/posters/v3/064295470bf2.webp",
-  "prev": "data/posters/v2/064295470bf2.webp"
+  "prev": "data/posters/v2/064295470bf2.webp",
+  "bg": null
  },
  "karayazi-pwlqs": {
-  "at": 1794445885577,
+  "at": 1794453349622,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for karayazi-pwlqs"
@@ -1753,7 +2073,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/d48d634ffa56.webp",
-  "prev": "data/posters/v2/d48d634ffa56.webp"
+  "prev": "data/posters/v2/d48d634ffa56.webp",
+  "bg": {
+   "path": "data/posters/v4/d48d634ffa56.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/268/671397.jpg"
+  }
  },
  "guzel-koylu-hvqrt": {
   "at": 1794445015623,
@@ -1771,10 +2096,11 @@
   "score": 0.953,
   "status": "matched",
   "path": "data/posters/v3/0c9c74bd5c07.webp",
-  "prev": "data/posters/v2/0c9c74bd5c07.webp"
+  "prev": "data/posters/v2/0c9c74bd5c07.webp",
+  "bg": null
  },
  "alqada-aqvtn": {
-  "at": 1794445886994,
+  "at": 1794453351040,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alqada-aqvtn"
@@ -1795,7 +2121,12 @@
   "score": 0.973,
   "status": "matched",
   "path": "data/posters/v3/5b150ff3290c.webp",
-  "prev": "data/posters/v2/5b150ff3290c.webp"
+  "prev": "data/posters/v2/5b150ff3290c.webp",
+  "bg": {
+   "path": "data/posters/v4/5b150ff3290c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/489/1223664.jpg"
+  }
  },
  "gun-isigi-vqstm": {
   "at": 1794445888417,
@@ -1815,7 +2146,8 @@
   "score": 0.85,
   "status": "matched",
   "path": "data/posters/v3/2120dc5dfdf6.webp",
-  "prev": "data/posters/v2/2120dc5dfdf6.webp"
+  "prev": "data/posters/v2/2120dc5dfdf6.webp",
+  "bg": null
  },
  "tuzlu-kahve": {
   "at": 1794445021035,
@@ -1833,10 +2165,15 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/bc81031639fa.webp",
-  "prev": "data/posters/v2/bc81031639fa.webp"
+  "prev": "data/posters/v2/bc81031639fa.webp",
+  "bg": {
+   "path": "data/posters/v4/bc81031639fa.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/639/1598074.jpg"
+  }
  },
  "yalanci-vqrms": {
-  "at": 1794445890837,
+  "at": 1794453352473,
   "tries": 1,
   "q": "yalanci",
   "conf": "high",
@@ -1869,7 +2206,8 @@
   "score": 0.685,
   "status": "matched",
   "path": "data/posters/v3/73d3e01b9efa.webp",
-  "prev": "data/posters/v2/73d3e01b9efa.webp"
+  "prev": "data/posters/v2/73d3e01b9efa.webp",
+  "bg": null
  },
  "yalancilar-ve-mumlari-dqvts": {
   "at": 1794445025853,
@@ -1887,10 +2225,15 @@
   "score": 0.969,
   "status": "matched",
   "path": "data/posters/v3/70ef32b142e3.webp",
-  "prev": "data/posters/v2/70ef32b142e3.webp"
+  "prev": "data/posters/v2/70ef32b142e3.webp",
+  "bg": {
+   "path": "data/posters/v4/70ef32b142e3.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/358/895851.jpg"
+  }
  },
  "kathba-kqvsm": {
-  "at": 1794445892893,
+  "at": 1794453355146,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for kathba-kqvsm"
@@ -1911,7 +2254,8 @@
   "score": 0.949,
   "status": "matched",
   "path": "data/posters/v3/7a7edb398a68.webp",
-  "prev": "data/posters/v2/7a7edb398a68.webp"
+  "prev": "data/posters/v2/7a7edb398a68.webp",
+  "bg": null
  },
  "elkizi-vqstm": {
   "at": 1794445030082,
@@ -1929,7 +2273,12 @@
   "score": 0.911,
   "status": "matched",
   "path": "data/posters/v3/8de4ef853bb8.webp",
-  "prev": "data/posters/v2/8de4ef853bb8.webp"
+  "prev": "data/posters/v2/8de4ef853bb8.webp",
+  "bg": {
+   "path": "data/posters/v4/8de4ef853bb8.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/365/914803.jpg"
+  }
  },
  "siyah-inci-mqvst": {
   "at": 1794445031426,
@@ -1947,7 +2296,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/5307b407eee9.webp",
-  "prev": "data/posters/v2/5307b407eee9.webp"
+  "prev": "data/posters/v2/5307b407eee9.webp",
+  "bg": {
+   "path": "data/posters/v4/5307b407eee9.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/398/996645.jpg"
+  }
  },
  "leke-kqvhs": {
   "at": 1794445032582,
@@ -1965,10 +2319,15 @@
   "score": 0.844,
   "status": "matched",
   "path": "data/posters/v3/8c4712f6fb40.webp",
-  "prev": "data/posters/v2/8c4712f6fb40.webp"
+  "prev": "data/posters/v2/8c4712f6fb40.webp",
+  "bg": {
+   "path": "data/posters/v4/8c4712f6fb40.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/225/564551.jpg"
+  }
  },
  "lahib-kqvms": {
-  "at": 1794445894327,
+  "at": 1794453356589,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lahib-kqvms"
@@ -1989,7 +2348,12 @@
   "score": 0.842,
   "status": "matched",
   "path": "data/posters/v3/0f28db2dee95.webp",
-  "prev": "data/posters/v2/0f28db2dee95.webp"
+  "prev": "data/posters/v2/0f28db2dee95.webp",
+  "bg": {
+   "path": "data/posters/v4/0f28db2dee95.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/227/569838.jpg"
+  }
  },
  "kopuk-kqvmt": {
   "at": 1794445038137,
@@ -2007,10 +2371,11 @@
   "score": 0.849,
   "status": "matched",
   "path": "data/posters/v3/0023c904193d.webp",
-  "prev": "data/posters/v2/0023c904193d.webp"
+  "prev": "data/posters/v2/0023c904193d.webp",
+  "bg": null
  },
  "motawahesh-fqnst": {
-  "at": 1794445895743,
+  "at": 1794453357992,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for motawahesh-fqnst"
@@ -2031,7 +2396,8 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/735f23c869bf.webp",
-  "prev": "data/posters/v2/735f23c869bf.webp"
+  "prev": "data/posters/v2/735f23c869bf.webp",
+  "bg": null
  },
  "kalpazan-kvprs": {
   "at": 1794445041940,
@@ -2049,13 +2415,36 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/edad8425d751.webp",
-  "prev": "data/posters/v2/edad8425d751.webp"
+  "prev": "data/posters/v2/edad8425d751.webp",
+  "bg": {
+   "path": "data/posters/v4/edad8425d751.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/538/1345464.jpg"
+  }
  },
  "sahtekarlar-raxen": {
-  "at": 1794445897175,
+  "at": 1794453359417,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for sahtekarlar-raxen"
+  "q": "sahtekarlar",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "87347",
+  "name": "Sahtekarlar",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/595/1489033.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 105.68,
+  "ent": 5.89,
+  "score": 0.815,
+  "status": "matched",
+  "path": "data/posters/v3/a6a05662a279.webp",
+  "prev": "data/posters/v2/a6a05662a279.webp",
+  "bg": {
+   "path": "data/posters/v4/a6a05662a279.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/589/1473471.jpg"
+  }
  },
  "medcezir-kqvtn": {
   "at": 1794445043800,
@@ -2073,7 +2462,8 @@
   "score": 0.839,
   "status": "matched",
   "path": "data/posters/v3/ee4b823e328d.webp",
-  "prev": "data/posters/v2/ee4b823e328d.webp"
+  "prev": "data/posters/v2/ee4b823e328d.webp",
+  "bg": null
  },
  "donence-wqvhs": {
   "at": 1794445044844,
@@ -2091,16 +2481,35 @@
   "score": 0.912,
   "status": "matched",
   "path": "data/posters/v3/4ade46fa4587.webp",
-  "prev": "data/posters/v2/4ade46fa4587.webp"
+  "prev": "data/posters/v2/4ade46fa4587.webp",
+  "bg": null
  },
  "uzak-sehir-qevan": {
-  "at": 1794445897899,
+  "at": 1794453363835,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for uzak-sehir-qevan"
+  "q": "uzak sehir",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "80669",
+  "name": "Uzak Şehir",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/638/1597031.jpg",
+  "w": 1600,
+  "h": 2133,
+  "sharp": 82.05,
+  "ent": 7.55,
+  "score": 0.945,
+  "status": "matched",
+  "path": "data/posters/v3/7357abd27dbf.webp",
+  "prev": "data/posters/v2/7357abd27dbf.webp",
+  "bg": {
+   "path": "data/posters/v4/7357abd27dbf.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/558/1396274.jpg"
+  }
  },
  "tlcty-fmsqr": {
-  "at": 1794445898606,
+  "at": 1794453369234,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tlcty-fmsqr"
@@ -2121,7 +2530,8 @@
   "score": 0.834,
   "status": "matched",
   "path": "data/posters/v3/d5b3a93bc5e1.webp",
-  "prev": "data/posters/v2/d5b3a93bc5e1.webp"
+  "prev": "data/posters/v2/d5b3a93bc5e1.webp",
+  "bg": null
  },
  "kusursuz-kiraci-nqvts": {
   "at": 1794445050158,
@@ -2139,22 +2549,45 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/181bc15f0453.webp",
-  "prev": "data/posters/v2/181bc15f0453.webp"
+  "prev": "data/posters/v2/181bc15f0453.webp",
+  "bg": {
+   "path": "data/posters/v4/181bc15f0453.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/419/1049054.jpg"
+  }
  },
  "mashbooh-kqvns": {
-  "at": 1794445900021,
+  "at": 1794453370654,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for mashbooh-kqvns"
  },
  "sahipsizler-qerul": {
-  "at": 1794445901440,
+  "at": 1794453372073,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for sahipsizler-qerul"
+  "q": "sahipsizler",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "79980",
+  "name": "Sahipsizler",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/540/1350697.jpg",
+  "w": 1242,
+  "h": 1720,
+  "sharp": 81.17,
+  "ent": 7.72,
+  "score": 0.963,
+  "status": "matched",
+  "path": "data/posters/v3/71d5c9e898a1.webp",
+  "prev": "data/posters/v2/71d5c9e898a1.webp",
+  "bg": {
+   "path": "data/posters/v4/71d5c9e898a1.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/538/1345466.jpg"
+  }
  },
  "ogretmen-vqstm": {
-  "at": 1794445902159,
+  "at": 1794453376598,
   "tries": 1,
   "q": "ogretmen",
   "conf": "high",
@@ -2187,7 +2620,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/681b78c60c52.webp",
-  "prev": "data/posters/v2/681b78c60c52.webp"
+  "prev": "data/posters/v2/681b78c60c52.webp",
+  "bg": {
+   "path": "data/posters/v4/681b78c60c52.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/639/1597735.jpg"
+  }
  },
  "kayip-fqvmt": {
   "at": 1794445904928,
@@ -2206,7 +2644,8 @@
   "score": 0.712,
   "status": "matched",
   "path": "data/posters/v3/2b95fcc88951.webp",
-  "prev": "data/posters/v2/2b95fcc88951.webp"
+  "prev": "data/posters/v2/2b95fcc88951.webp",
+  "bg": null
  },
  "kralice-hqvmt": {
   "at": 1794445906152,
@@ -2225,10 +2664,15 @@
   "score": 0.784,
   "status": "matched",
   "path": "data/posters/v3/270665edeb23.webp",
-  "prev": "data/posters/v2/270665edeb23.webp"
+  "prev": "data/posters/v2/270665edeb23.webp",
+  "bg": {
+   "path": "data/posters/v4/270665edeb23.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/452/1131806.jpg"
+  }
  },
  "yasak-mqvst": {
-  "at": 1794445907343,
+  "at": 1794453378816,
   "tries": 1,
   "q": "yasak",
   "status": "review",
@@ -2252,7 +2696,12 @@
   "score": 0.911,
   "status": "matched",
   "path": "data/posters/v3/bd6924806703.webp",
-  "prev": "data/posters/v2/bd6924806703.webp"
+  "prev": "data/posters/v2/bd6924806703.webp",
+  "bg": {
+   "path": "data/posters/v4/bd6924806703.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/298/745747.jpg"
+  }
  },
  "maviye-surgun-kvrmp": {
   "at": 1794445061579,
@@ -2270,7 +2719,8 @@
   "score": 0.906,
   "status": "matched",
   "path": "data/posters/v3/03e37c3e8e66.webp",
-  "prev": "data/posters/v2/03e37c3e8e66.webp"
+  "prev": "data/posters/v2/03e37c3e8e66.webp",
+  "bg": null
  },
  "yuzlesme-kvdrp": {
   "at": 1794445062916,
@@ -2288,7 +2738,12 @@
   "score": 0.842,
   "status": "matched",
   "path": "data/posters/v3/18b957cb12b6.webp",
-  "prev": "data/posters/v2/18b957cb12b6.webp"
+  "prev": "data/posters/v2/18b957cb12b6.webp",
+  "bg": {
+   "path": "data/posters/v4/18b957cb12b6.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/232/581917.jpg"
+  }
  },
  "icimizdeki-ates-vqmtp": {
   "at": 1794445064231,
@@ -2306,7 +2761,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/86812cd18d91.webp",
-  "prev": "data/posters/v2/86812cd18d91.webp"
+  "prev": "data/posters/v2/86812cd18d91.webp",
+  "bg": {
+   "path": "data/posters/v4/86812cd18d91.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034779.jpg"
+  }
  },
  "yildizlar-bana-uzak-fqvsm": {
   "at": 1794445065646,
@@ -2324,10 +2784,15 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/c325c0dac105.webp",
-  "prev": "data/posters/v2/c325c0dac105.webp"
+  "prev": "data/posters/v2/c325c0dac105.webp",
+  "bg": {
+   "path": "data/posters/v4/c325c0dac105.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/491/1228076.jpg"
+  }
  },
  "yildizlarsahidim-bqtsv": {
-  "at": 1794445908774,
+  "at": 1794453380240,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yildizlarsahidim-bqtsv"
@@ -2348,7 +2813,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/f22bc875dff4.webp",
-  "prev": "data/posters/v2/f22bc875dff4.webp"
+  "prev": "data/posters/v2/f22bc875dff4.webp",
+  "bg": {
+   "path": "data/posters/v4/f22bc875dff4.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1194727.jpg"
+  }
  },
  "kor-nokta-vqstm": {
   "at": 1794445069500,
@@ -2366,7 +2836,8 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/43dfc59085f2.webp",
-  "prev": "data/posters/v2/43dfc59085f2.webp"
+  "prev": "data/posters/v2/43dfc59085f2.webp",
+  "bg": null
  },
  "kacak-vpslr": {
   "at": 1794445070752,
@@ -2384,10 +2855,11 @@
   "score": 0.842,
   "status": "matched",
   "path": "data/posters/v3/6a4936f245ea.webp",
-  "prev": "data/posters/v2/6a4936f245ea.webp"
+  "prev": "data/posters/v2/6a4936f245ea.webp",
+  "bg": null
  },
  "rengarenk-hvstm": {
-  "at": 1794445910193,
+  "at": 1794453381665,
   "tries": 1,
   "q": "rengarenk",
   "conf": "high",
@@ -2405,13 +2877,13 @@
   "note": "candidate rejected: aspect"
  },
  "alyaka-wqfnt": {
-  "at": 1794445912481,
+  "at": 1794453383967,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alyaka-wqfnt"
  },
  "yakoot-fqmts": {
-  "at": 1794445913907,
+  "at": 1794453385401,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yakoot-fqmts"
@@ -2432,7 +2904,8 @@
   "score": 0.829,
   "status": "matched",
   "path": "data/posters/v3/08808cada384.webp",
-  "prev": "data/posters/v2/08808cada384.webp"
+  "prev": "data/posters/v2/08808cada384.webp",
+  "bg": null
  },
  "kadin-hqtsm": {
   "at": 1794445078370,
@@ -2450,7 +2923,12 @@
   "score": 0.967,
   "status": "matched",
   "path": "data/posters/v3/d05664a1c067.webp",
-  "prev": "data/posters/v2/d05664a1c067.webp"
+  "prev": "data/posters/v2/d05664a1c067.webp",
+  "bg": {
+   "path": "data/posters/v4/d05664a1c067.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/558048.jpg"
+  }
  },
  "bir-umut-yeter-hqvns": {
   "at": 1794445079768,
@@ -2468,7 +2946,8 @@
   "score": 0.812,
   "status": "matched",
   "path": "data/posters/v3/5f391f65002e.webp",
-  "prev": "data/posters/v2/5f391f65002e.webp"
+  "prev": "data/posters/v2/5f391f65002e.webp",
+  "bg": null
  },
  "anne-vpkrs": {
   "at": 1794445080955,
@@ -2486,7 +2965,12 @@
   "score": 0.819,
   "status": "matched",
   "path": "data/posters/v3/8ac3a1a8620f.webp",
-  "prev": "data/posters/v2/8ac3a1a8620f.webp"
+  "prev": "data/posters/v2/8ac3a1a8620f.webp",
+  "bg": {
+   "path": "data/posters/v4/8ac3a1a8620f.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/225/564139.jpg"
+  }
  },
  "tacsiz-prenses-kvstm": {
   "at": 1794445082227,
@@ -2504,22 +2988,59 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/d06b66fe3af9.webp",
-  "prev": "data/posters/v2/d06b66fe3af9.webp"
+  "prev": "data/posters/v2/d06b66fe3af9.webp",
+  "bg": {
+   "path": "data/posters/v4/d06b66fe3af9.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/441/1102835.jpg"
+  }
  },
  "ben-onun-annesiyim-porel": {
-  "at": 1794445915328,
+  "at": 1794453386816,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ben-onun-annesiyim-porel"
+  "q": "ben onun annesiyim",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "87727",
+  "name": "Ben Onun Annesiyim",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/593/1484308.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 81.77,
+  "ent": 7.71,
+  "score": 0.847,
+  "status": "matched",
+  "path": "data/posters/v3/4ef24a4e44e8.webp",
+  "prev": "data/posters/v2/4ef24a4e44e8.webp",
+  "bg": null
  },
  "ben-leman-pamik": {
-  "at": 1794445916046,
+  "at": 1794453389836,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ben-leman-pamik"
+  "q": "ben leman",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "86725",
+  "name": "Ben Leman",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/588/1472423.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 54.51,
+  "ent": 7.4,
+  "score": 0.845,
+  "status": "matched",
+  "path": "data/posters/v3/4c9ec6752fc9.webp",
+  "prev": "data/posters/v2/4c9ec6752fc9.webp",
+  "bg": {
+   "path": "data/posters/v4/4c9ec6752fc9.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/584/1460993.jpg"
+  }
  },
  "atroq-babi-fqvms": {
-  "at": 1794445916763,
+  "at": 1794453394232,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for atroq-babi-fqvms"
@@ -2540,7 +3061,12 @@
   "score": 0.811,
   "status": "matched",
   "path": "data/posters/v3/d467febbbd3c.webp",
-  "prev": "data/posters/v2/d467febbbd3c.webp"
+  "prev": "data/posters/v2/d467febbbd3c.webp",
+  "bg": {
+   "path": "data/posters/v4/d467febbbd3c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/225/563238.jpg"
+  }
  },
  "sen-benimsin-vqrmt": {
   "at": 1794445088330,
@@ -2558,13 +3084,36 @@
   "score": 0.848,
   "status": "matched",
   "path": "data/posters/v3/19b753482769.webp",
-  "prev": "data/posters/v2/19b753482769.webp"
+  "prev": "data/posters/v2/19b753482769.webp",
+  "bg": {
+   "path": "data/posters/v4/19b753482769.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1194195.jpg"
+  }
  },
  "sevdigim-sensin-gurex": {
-  "at": 1794445918196,
+  "at": 1794453395987,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for sevdigim-sensin-gurex"
+  "q": "sevdigim sensin",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "88454",
+  "name": "Sevdiğim Sensin",
+  "premiered": "2026",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/612/1532097.jpg",
+  "w": 694,
+  "h": 1002,
+  "sharp": 67.97,
+  "ent": 7.74,
+  "score": 0.845,
+  "status": "matched",
+  "path": "data/posters/v3/c6f15811758d.webp",
+  "prev": "data/posters/v2/c6f15811758d.webp",
+  "bg": {
+   "path": "data/posters/v4/c6f15811758d.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/599/1498080.jpg"
+  }
  },
  "vatanim-sensin-rqmpv": {
   "at": 1794445090254,
@@ -2582,10 +3131,15 @@
   "score": 0.84,
   "status": "matched",
   "path": "data/posters/v3/56f8c4ea20cf.webp",
-  "prev": "data/posters/v2/56f8c4ea20cf.webp"
+  "prev": "data/posters/v2/56f8c4ea20cf.webp",
+  "bg": {
+   "path": "data/posters/v4/56f8c4ea20cf.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/222/555376.jpg"
+  }
  },
  "seni-bekledim-kqvts": {
-  "at": 1794445918913,
+  "at": 1794453399681,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for seni-bekledim-kqvts"
@@ -2606,7 +3160,8 @@
   "score": 0.83,
   "status": "matched",
   "path": "data/posters/v3/d48f7d77e174.webp",
-  "prev": "data/posters/v2/d48f7d77e174.webp"
+  "prev": "data/posters/v2/d48f7d77e174.webp",
+  "bg": null
  },
  "bugunun-saraylisi-bqvmt": {
   "at": 1794445094090,
@@ -2624,16 +3179,17 @@
   "score": 0.838,
   "status": "matched",
   "path": "data/posters/v3/91ddeb89e46e.webp",
-  "prev": "data/posters/v2/91ddeb89e46e.webp"
+  "prev": "data/posters/v2/91ddeb89e46e.webp",
+  "bg": null
  },
  "babel-nqfds": {
-  "at": 1794445920343,
+  "at": 1794453401099,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for babel-nqfds"
  },
  "yeni-baslangiclar-kqvms": {
-  "at": 1794445921780,
+  "at": 1794453402547,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yeni-baslangiclar-kqvms"
@@ -2654,7 +3210,12 @@
   "score": 0.835,
   "status": "matched",
   "path": "data/posters/v3/822a6f859b6a.webp",
-  "prev": "data/posters/v2/822a6f859b6a.webp"
+  "prev": "data/posters/v2/822a6f859b6a.webp",
+  "bg": {
+   "path": "data/posters/v4/822a6f859b6a.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/420/1052265.jpg"
+  }
  },
  "gunesin-kizlari-lqvps": {
   "at": 1794445100220,
@@ -2672,7 +3233,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/6dc4e76ea874.webp",
-  "prev": "data/posters/v2/6dc4e76ea874.webp"
+  "prev": "data/posters/v2/6dc4e76ea874.webp",
+  "bg": null
  },
  "bahar-kvmts": {
   "at": 1794445101438,
@@ -2690,7 +3252,12 @@
   "score": 0.998,
   "status": "matched",
   "path": "data/posters/v3/b209688cbd86.webp",
-  "prev": "data/posters/v2/b209688cbd86.webp"
+  "prev": "data/posters/v2/b209688cbd86.webp",
+  "bg": {
+   "path": "data/posters/v4/b209688cbd86.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/501/1253051.jpg"
+  }
  },
  "poyraz-karayel-gqtnm": {
   "at": 1794445102797,
@@ -2708,7 +3275,12 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/14e952d7c28e.webp",
-  "prev": "data/posters/v2/14e952d7c28e.webp"
+  "prev": "data/posters/v2/14e952d7c28e.webp",
+  "bg": {
+   "path": "data/posters/v4/14e952d7c28e.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/288/721448.jpg"
+  }
  },
  "kagit-ev-vqsmr": {
   "at": 1794445103838,
@@ -2726,7 +3298,12 @@
   "score": 0.874,
   "status": "matched",
   "path": "data/posters/v3/8d0aade3e451.webp",
-  "prev": "data/posters/v2/8d0aade3e451.webp"
+  "prev": "data/posters/v2/8d0aade3e451.webp",
+  "bg": {
+   "path": "data/posters/v4/8d0aade3e451.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/309/773475.jpg"
+  }
  },
  "tatar-ramazan-vqstm": {
   "at": 1794445105569,
@@ -2744,19 +3321,52 @@
   "score": 0.842,
   "status": "matched",
   "path": "data/posters/v3/4b6ed02fc52e.webp",
-  "prev": "data/posters/v2/4b6ed02fc52e.webp"
+  "prev": "data/posters/v2/4b6ed02fc52e.webp",
+  "bg": {
+   "path": "data/posters/v4/4b6ed02fc52e.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034869.jpg"
+  }
  },
  "yeralti-qovem": {
-  "at": 1794445923203,
+  "at": 1794453403972,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yeralti-qovem"
+  "q": "yeralti",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "89250",
+  "name": "Yeraltı",
+  "premiered": "2026",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/607/1518721.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 77.1,
+  "ent": 7.28,
+  "score": 0.843,
+  "status": "matched",
+  "path": "data/posters/v3/e531a6675b56.webp",
+  "prev": "data/posters/v2/e531a6675b56.webp",
+  "bg": null
  },
  "ayni-yagmur-altinda-qovem": {
-  "at": 1794445924073,
+  "at": 1794453406961,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ayni-yagmur-altinda-qovem"
+  "q": "ayni yagmur altinda",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "90134",
+  "name": "Aynı Yağmur Altında",
+  "premiered": "2026",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/612/1532342.jpg",
+  "w": 1206,
+  "h": 1809,
+  "sharp": 84.17,
+  "ent": 7.53,
+  "score": 1,
+  "status": "matched",
+  "path": "data/posters/v3/0cf02d84964b.webp",
+  "prev": "data/posters/v2/0cf02d84964b.webp",
+  "bg": null
  },
  "dayan-fzrwd": {
   "at": 1794445924951,
@@ -2776,7 +3386,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/2398585939b0.webp",
-  "prev": "data/posters/v2/2398585939b0.webp"
+  "prev": "data/posters/v2/2398585939b0.webp",
+  "bg": {
+   "path": "data/posters/v4/2398585939b0.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/478/1196356.jpg"
+  }
  },
  "hatirla-gonul-mqrsv": {
   "at": 1794445109666,
@@ -2794,7 +3409,12 @@
   "score": 0.721,
   "status": "matched",
   "path": "data/posters/v3/8bcc0f58c0a3.webp",
-  "prev": "data/posters/v2/8bcc0f58c0a3.webp"
+  "prev": "data/posters/v2/8bcc0f58c0a3.webp",
+  "bg": {
+   "path": "data/posters/v4/8bcc0f58c0a3.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/301/754615.jpg"
+  }
  },
  "can-kiriklari-gmtvq": {
   "at": 1794445110836,
@@ -2812,7 +3432,12 @@
   "score": 0.832,
   "status": "matched",
   "path": "data/posters/v3/c2f5c8d4198b.webp",
-  "prev": "data/posters/v2/c2f5c8d4198b.webp"
+  "prev": "data/posters/v2/c2f5c8d4198b.webp",
+  "bg": {
+   "path": "data/posters/v4/c2f5c8d4198b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/168/420524.jpg"
+  }
  },
  "sahin-tepesi-lqmrv": {
   "at": 1794445112014,
@@ -2830,7 +3455,8 @@
   "score": 0.687,
   "status": "matched",
   "path": "data/posters/v3/9c6856c812f0.webp",
-  "prev": "data/posters/v2/9c6856c812f0.webp"
+  "prev": "data/posters/v2/9c6856c812f0.webp",
+  "bg": null
  },
  "o-kiz-hmvrt": {
   "at": 1794445115444,
@@ -2848,7 +3474,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/b0399eb5fd94.webp",
-  "prev": "data/posters/v2/b0399eb5fd94.webp"
+  "prev": "data/posters/v2/b0399eb5fd94.webp",
+  "bg": null
  },
  "o-hayat-benim-ktsrv": {
   "at": 1794445116669,
@@ -2866,10 +3493,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/6d6c6123065f.webp",
-  "prev": "data/posters/v2/6d6c6123065f.webp"
+  "prev": "data/posters/v2/6d6c6123065f.webp",
+  "bg": {
+   "path": "data/posters/v4/6d6c6123065f.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1194234.jpg"
+  }
  },
  "uckizkardes-mplfv": {
-  "at": 1794445927786,
+  "at": 1794453410070,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for uckizkardes-mplfv"
@@ -2890,7 +3522,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/a24e9d2a8366.webp",
-  "prev": "data/posters/v2/a24e9d2a8366.webp"
+  "prev": "data/posters/v2/a24e9d2a8366.webp",
+  "bg": {
+   "path": "data/posters/v4/a24e9d2a8366.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/377/944088.jpg"
+  }
  },
  "ufak-tefek-kqvns": {
   "at": 1794445929210,
@@ -2910,7 +3547,8 @@
   "score": 0.831,
   "status": "matched",
   "path": "data/posters/v3/5dfa6d5ff88a.webp",
-  "prev": "data/posters/v2/5dfa6d5ff88a.webp"
+  "prev": "data/posters/v2/5dfa6d5ff88a.webp",
+  "bg": null
  },
  "kalp-yarasi-tqzfm": {
   "at": 1794445121740,
@@ -2928,10 +3566,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/6fae48288daa.webp",
-  "prev": "data/posters/v2/6fae48288daa.webp"
+  "prev": "data/posters/v2/6fae48288daa.webp",
+  "bg": {
+   "path": "data/posters/v4/6fae48288daa.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/325/813718.jpg"
+  }
  },
  "cesur-ve-guzel-tmqvs": {
-  "at": 1794445931381,
+  "at": 1794453411477,
   "tries": 1,
   "q": "cesur ve guzel",
   "conf": "high",
@@ -2949,7 +3592,7 @@
   "note": "candidate rejected: aspect"
  },
  "gul-jamal-fqnts": {
-  "at": 1794445933416,
+  "at": 1794453413423,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for gul-jamal-fqnts"
@@ -2971,10 +3614,11 @@
   "score": 0.731,
   "status": "matched",
   "path": "data/posters/v3/777ec2a19f56.webp",
-  "prev": "data/posters/v2/777ec2a19f56.webp"
+  "prev": "data/posters/v2/777ec2a19f56.webp",
+  "bg": null
  },
  "siyah-ask-kqvmp": {
-  "at": 1794445936016,
+  "at": 1794453414850,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for siyah-ask-kqvmp"
@@ -2995,7 +3639,12 @@
   "score": 0.833,
   "status": "matched",
   "path": "data/posters/v3/770de346eeae.webp",
-  "prev": "data/posters/v2/770de346eeae.webp"
+  "prev": "data/posters/v2/770de346eeae.webp",
+  "bg": {
+   "path": "data/posters/v4/770de346eeae.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/557895.jpg"
+  }
  },
  "meleklerin-aski-hqsvt": {
   "at": 1794445131167,
@@ -3013,7 +3662,8 @@
   "score": 0.896,
   "status": "matched",
   "path": "data/posters/v3/ac3461678e71.webp",
-  "prev": "data/posters/v2/ac3461678e71.webp"
+  "prev": "data/posters/v2/ac3461678e71.webp",
+  "bg": null
  },
  "kazara-ask-pvmqt": {
   "at": 1794445132420,
@@ -3031,10 +3681,15 @@
   "score": 0.912,
   "status": "matched",
   "path": "data/posters/v3/eabc110fdd97.webp",
-  "prev": "data/posters/v2/eabc110fdd97.webp"
+  "prev": "data/posters/v2/eabc110fdd97.webp",
+  "bg": {
+   "path": "data/posters/v4/eabc110fdd97.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/321/803194.jpg"
+  }
  },
  "hob-bila-hodood-sqvjm": {
-  "at": 1794445937454,
+  "at": 1794453416256,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hob-bila-hodood-sqvjm"
@@ -3055,7 +3710,12 @@
   "score": 0.802,
   "status": "matched",
   "path": "data/posters/v3/1292b87c5beb.webp",
-  "prev": "data/posters/v2/1292b87c5beb.webp"
+  "prev": "data/posters/v2/1292b87c5beb.webp",
+  "bg": {
+   "path": "data/posters/v4/1292b87c5beb.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/559150.jpg"
+  }
  },
  "ask-evlilik-bosanma-hqvst": {
   "at": 1794445137710,
@@ -3073,10 +3733,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/b0d04b07ba02.webp",
-  "prev": "data/posters/v2/b0d04b07ba02.webp"
+  "prev": "data/posters/v2/b0d04b07ba02.webp",
+  "bg": {
+   "path": "data/posters/v4/b0d04b07ba02.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/544/1360457.jpg"
+  }
  },
  "hob-fi-alaliyah-jqvms": {
-  "at": 1794445938875,
+  "at": 1794453417663,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hob-fi-alaliyah-jqvms"
@@ -3097,7 +3762,12 @@
   "score": 0.788,
   "status": "matched",
   "path": "data/posters/v3/954e62f86166.webp",
-  "prev": "data/posters/v2/954e62f86166.webp"
+  "prev": "data/posters/v2/954e62f86166.webp",
+  "bg": {
+   "path": "data/posters/v4/954e62f86166.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/227/568579.jpg"
+  }
  },
  "muhtemel-ask": {
   "at": 1794445141647,
@@ -3115,19 +3785,34 @@
   "score": 0.753,
   "status": "matched",
   "path": "data/posters/v3/20c6805d1c08.webp",
-  "prev": "data/posters/v2/20c6805d1c08.webp"
+  "prev": "data/posters/v2/20c6805d1c08.webp",
+  "bg": null
  },
  "hob-mantiq-fqvns": {
-  "at": 1794445940304,
+  "at": 1794453419080,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hob-mantiq-fqvns"
  },
  "ask-ve-gozyasi-qorim": {
-  "at": 1794445942013,
+  "at": 1794453420500,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ask-ve-gozyasi-qorim"
+  "q": "ask ve gozyasi",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "86727",
+  "name": "Aşk ve Gözyaşı",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/597/1493721.jpg",
+  "w": 1170,
+  "h": 1755,
+  "sharp": 91.21,
+  "ent": 6.85,
+  "score": 0.987,
+  "status": "matched",
+  "path": "data/posters/v3/c08a0bf82122.webp",
+  "prev": "data/posters/v2/c08a0bf82122.webp",
+  "bg": null
  },
  "sevdan-bir-ates": {
   "at": 1794445942721,
@@ -3146,7 +3831,8 @@
   "score": 0.908,
   "status": "matched",
   "path": "data/posters/v3/f97faed7d355.webp",
-  "prev": "data/posters/v2/f97faed7d355.webp"
+  "prev": "data/posters/v2/f97faed7d355.webp",
+  "bg": null
  },
  "sevdam-karadeniz": {
   "at": 1794445147101,
@@ -3164,7 +3850,12 @@
   "score": 0.955,
   "status": "matched",
   "path": "data/posters/v3/8d602f32ad79.webp",
-  "prev": "data/posters/v2/8d602f32ad79.webp"
+  "prev": "data/posters/v2/8d602f32ad79.webp",
+  "bg": {
+   "path": "data/posters/v4/8d602f32ad79.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/638/1597424.jpg"
+  }
  },
  "elbet-bir-gun-kvrms": {
   "at": 1794445148443,
@@ -3182,10 +3873,15 @@
   "score": 0.911,
   "status": "matched",
   "path": "data/posters/v3/6a17aa9e5a5b.webp",
-  "prev": "data/posters/v2/6a17aa9e5a5b.webp"
+  "prev": "data/posters/v2/6a17aa9e5a5b.webp",
+  "bg": {
+   "path": "data/posters/v4/6a17aa9e5a5b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/392/981292.jpg"
+  }
  },
  "olenekadar-rmpts": {
-  "at": 1794445944368,
+  "at": 1794453423521,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for olenekadar-rmpts"
@@ -3206,7 +3902,12 @@
   "score": 0.911,
   "status": "matched",
   "path": "data/posters/v3/bc48841a58bb.webp",
-  "prev": "data/posters/v2/bc48841a58bb.webp"
+  "prev": "data/posters/v2/bc48841a58bb.webp",
+  "bg": {
+   "path": "data/posters/v4/bc48841a58bb.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1194141.jpg"
+  }
  },
  "dilek-tasi-kvrmt": {
   "at": 1794445152101,
@@ -3224,10 +3925,11 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/edc888f2480c.webp",
-  "prev": "data/posters/v2/edc888f2480c.webp"
+  "prev": "data/posters/v2/edc888f2480c.webp",
+  "bg": null
  },
  "hijrah-waraqa-kvmqs": {
-  "at": 1794445945776,
+  "at": 1794453424951,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hijrah-waraqa-kvmqs"
@@ -3248,7 +3950,8 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/1710811b1038.webp",
-  "prev": "data/posters/v2/1710811b1038.webp"
+  "prev": "data/posters/v2/1710811b1038.webp",
+  "bg": null
  },
  "paramparca-bqvtn": {
   "at": 1794445155940,
@@ -3266,7 +3969,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/c1196030e8dc.webp",
-  "prev": "data/posters/v2/c1196030e8dc.webp"
+  "prev": "data/posters/v2/c1196030e8dc.webp",
+  "bg": {
+   "path": "data/posters/v4/c1196030e8dc.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/227/568592.jpg"
+  }
  },
  "bir-deniz-hikayesi-kmvrt": {
   "at": 1794445157154,
@@ -3284,16 +3992,17 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/57aed7503dbe.webp",
-  "prev": "data/posters/v2/57aed7503dbe.webp"
+  "prev": "data/posters/v2/57aed7503dbe.webp",
+  "bg": null
  },
  "bodrummasali-rgxne": {
-  "at": 1794445947178,
+  "at": 1794453426398,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for bodrummasali-rgxne"
  },
  "jazeera-kvmts": {
-  "at": 1794445948644,
+  "at": 1794453427835,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for jazeera-kvmts"
@@ -3314,10 +4023,15 @@
   "score": 0.77,
   "status": "matched",
   "path": "data/posters/v3/34af82f940b6.webp",
-  "prev": "data/posters/v2/34af82f940b6.webp"
+  "prev": "data/posters/v2/34af82f940b6.webp",
+  "bg": {
+   "path": "data/posters/v4/34af82f940b6.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1193367.jpg"
+  }
  },
  "yazin-hikayesi-vqstm": {
-  "at": 1794445950172,
+  "at": 1794453429259,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yazin-hikayesi-vqstm"
@@ -3338,13 +4052,32 @@
   "score": 0.947,
   "status": "matched",
   "path": "data/posters/v3/a82f99ee5f5a.webp",
-  "prev": "data/posters/v2/a82f99ee5f5a.webp"
+  "prev": "data/posters/v2/a82f99ee5f5a.webp",
+  "bg": {
+   "path": "data/posters/v4/a82f99ee5f5a.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/201/504598.jpg"
+  }
  },
  "bir-gece-masali-qared": {
-  "at": 1794445952046,
+  "at": 1794453430683,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for bir-gece-masali-qared"
+  "q": "bir gece masali",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "79045",
+  "name": "Bir Gece Masalı",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/532/1330117.jpg",
+  "w": 1253,
+  "h": 1600,
+  "sharp": 66.29,
+  "ent": 7.79,
+  "score": 0.923,
+  "status": "matched",
+  "path": "data/posters/v3/17aa7d8e62f3.webp",
+  "prev": "data/posters/v2/17aa7d8e62f3.webp",
+  "bg": null
  },
  "gul-masali-hqvtn": {
   "at": 1794445165871,
@@ -3362,7 +4095,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/d5e9925ec71b.webp",
-  "prev": "data/posters/v2/d5e9925ec71b.webp"
+  "prev": "data/posters/v2/d5e9925ec71b.webp",
+  "bg": {
+   "path": "data/posters/v4/d5e9925ec71b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/413/1033591.jpg"
+  }
  },
  "bizim-hikaye-hqvnt": {
   "at": 1794445167086,
@@ -3380,7 +4118,8 @@
   "score": 0.835,
   "status": "matched",
   "path": "data/posters/v3/e5fe9d9c9c64.webp",
-  "prev": "data/posters/v2/e5fe9d9c9c64.webp"
+  "prev": "data/posters/v2/e5fe9d9c9c64.webp",
+  "bg": null
  },
  "hekimoglu-vqstm": {
   "at": 1794445168330,
@@ -3398,7 +4137,12 @@
   "score": 0.733,
   "status": "matched",
   "path": "data/posters/v3/f617d430a880.webp",
-  "prev": "data/posters/v2/f617d430a880.webp"
+  "prev": "data/posters/v2/f617d430a880.webp",
+  "bg": {
+   "path": "data/posters/v4/f617d430a880.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/229/574973.jpg"
+  }
  },
  "halka-rqmtp": {
   "at": 1794445952768,
@@ -3417,16 +4161,39 @@
   "score": 0.786,
   "status": "matched",
   "path": "data/posters/v3/613f627ef34b.webp",
-  "prev": "data/posters/v2/613f627ef34b.webp"
+  "prev": "data/posters/v2/613f627ef34b.webp",
+  "bg": {
+   "path": "data/posters/v4/613f627ef34b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/558414.jpg"
+  }
  },
  "esref-ruya-kavim": {
-  "at": 1794445954661,
+  "at": 1794453434169,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for esref-ruya-kavim"
+  "q": "esref ruya",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "82454",
+  "name": "Eşref Rüya",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/559/1398881.jpg",
+  "w": 1236,
+  "h": 1484,
+  "sharp": 73.08,
+  "ent": 7.39,
+  "score": 0.898,
+  "status": "matched",
+  "path": "data/posters/v3/e895829a41a7.webp",
+  "prev": "data/posters/v2/e895829a41a7.webp",
+  "bg": {
+   "path": "data/posters/v4/e895829a41a7.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/587/1469400.jpg"
+  }
  },
  "baskalarin-hayati": {
-  "at": 1794445955427,
+  "at": 1794453437855,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for baskalarin-hayati"
@@ -3447,7 +4214,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/0c43224a4ff4.webp",
-  "prev": "data/posters/v2/0c43224a4ff4.webp"
+  "prev": "data/posters/v2/0c43224a4ff4.webp",
+  "bg": null
  },
  "yeni-hayat-vqsmn": {
   "at": 1794445173348,
@@ -3465,10 +4233,11 @@
   "score": 0.963,
   "status": "matched",
   "path": "data/posters/v3/cebf2ae76708.webp",
-  "prev": "data/posters/v2/cebf2ae76708.webp"
+  "prev": "data/posters/v2/cebf2ae76708.webp",
+  "bg": null
  },
  "hayati-alraeaah-dvmqt": {
-  "at": 1794445956158,
+  "at": 1794453438660,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hayati-alraeaah-dvmqt"
@@ -3489,7 +4258,8 @@
   "score": 0.678,
   "status": "matched",
   "path": "data/posters/v3/138fa4085d43.webp",
-  "prev": "data/posters/v2/138fa4085d43.webp"
+  "prev": "data/posters/v2/138fa4085d43.webp",
+  "bg": null
  },
  "gunesin-dogdugu-yer": {
   "at": 1794445179319,
@@ -3507,7 +4277,12 @@
   "score": 0.986,
   "status": "matched",
   "path": "data/posters/v3/9b38dd3013de.webp",
-  "prev": "data/posters/v2/9b38dd3013de.webp"
+  "prev": "data/posters/v2/9b38dd3013de.webp",
+  "bg": {
+   "path": "data/posters/v4/9b38dd3013de.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/639/1599924.jpg"
+  }
  },
  "kayitdisi-pqvsm": {
   "at": 1794445183483,
@@ -3525,7 +4300,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/a5c402bbf82b.webp",
-  "prev": "data/posters/v2/a5c402bbf82b.webp"
+  "prev": "data/posters/v2/a5c402bbf82b.webp",
+  "bg": null
  },
  "gonulcelen-wrmtq": {
   "at": 1794445187727,
@@ -3543,10 +4319,11 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/5112064d2a23.webp",
-  "prev": "data/posters/v2/5112064d2a23.webp"
+  "prev": "data/posters/v2/5112064d2a23.webp",
+  "bg": null
  },
  "khabbini-vqsmr": {
-  "at": 1794445957589,
+  "at": 1794453440292,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for khabbini-vqsmr"
@@ -3567,22 +4344,41 @@
   "score": 0.727,
   "status": "matched",
   "path": "data/posters/v3/f2db01a490c1.webp",
-  "prev": "data/posters/v2/f2db01a490c1.webp"
+  "prev": "data/posters/v2/f2db01a490c1.webp",
+  "bg": null
  },
  "carpinti-karen": {
-  "at": 1794445958987,
+  "at": 1794453441806,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for carpinti-karen"
+  "q": "carpinti",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "86350",
+  "name": "Çarpıntı",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/581/1454650.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 54.43,
+  "ent": 7.45,
+  "score": 0.846,
+  "status": "matched",
+  "path": "data/posters/v3/8ebf9a051993.webp",
+  "prev": "data/posters/v2/8ebf9a051993.webp",
+  "bg": {
+   "path": "data/posters/v4/8ebf9a051993.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/581/1454658.jpg"
+  }
  },
  "don-an-tashoor-kvmts": {
-  "at": 1794445959701,
+  "at": 1794453446423,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for don-an-tashoor-kvmts"
  },
  "deen-rooh-fqvts": {
-  "at": 1794445961375,
+  "at": 1794453447836,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for deen-rooh-fqvts"
@@ -3603,16 +4399,17 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/304eb5aa3cec.webp",
-  "prev": "data/posters/v2/304eb5aa3cec.webp"
+  "prev": "data/posters/v2/304eb5aa3cec.webp",
+  "bg": null
  },
  "ogulkokusu-fzqtm": {
-  "at": 1794445963004,
+  "at": 1794453449264,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ogulkokusu-fzqtm"
  },
  "alsunduq-fqmts": {
-  "at": 1794445964447,
+  "at": 1794453450686,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alsunduq-fqmts"
@@ -3633,7 +4430,12 @@
   "score": 0.832,
   "status": "matched",
   "path": "data/posters/v3/337223650acf.webp",
-  "prev": "data/posters/v2/337223650acf.webp"
+  "prev": "data/posters/v2/337223650acf.webp",
+  "bg": {
+   "path": "data/posters/v4/337223650acf.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/224/561570.jpg"
+  }
  },
  "ramo-kvnts": {
   "at": 1794445202141,
@@ -3651,7 +4453,8 @@
   "score": 0.85,
   "status": "matched",
   "path": "data/posters/v3/4ec062312f73.webp",
-  "prev": "data/posters/v2/4ec062312f73.webp"
+  "prev": "data/posters/v2/4ec062312f73.webp",
+  "bg": null
  },
  "cop-adam-vstpm": {
   "at": 1794445203801,
@@ -3669,10 +4472,11 @@
   "score": 0.841,
   "status": "matched",
   "path": "data/posters/v3/7ebc780139dd.webp",
-  "prev": "data/posters/v2/7ebc780139dd.webp"
+  "prev": "data/posters/v2/7ebc780139dd.webp",
+  "bg": null
  },
  "risalat-wadae-lmqst": {
-  "at": 1794445965879,
+  "at": 1794453452107,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for risalat-wadae-lmqst"
@@ -3694,7 +4498,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/941e58b4f176.webp",
-  "prev": "data/posters/v2/941e58b4f176.webp"
+  "prev": "data/posters/v2/941e58b4f176.webp",
+  "bg": {
+   "path": "data/posters/v4/941e58b4f176.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/477/1193167.jpg"
+  }
  },
  "deli-ruzgar-vpmst": {
   "at": 1794445968995,
@@ -3714,7 +4523,12 @@
   "score": 0.958,
   "status": "matched",
   "path": "data/posters/v3/e27fd387b263.webp",
-  "prev": "data/posters/v2/e27fd387b263.webp"
+  "prev": "data/posters/v2/e27fd387b263.webp",
+  "bg": {
+   "path": "data/posters/v4/e27fd387b263.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/166/415684.jpg"
+  }
  },
  "zemheri-kqvns": {
   "at": 1794445209879,
@@ -3732,10 +4546,15 @@
   "score": 0.837,
   "status": "matched",
   "path": "data/posters/v3/47dfbf5c3411.webp",
-  "prev": "data/posters/v2/47dfbf5c3411.webp"
+  "prev": "data/posters/v2/47dfbf5c3411.webp",
+  "bg": {
+   "path": "data/posters/v4/47dfbf5c3411.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/237/594932.jpg"
+  }
  },
  "zahret-althalouth-kqvmt": {
-  "at": 1794445971140,
+  "at": 1794453453539,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for zahret-althalouth-kqvmt"
@@ -3756,7 +4575,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/67dc12a69eb9.webp",
-  "prev": "data/posters/v2/67dc12a69eb9.webp"
+  "prev": "data/posters/v2/67dc12a69eb9.webp",
+  "bg": {
+   "path": "data/posters/v4/67dc12a69eb9.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/464/1161969.jpg"
+  }
  },
  "tehlikeli-karim-vqrpt": {
   "at": 1794445214053,
@@ -3774,7 +4598,8 @@
   "score": 0.8,
   "status": "matched",
   "path": "data/posters/v3/23cd5e56dcd4.webp",
-  "prev": "data/posters/v2/23cd5e56dcd4.webp"
+  "prev": "data/posters/v2/23cd5e56dcd4.webp",
+  "bg": null
  },
  "kalp-hirsizi-mqrvp": {
   "at": 1794445215132,
@@ -3792,7 +4617,8 @@
   "score": 0.815,
   "status": "matched",
   "path": "data/posters/v3/3d6e538021ca.webp",
-  "prev": "data/posters/v2/3d6e538021ca.webp"
+  "prev": "data/posters/v2/3d6e538021ca.webp",
+  "bg": null
  },
  "atesbocegi-kqvsm": {
   "at": 1794445216288,
@@ -3810,7 +4636,8 @@
   "score": 0.966,
   "status": "matched",
   "path": "data/posters/v3/e42c7a057a3c.webp",
-  "prev": "data/posters/v2/e42c7a057a3c.webp"
+  "prev": "data/posters/v2/e42c7a057a3c.webp",
+  "bg": null
  },
  "ikimizin-sirri-lptmq": {
   "at": 1794445217548,
@@ -3828,7 +4655,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/5602069a66f5.webp",
-  "prev": "data/posters/v2/5602069a66f5.webp"
+  "prev": "data/posters/v2/5602069a66f5.webp",
+  "bg": null
  },
  "kurt-seyit-ve-sura-rqvmt": {
   "at": 1794445218569,
@@ -3846,7 +4674,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/628b731dbbbd.webp",
-  "prev": "data/posters/v2/628b731dbbbd.webp"
+  "prev": "data/posters/v2/628b731dbbbd.webp",
+  "bg": null
  },
  "kalbimin-sultani-prqmv": {
   "at": 1794445219613,
@@ -3864,7 +4693,8 @@
   "score": 0.743,
   "status": "matched",
   "path": "data/posters/v3/ca11f30e8ebb.webp",
-  "prev": "data/posters/v2/ca11f30e8ebb.webp"
+  "prev": "data/posters/v2/ca11f30e8ebb.webp",
+  "bg": null
  },
  "bana-artik-hicran-de-vqstm": {
   "at": 1794445220622,
@@ -3882,7 +4712,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/24ae7e82c4b7.webp",
-  "prev": "data/posters/v2/24ae7e82c4b7.webp"
+  "prev": "data/posters/v2/24ae7e82c4b7.webp",
+  "bg": {
+   "path": "data/posters/v4/24ae7e82c4b7.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/544/1362000.jpg"
+  }
  },
  "sipahi-kvrsm": {
   "at": 1794445222217,
@@ -3900,28 +4735,43 @@
   "score": 0.835,
   "status": "matched",
   "path": "data/posters/v3/0720607a16cd.webp",
-  "prev": "data/posters/v2/0720607a16cd.webp"
+  "prev": "data/posters/v2/0720607a16cd.webp",
+  "bg": null
  },
  "sayaejebak-lqmnt": {
-  "at": 1794445972571,
+  "at": 1794453454982,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for sayaejebak-lqmnt"
  },
  "shakhs-akhar-vqnts": {
-  "at": 1794445974011,
+  "at": 1794453456434,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for shakhs-akhar-vqnts"
  },
  "kizilcik-serbeti-satel": {
-  "at": 1794445975443,
+  "at": 1794453457928,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for kizilcik-serbeti-satel"
+  "q": "kizilcik serbeti",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "64593",
+  "name": "Kızılcık Şerbeti",
+  "premiered": "2022",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/596/1490153.jpg",
+  "w": 1080,
+  "h": 1350,
+  "sharp": 78.03,
+  "ent": 7.75,
+  "score": 0.911,
+  "status": "matched",
+  "path": "data/posters/v3/5d691cf4c48f.webp",
+  "prev": "data/posters/v2/5d691cf4c48f.webp",
+  "bg": null
  },
  "masumlar-aprt-bxqvn": {
-  "at": 1794445976161,
+  "at": 1794453461411,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for masumlar-aprt-bxqvn"
@@ -3942,7 +4792,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/eb28988d3780.webp",
-  "prev": "data/posters/v2/eb28988d3780.webp"
+  "prev": "data/posters/v2/eb28988d3780.webp",
+  "bg": {
+   "path": "data/posters/v4/eb28988d3780.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/221/554437.jpg"
+  }
  },
  "erkenci-kus-vqstm": {
   "at": 1794445977747,
@@ -3961,7 +4816,8 @@
   "score": 0.766,
   "status": "matched",
   "path": "data/posters/v3/25e685e21a59.webp",
-  "prev": "data/posters/v2/25e685e21a59.webp"
+  "prev": "data/posters/v2/25e685e21a59.webp",
+  "bg": null
  },
  "calikusu-vprmt": {
   "at": 1794445980260,
@@ -3981,7 +4837,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/9892fe5a2563.webp",
-  "prev": "data/posters/v2/9892fe5a2563.webp"
+  "prev": "data/posters/v2/9892fe5a2563.webp",
+  "bg": null
  },
  "kasaba-doktoru-wqtsn": {
   "at": 1794445233130,
@@ -3999,10 +4856,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/22c8671ff480.webp",
-  "prev": "data/posters/v2/22c8671ff480.webp"
+  "prev": "data/posters/v2/22c8671ff480.webp",
+  "bg": {
+   "path": "data/posters/v4/22c8671ff480.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/403/1007844.jpg"
+  }
  },
  "tuyoor-annar-kqvsm": {
-  "at": 1794445983338,
+  "at": 1794453462925,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tuyoor-annar-kqvsm"
@@ -4023,13 +4885,32 @@
   "score": 0.805,
   "status": "matched",
   "path": "data/posters/v3/2015e535a7f2.webp",
-  "prev": "data/posters/v2/2015e535a7f2.webp"
+  "prev": "data/posters/v2/2015e535a7f2.webp",
+  "bg": null
  },
  "sakir-pasa-ailesi-litan": {
-  "at": 1794445984800,
+  "at": 1794453464487,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for sakir-pasa-ailesi-litan"
+  "q": "sakir pasa ailesi",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "80967",
+  "name": "Şakir Paşa Ailesi",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/570/1426125.jpg",
+  "w": 1500,
+  "h": 2248,
+  "sharp": 65.44,
+  "ent": 7.58,
+  "score": 1,
+  "status": "matched",
+  "path": "data/posters/v3/9e5858f07abb.webp",
+  "prev": "data/posters/v2/9e5858f07abb.webp",
+  "bg": {
+   "path": "data/posters/v4/9e5858f07abb.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/558/1396278.jpg"
+  }
  },
  "benim-guzel-ailem-kqvrs": {
   "at": 1794445238020,
@@ -4047,7 +4928,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/eabdd6c253a9.webp",
-  "prev": "data/posters/v2/eabdd6c253a9.webp"
+  "prev": "data/posters/v2/eabdd6c253a9.webp",
+  "bg": null
  },
  "kirlangic-firtinasi-sqvnp": {
   "at": 1794445985520,
@@ -4067,7 +4949,12 @@
   "status": "matched",
   "path": "data/posters/v3/c31c2fbfa4c8.webp",
   "prev": "data/posters/v2/c31c2fbfa4c8.webp",
-  "lowres": true
+  "lowres": true,
+  "bg": {
+   "path": "data/posters/v4/c31c2fbfa4c8.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/91/229679.jpg"
+  }
  },
  "aska-dusman-fqvts": {
   "at": 1794445240103,
@@ -4085,10 +4972,11 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/b699ffa35d9b.webp",
-  "prev": "data/posters/v2/b699ffa35d9b.webp"
+  "prev": "data/posters/v2/b699ffa35d9b.webp",
+  "bg": null
  },
  "evimdeki-dusman-kmtvs": {
-  "at": 1794445986520,
+  "at": 1794453471093,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for evimdeki-dusman-kmtvs"
@@ -4109,7 +4997,12 @@
   "score": 0.831,
   "status": "matched",
   "path": "data/posters/v3/254913f7e47e.webp",
-  "prev": "data/posters/v2/254913f7e47e.webp"
+  "prev": "data/posters/v2/254913f7e47e.webp",
+  "bg": {
+   "path": "data/posters/v4/254913f7e47e.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/557734.jpg"
+  }
  },
  "kacak-gelinler-vspmt": {
   "at": 1794445246618,
@@ -4127,7 +5020,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/ece944ccca9c.webp",
-  "prev": "data/posters/v2/ece944ccca9c.webp"
+  "prev": "data/posters/v2/ece944ccca9c.webp",
+  "bg": {
+   "path": "data/posters/v4/ece944ccca9c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/222/557115.jpg"
+  }
  },
  "aziz-wqjpm": {
   "at": 1794445247717,
@@ -4145,7 +5043,12 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/4127f794f631.webp",
-  "prev": "data/posters/v2/4127f794f631.webp"
+  "prev": "data/posters/v2/4127f794f631.webp",
+  "bg": {
+   "path": "data/posters/v4/4127f794f631.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/370/925301.jpg"
+  }
  },
  "azize-kqvms": {
   "at": 1794445249010,
@@ -4163,7 +5066,12 @@
   "score": 0.997,
   "status": "matched",
   "path": "data/posters/v3/ba7926230b2c.webp",
-  "prev": "data/posters/v2/ba7926230b2c.webp"
+  "prev": "data/posters/v2/ba7926230b2c.webp",
+  "bg": {
+   "path": "data/posters/v4/ba7926230b2c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/222/556987.jpg"
+  }
  },
  "ask-ve-gurur-kqvms": {
   "at": 1794445987973,
@@ -4183,10 +5091,15 @@
   "score": 0.603,
   "status": "matched",
   "path": "data/posters/v3/872109dfb28c.webp",
-  "prev": "data/posters/v2/872109dfb28c.webp"
+  "prev": "data/posters/v2/872109dfb28c.webp",
+  "bg": {
+   "path": "data/posters/v4/872109dfb28c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/412/1031829.jpg"
+  }
  },
  "evli-cgowr": {
-  "at": 1794445990425,
+  "at": 1794453472510,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for evli-cgowr"
@@ -4209,22 +5122,23 @@
   "score": 0.831,
   "status": "matched",
   "path": "data/posters/v3/0b9eee22139e.webp",
-  "prev": "data/posters/v2/0b9eee22139e.webp"
+  "prev": "data/posters/v2/0b9eee22139e.webp",
+  "bg": null
  },
  "banasevmeyi-kmfrs": {
-  "at": 1794445993807,
+  "at": 1794453473961,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for banasevmeyi-kmfrs"
  },
  "ali-riza-hqmnt": {
-  "at": 1794445995408,
+  "at": 1794453475372,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ali-riza-hqmnt"
  },
  "masharef-allayl-fqmts": {
-  "at": 1794445996908,
+  "at": 1794453476786,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for masharef-allayl-fqmts"
@@ -4245,7 +5159,12 @@
   "score": 0.833,
   "status": "matched",
   "path": "data/posters/v3/b7d622d63746.webp",
-  "prev": "data/posters/v2/b7d622d63746.webp"
+  "prev": "data/posters/v2/b7d622d63746.webp",
+  "bg": {
+   "path": "data/posters/v4/b7d622d63746.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/441/1102635.jpg"
+  }
  },
  "annemizi-saklarken-kmvrs": {
   "at": 1794445261083,
@@ -4263,7 +5182,8 @@
   "score": 0.876,
   "status": "matched",
   "path": "data/posters/v3/a8284935665c.webp",
-  "prev": "data/posters/v2/a8284935665c.webp"
+  "prev": "data/posters/v2/a8284935665c.webp",
+  "bg": null
  },
  "eve-donus-hqstv": {
   "at": 1794445263344,
@@ -4281,22 +5201,41 @@
   "score": 0.821,
   "status": "matched",
   "path": "data/posters/v3/8d62ae109c95.webp",
-  "prev": "data/posters/v2/8d62ae109c95.webp"
+  "prev": "data/posters/v2/8d62ae109c95.webp",
+  "bg": {
+   "path": "data/posters/v4/8d62ae109c95.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/386/967484.jpg"
+  }
  },
  "kalbahar-aleswad-mqvts": {
-  "at": 1794445998502,
+  "at": 1794453478216,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for kalbahar-aleswad-mqvts"
  },
  "cift-kisilik-oda-fatum": {
-  "at": 1794446000092,
+  "at": 1794453479636,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for cift-kisilik-oda-fatum"
+  "q": "cift kisilik oda",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "84359",
+  "name": "Çift Kişilik Oda",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/567/1419116.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 87.61,
+  "ent": 6.62,
+  "score": 0.83,
+  "status": "matched",
+  "path": "data/posters/v3/ec253b6bb09a.webp",
+  "prev": "data/posters/v2/ec253b6bb09a.webp",
+  "bg": null
  },
  "ghareeb-kvmtp": {
-  "at": 1794446000839,
+  "at": 1794453483661,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ghareeb-kvmtp"
@@ -4317,7 +5256,8 @@
   "score": 0.837,
   "status": "matched",
   "path": "data/posters/v3/5a6269071623.webp",
-  "prev": "data/posters/v2/5a6269071623.webp"
+  "prev": "data/posters/v2/5a6269071623.webp",
+  "bg": null
  },
  "fabrika-kizi-mqvpr": {
   "at": 1794445269449,
@@ -4335,7 +5275,12 @@
   "score": 0.835,
   "status": "matched",
   "path": "data/posters/v3/de6075247e85.webp",
-  "prev": "data/posters/v2/de6075247e85.webp"
+  "prev": "data/posters/v2/de6075247e85.webp",
+  "bg": {
+   "path": "data/posters/v4/de6075247e85.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/220/550044.jpg"
+  }
  },
  "camdaki-kiz-kqvhn": {
   "at": 1794445270525,
@@ -4353,7 +5298,12 @@
   "score": 0.81,
   "status": "matched",
   "path": "data/posters/v3/a16556864ad1.webp",
-  "prev": "data/posters/v2/a16556864ad1.webp"
+  "prev": "data/posters/v2/a16556864ad1.webp",
+  "bg": {
+   "path": "data/posters/v4/a16556864ad1.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/300/752264.jpg"
+  }
  },
  "ferhat-ile-sirin-qmzpt": {
   "at": 1794446002247,
@@ -4372,7 +5322,8 @@
   "score": 0.781,
   "status": "matched",
   "path": "data/posters/v3/f753edcf56ac.webp",
-  "prev": "data/posters/v2/f753edcf56ac.webp"
+  "prev": "data/posters/v2/f753edcf56ac.webp",
+  "bg": null
  },
  "fazilet-hanim-kqvtn": {
   "at": 1794446004725,
@@ -4392,7 +5343,8 @@
   "score": 0.775,
   "status": "matched",
   "path": "data/posters/v3/9562f6643f15.webp",
-  "prev": "data/posters/v2/9562f6643f15.webp"
+  "prev": "data/posters/v2/9562f6643f15.webp",
+  "bg": null
  },
  "darmaduman-hqvns": {
   "at": 1794445275993,
@@ -4410,7 +5362,12 @@
   "score": 0.84,
   "status": "matched",
   "path": "data/posters/v3/e9a070b05c8f.webp",
-  "prev": "data/posters/v2/e9a070b05c8f.webp"
+  "prev": "data/posters/v2/e9a070b05c8f.webp",
+  "bg": {
+   "path": "data/posters/v4/e9a070b05c8f.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/478/1196361.jpg"
+  }
  },
  "icerde-kqvht": {
   "at": 1794445277033,
@@ -4428,7 +5385,12 @@
   "score": 0.663,
   "status": "matched",
   "path": "data/posters/v3/7a89ae806d67.webp",
-  "prev": "data/posters/v2/7a89ae806d67.webp"
+  "prev": "data/posters/v2/7a89ae806d67.webp",
+  "bg": {
+   "path": "data/posters/v4/7a89ae806d67.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/266/666481.jpg"
+  }
  },
  "daha-17": {
   "at": 1794445278235,
@@ -4446,10 +5408,11 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/e6aba68264ea.webp",
-  "prev": "data/posters/v2/e6aba68264ea.webp"
+  "prev": "data/posters/v2/e6aba68264ea.webp",
+  "bg": null
  },
  "seer-wa-khafa-nqvts": {
-  "at": 1794446006747,
+  "at": 1794453485088,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for seer-wa-khafa-nqvts"
@@ -4470,7 +5433,12 @@
   "score": 0.788,
   "status": "matched",
   "path": "data/posters/v3/99d66db74a5d.webp",
-  "prev": "data/posters/v2/99d66db74a5d.webp"
+  "prev": "data/posters/v2/99d66db74a5d.webp",
+  "bg": {
+   "path": "data/posters/v4/99d66db74a5d.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/272/680082.jpg"
+  }
  },
  "firuze-kvprm": {
   "at": 1794445281791,
@@ -4488,7 +5456,8 @@
   "score": 0.977,
   "status": "matched",
   "path": "data/posters/v3/02678d3bc496.webp",
-  "prev": "data/posters/v2/02678d3bc496.webp"
+  "prev": "data/posters/v2/02678d3bc496.webp",
+  "bg": null
  },
  "doganin-kanunu": {
   "at": 1794445282918,
@@ -4506,10 +5475,11 @@
   "score": 0.749,
   "status": "matched",
   "path": "data/posters/v3/8e1f70e659e5.webp",
-  "prev": "data/posters/v2/8e1f70e659e5.webp"
+  "prev": "data/posters/v2/8e1f70e659e5.webp",
+  "bg": null
  },
  "lvstr-bqmzn": {
-  "at": 1794446008264,
+  "at": 1794453486867,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lvstr-bqmzn"
@@ -4530,7 +5500,8 @@
   "score": 0.83,
   "status": "matched",
   "path": "data/posters/v3/dfa0ca46b97f.webp",
-  "prev": "data/posters/v2/dfa0ca46b97f.webp"
+  "prev": "data/posters/v2/dfa0ca46b97f.webp",
+  "bg": null
  },
  "mercan-kosk": {
   "at": 1794445286375,
@@ -4548,10 +5519,15 @@
   "score": 0.851,
   "status": "matched",
   "path": "data/posters/v3/bc5e1c15ed3a.webp",
-  "prev": "data/posters/v2/bc5e1c15ed3a.webp"
+  "prev": "data/posters/v2/bc5e1c15ed3a.webp",
+  "bg": {
+   "path": "data/posters/v4/bc5e1c15ed3a.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/635/1589477.jpg"
+  }
  },
  "eskiya-kqvmt": {
-  "at": 1794446009902,
+  "at": 1794453488284,
   "tries": 1,
   "q": "eskiya",
   "status": "review",
@@ -4577,7 +5553,8 @@
   "status": "matched",
   "path": "data/posters/v3/7c075ea0e099.webp",
   "prev": "data/posters/v2/7c075ea0e099.webp",
-  "lowres": true
+  "lowres": true,
+  "bg": null
  },
  "deli-gonul-hvsrq": {
   "at": 1794445289829,
@@ -4595,7 +5572,12 @@
   "score": 0.653,
   "status": "matched",
   "path": "data/posters/v3/a1b965b2534b.webp",
-  "prev": "data/posters/v2/a1b965b2534b.webp"
+  "prev": "data/posters/v2/a1b965b2534b.webp",
+  "bg": {
+   "path": "data/posters/v4/a1b965b2534b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/478/1196285.jpg"
+  }
  },
  "canevim-hqvts": {
   "at": 1794445290752,
@@ -4613,7 +5595,12 @@
   "score": 0.695,
   "status": "matched",
   "path": "data/posters/v3/4eb52aced0f5.webp",
-  "prev": "data/posters/v2/4eb52aced0f5.webp"
+  "prev": "data/posters/v2/4eb52aced0f5.webp",
+  "bg": {
+   "path": "data/posters/v4/4eb52aced0f5.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/199/497504.jpg"
+  }
  },
  "kara-vqsmr": {
   "at": 1794445291777,
@@ -4631,10 +5618,15 @@
   "score": 0.846,
   "status": "matched",
   "path": "data/posters/v3/3480c8a9919e.webp",
-  "prev": "data/posters/v2/3480c8a9919e.webp"
+  "prev": "data/posters/v2/3480c8a9919e.webp",
+  "bg": {
+   "path": "data/posters/v4/3480c8a9919e.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/491/1229061.jpg"
+  }
  },
  "adini-kalbime-yazdim-kvrts": {
-  "at": 1794446012852,
+  "at": 1794453489729,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for adini-kalbime-yazdim-kvrts"
@@ -4656,10 +5648,11 @@
   "score": 0.845,
   "status": "matched",
   "path": "data/posters/v3/865661a7a8ed.webp",
-  "prev": "data/posters/v2/865661a7a8ed.webp"
+  "prev": "data/posters/v2/865661a7a8ed.webp",
+  "bg": null
  },
  "aabmr-kdzvf": {
-  "at": 1794446015880,
+  "at": 1794453491145,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for aabmr-kdzvf"
@@ -4680,7 +5673,12 @@
   "score": 0.82,
   "status": "matched",
   "path": "data/posters/v3/540941d6de31.webp",
-  "prev": "data/posters/v2/540941d6de31.webp"
+  "prev": "data/posters/v2/540941d6de31.webp",
+  "bg": {
+   "path": "data/posters/v4/540941d6de31.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/490/1227235.jpg"
+  }
  },
  "kimse-bilmez-kqvhs": {
   "at": 1794445299122,
@@ -4698,10 +5696,11 @@
   "score": 0.755,
   "status": "matched",
   "path": "data/posters/v3/bf47b2992841.webp",
-  "prev": "data/posters/v2/bf47b2992841.webp"
+  "prev": "data/posters/v2/bf47b2992841.webp",
+  "bg": null
  },
  "aglma-istanbul-kqvnt": {
-  "at": 1794446017321,
+  "at": 1794453492549,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for aglma-istanbul-kqvnt"
@@ -4722,7 +5721,8 @@
   "score": 0.783,
   "status": "matched",
   "path": "data/posters/v3/56a16cbda32c.webp",
-  "prev": "data/posters/v2/56a16cbda32c.webp"
+  "prev": "data/posters/v2/56a16cbda32c.webp",
+  "bg": null
  },
  "elimi-birakma-kqvhs": {
   "at": 1794445302979,
@@ -4740,10 +5740,11 @@
   "score": 0.824,
   "status": "matched",
   "path": "data/posters/v3/5e8d7f285bdc.webp",
-  "prev": "data/posters/v2/5e8d7f285bdc.webp"
+  "prev": "data/posters/v2/5e8d7f285bdc.webp",
+  "bg": null
  },
  "korkma-yanindayim-hqvps": {
-  "at": 1794446019114,
+  "at": 1794453493967,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for korkma-yanindayim-hqvps"
@@ -4764,7 +5765,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/0fad1d7d6622.webp",
-  "prev": "data/posters/v2/0fad1d7d6622.webp"
+  "prev": "data/posters/v2/0fad1d7d6622.webp",
+  "bg": {
+   "path": "data/posters/v4/0fad1d7d6622.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/220/550338.jpg"
+  }
  },
  "gelsin-hayat-hqvts": {
   "at": 1794446020655,
@@ -4784,10 +5790,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/2e5dde7846b2.webp",
-  "prev": "data/posters/v2/2e5dde7846b2.webp"
+  "prev": "data/posters/v2/2e5dde7846b2.webp",
+  "bg": {
+   "path": "data/posters/v4/2e5dde7846b2.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/414/1037262.jpg"
+  }
  },
  "bir-litre-gozyasi-kqvmt": {
-  "at": 1794446023496,
+  "at": 1794453495388,
   "tries": 1,
   "q": "bir litre gozyasi",
   "conf": "high",
@@ -4820,16 +5831,17 @@
   "score": 0.819,
   "status": "matched",
   "path": "data/posters/v3/e4120910c327.webp",
-  "prev": "data/posters/v2/e4120910c327.webp"
+  "prev": "data/posters/v2/e4120910c327.webp",
+  "bg": null
  },
  "alhath-vqmns": {
-  "at": 1794446026022,
+  "at": 1794453498151,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alhath-vqmns"
  },
  "tgomd-sxpvh": {
-  "at": 1794446027458,
+  "at": 1794453499611,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tgomd-sxpvh"
@@ -4850,10 +5862,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/4cb32bc09475.webp",
-  "prev": "data/posters/v2/4cb32bc09475.webp"
+  "prev": "data/posters/v2/4cb32bc09475.webp",
+  "bg": {
+   "path": "data/posters/v4/4cb32bc09475.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/464/1161974.jpg"
+  }
  },
  "layla-kbwet": {
-  "at": 1794446028874,
+  "at": 1794453501017,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for layla-kbwet"
@@ -4875,10 +5892,11 @@
   "score": 0.849,
   "status": "matched",
   "path": "data/posters/v3/ea2bbaf8cf7d.webp",
-  "prev": "data/posters/v2/ea2bbaf8cf7d.webp"
+  "prev": "data/posters/v2/ea2bbaf8cf7d.webp",
+  "bg": null
  },
  "matha-law-vqstm": {
-  "at": 1794446031945,
+  "at": 1794453502450,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for matha-law-vqstm"
@@ -4901,7 +5919,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/0cddd9ec02bf.webp",
-  "prev": "data/posters/v2/0cddd9ec02bf.webp"
+  "prev": "data/posters/v2/0cddd9ec02bf.webp",
+  "bg": null
  },
  "maria-ile-mustafa": {
   "at": 1794445321703,
@@ -4919,7 +5938,12 @@
   "score": 0.758,
   "status": "matched",
   "path": "data/posters/v3/1d6454d5463b.webp",
-  "prev": "data/posters/v2/1d6454d5463b.webp"
+  "prev": "data/posters/v2/1d6454d5463b.webp",
+  "bg": {
+   "path": "data/posters/v4/1d6454d5463b.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/270/675974.jpg"
+  }
  },
  "benim-hala-umudum-var-vqtrs": {
   "at": 1794445323021,
@@ -4937,10 +5961,11 @@
   "score": 0.805,
   "status": "matched",
   "path": "data/posters/v3/90242df34728.webp",
-  "prev": "data/posters/v2/90242df34728.webp"
+  "prev": "data/posters/v2/90242df34728.webp",
+  "bg": null
  },
  "mavi-ve-ask-kqvrs": {
-  "at": 1794446035810,
+  "at": 1794453503870,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for mavi-ve-ask-kqvrs"
@@ -4961,23 +5986,38 @@
   "score": 0.698,
   "status": "matched",
   "path": "data/posters/v3/559b82cc1f25.webp",
-  "prev": "data/posters/v2/559b82cc1f25.webp"
+  "prev": "data/posters/v2/559b82cc1f25.webp",
+  "bg": null
  },
  "ruya-gibi-purel": {
-  "at": 1794446037706,
+  "at": 1794453505285,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ruya-gibi-purel"
+  "q": "ruya gibi",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "88645",
+  "name": "Rüya Gibi",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/600/1501536.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 73.96,
+  "ent": 7.75,
+  "score": 0.847,
+  "status": "matched",
+  "path": "data/posters/v3/be325aa65d29.webp",
+  "prev": "data/posters/v2/be325aa65d29.webp",
+  "bg": null
  },
  "mehmed-vqsmr": {
-  "at": 1794446038417,
+  "at": 1794453508631,
   "tries": 1,
   "q": "mehmed",
   "status": "review",
   "note": "partial ambiguous: Mehmed: Fetihler Sultanı | Mehmed Bir Cihan Fatihi"
  },
  "marashli-hqfns": {
-  "at": 1794446039119,
+  "at": 1794453509361,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for marashli-hqfns"
@@ -4998,7 +6038,8 @@
   "score": 0.84,
   "status": "matched",
   "path": "data/posters/v3/ffcb33957179.webp",
-  "prev": "data/posters/v2/ffcb33957179.webp"
+  "prev": "data/posters/v2/ffcb33957179.webp",
+  "bg": null
  },
  "gonul-isleri-kpvst": {
   "at": 1794445333453,
@@ -5016,7 +6057,12 @@
   "score": 0.826,
   "status": "matched",
   "path": "data/posters/v3/ebd1cc89d17f.webp",
-  "prev": "data/posters/v2/ebd1cc89d17f.webp"
+  "prev": "data/posters/v2/ebd1cc89d17f.webp",
+  "bg": {
+   "path": "data/posters/v4/ebd1cc89d17f.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/221/553347.jpg"
+  }
  },
  "seref-meselesi-hqvmt": {
   "at": 1794445334846,
@@ -5034,10 +6080,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/be50041d56c3.webp",
-  "prev": "data/posters/v2/be50041d56c3.webp"
+  "prev": "data/posters/v2/be50041d56c3.webp",
+  "bg": {
+   "path": "data/posters/v4/be50041d56c3.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/220/550723.jpg"
+  }
  },
  "emirin-yolu-kqvts": {
-  "at": 1794446040937,
+  "at": 1794453510795,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for emirin-yolu-kqvts"
@@ -5058,7 +6109,12 @@
   "score": 0.958,
   "status": "matched",
   "path": "data/posters/v3/6693272b4439.webp",
-  "prev": "data/posters/v2/6693272b4439.webp"
+  "prev": "data/posters/v2/6693272b4439.webp",
+  "bg": {
+   "path": "data/posters/v4/6693272b4439.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/327/818372.jpg"
+  }
  },
  "acil-ask-araniyor-hqmst": {
   "at": 1794445339432,
@@ -5076,7 +6132,12 @@
   "score": 0.836,
   "status": "matched",
   "path": "data/posters/v3/987df862dacb.webp",
-  "prev": "data/posters/v2/987df862dacb.webp"
+  "prev": "data/posters/v2/987df862dacb.webp",
+  "bg": {
+   "path": "data/posters/v4/987df862dacb.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/559144.jpg"
+  }
  },
  "yuz-yillik-mucize-kvrsm": {
   "at": 1794446042349,
@@ -5095,10 +6156,11 @@
   "score": 0.678,
   "status": "matched",
   "path": "data/posters/v3/538356f6e5df.webp",
-  "prev": "data/posters/v2/538356f6e5df.webp"
+  "prev": "data/posters/v2/538356f6e5df.webp",
+  "bg": null
  },
  "oyunu-bozan-nqvst": {
-  "at": 1794446043918,
+  "at": 1794453512218,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for oyunu-bozan-nqvst"
@@ -5119,7 +6181,12 @@
   "score": 0.995,
   "status": "matched",
   "path": "data/posters/v3/8ece9f6765d7.webp",
-  "prev": "data/posters/v2/8ece9f6765d7.webp"
+  "prev": "data/posters/v2/8ece9f6765d7.webp",
+  "bg": {
+   "path": "data/posters/v4/8ece9f6765d7.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/219/548187.jpg"
+  }
  },
  "gecenin-kralicesi-hqvmp": {
   "at": 1794445345191,
@@ -5137,7 +6204,8 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/1396ea817d21.webp",
-  "prev": "data/posters/v2/1396ea817d21.webp"
+  "prev": "data/posters/v2/1396ea817d21.webp",
+  "bg": null
  },
  "kizlarim-icin-hqtmv": {
   "at": 1794446045335,
@@ -5156,16 +6224,21 @@
   "score": 0.836,
   "status": "matched",
   "path": "data/posters/v3/d9b372e2364c.webp",
-  "prev": "data/posters/v2/d9b372e2364c.webp"
+  "prev": "data/posters/v2/d9b372e2364c.webp",
+  "bg": {
+   "path": "data/posters/v4/d9b372e2364c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/220/550470.jpg"
+  }
  },
  "hwhfc-mzqtn": {
-  "at": 1794446046834,
+  "at": 1794453513645,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hwhfc-mzqtn"
  },
  "manzili-kqvts": {
-  "at": 1794446048245,
+  "at": 1794453515071,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for manzili-kqvts"
@@ -5186,7 +6259,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/beadc4cbd0c9.webp",
-  "prev": "data/posters/v2/beadc4cbd0c9.webp"
+  "prev": "data/posters/v2/beadc4cbd0c9.webp",
+  "bg": {
+   "path": "data/posters/v4/beadc4cbd0c9.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/223/557972.jpg"
+  }
  },
  "kalp-atisi-lqrvm": {
   "at": 1794445355133,
@@ -5204,16 +6282,21 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/b0d8bd90e552.webp",
-  "prev": "data/posters/v2/b0d8bd90e552.webp"
+  "prev": "data/posters/v2/b0d8bd90e552.webp",
+  "bg": {
+   "path": "data/posters/v4/b0d8bd90e552.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/222/556936.jpg"
+  }
  },
  "cobanyildizi-mfrqe": {
-  "at": 1794446049677,
+  "at": 1794453516529,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for cobanyildizi-mfrqe"
  },
  "najmat-alshamal-bqvnt": {
-  "at": 1794446051113,
+  "at": 1794453517956,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for najmat-alshamal-bqvnt"
@@ -5234,7 +6317,12 @@
   "score": 0.911,
   "status": "matched",
   "path": "data/posters/v3/bbd92d554901.webp",
-  "prev": "data/posters/v2/bbd92d554901.webp"
+  "prev": "data/posters/v2/bbd92d554901.webp",
+  "bg": {
+   "path": "data/posters/v4/bbd92d554901.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/640/1601825.jpg"
+  }
  },
  "diger-yarim-kvtqs": {
   "at": 1794445360673,
@@ -5252,7 +6340,8 @@
   "score": 0.949,
   "status": "matched",
   "path": "data/posters/v3/233f74928499.webp",
-  "prev": "data/posters/v2/233f74928499.webp"
+  "prev": "data/posters/v2/233f74928499.webp",
+  "bg": null
  },
  "nefes-nefese-sqmvt": {
   "at": 1794445363391,
@@ -5270,16 +6359,31 @@
   "score": 0.832,
   "status": "matched",
   "path": "data/posters/v3/07c29568e510.webp",
-  "prev": "data/posters/v2/07c29568e510.webp"
+  "prev": "data/posters/v2/07c29568e510.webp",
+  "bg": null
  },
  "tasacak-bu-deniz-mreku": {
-  "at": 1794446052541,
+  "at": 1794453519388,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tasacak-bu-deniz-mreku"
+  "q": "tasacak bu deniz",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "87320",
+  "name": "Taşacak Bu Deniz",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/590/1477377.jpg",
+  "w": 694,
+  "h": 1002,
+  "sharp": 84.21,
+  "ent": 7.74,
+  "score": 0.845,
+  "status": "matched",
+  "path": "data/posters/v3/18ec48347d6b.webp",
+  "prev": "data/posters/v2/18ec48347d6b.webp",
+  "bg": null
  },
  "benbucihana-vtspq": {
-  "at": 1794446053255,
+  "at": 1794453522949,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for benbucihana-vtspq"
@@ -5302,7 +6406,8 @@
   "score": 0.85,
   "status": "matched",
   "path": "data/posters/v3/0632ec43c9aa.webp",
-  "prev": "data/posters/v2/0632ec43c9aa.webp"
+  "prev": "data/posters/v2/0632ec43c9aa.webp",
+  "bg": null
  },
  "benim-masalim-pvtrs": {
   "at": 1794446057213,
@@ -5322,10 +6427,15 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/01adc07bba88.webp",
-  "prev": "data/posters/v2/01adc07bba88.webp"
+  "prev": "data/posters/v2/01adc07bba88.webp",
+  "bg": {
+   "path": "data/posters/v4/01adc07bba88.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/293/732794.jpg"
+  }
  },
  "tutar-mi-tutar-lqvrs": {
-  "at": 1794446059253,
+  "at": 1794453524375,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tutar-mi-tutar-lqvrs"
@@ -5346,7 +6456,8 @@
   "score": 0.794,
   "status": "matched",
   "path": "data/posters/v3/2978d835f822.webp",
-  "prev": "data/posters/v2/2978d835f822.webp"
+  "prev": "data/posters/v2/2978d835f822.webp",
+  "bg": null
  },
  "kurtlar-vadisi-mqfst": {
   "at": 1794445372786,
@@ -5364,10 +6475,11 @@
   "score": 0.835,
   "status": "matched",
   "path": "data/posters/v3/c819731ed10d.webp",
-  "prev": "data/posters/v2/c819731ed10d.webp"
+  "prev": "data/posters/v2/c819731ed10d.webp",
+  "bg": null
  },
  "yurek-yarasi-kqvhn": {
-  "at": 1794446060686,
+  "at": 1794453525788,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yurek-yarasi-kqvhn"
@@ -5389,13 +6501,36 @@
   "score": 0.685,
   "status": "matched",
   "path": "data/posters/v3/460ec4d86eea.webp",
-  "prev": "data/posters/v2/460ec4d86eea.webp"
+  "prev": "data/posters/v2/460ec4d86eea.webp",
+  "bg": {
+   "path": "data/posters/v4/460ec4d86eea.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/222/556345.jpg"
+  }
  },
  "guller-ve-gunahlar-raxil": {
-  "at": 1794446063269,
+  "at": 1794453527213,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for guller-ve-gunahlar-raxil"
+  "q": "guller ve gunahlar",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "87157",
+  "name": "Güller ve Günahlar",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/588/1470039.jpg",
+  "w": 850,
+  "h": 1063,
+  "sharp": 82.19,
+  "ent": 7.4,
+  "score": 0.842,
+  "status": "matched",
+  "path": "data/posters/v3/e56ca4f4c16c.webp",
+  "prev": "data/posters/v2/e56ca4f4c16c.webp",
+  "bg": {
+   "path": "data/posters/v4/e56ca4f4c16c.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/588/1470268.jpg"
+  }
  },
  "askin-tarifi-bqvrs": {
   "at": 1794445378958,
@@ -5413,7 +6548,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/540dbb5505d8.webp",
-  "prev": "data/posters/v2/540dbb5505d8.webp"
+  "prev": "data/posters/v2/540dbb5505d8.webp",
+  "bg": {
+   "path": "data/posters/v4/540dbb5505d8.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/321/803191.jpg"
+  }
  },
  "sevmek-zamani-kvrts": {
   "at": 1794445380261,
@@ -5431,7 +6571,8 @@
   "score": 0.646,
   "status": "matched",
   "path": "data/posters/v3/fb45d0e9df09.webp",
-  "prev": "data/posters/v2/fb45d0e9df09.webp"
+  "prev": "data/posters/v2/fb45d0e9df09.webp",
+  "bg": null
  },
  "ask-zamani-kvrsm": {
   "at": 1794445381272,
@@ -5449,7 +6590,12 @@
   "score": 0.807,
   "status": "matched",
   "path": "data/posters/v3/3b0a99a09da7.webp",
-  "prev": "data/posters/v2/3b0a99a09da7.webp"
+  "prev": "data/posters/v2/3b0a99a09da7.webp",
+  "bg": {
+   "path": "data/posters/v4/3b0a99a09da7.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/79/197928.jpg"
+  }
  },
  "goc-zamani-ltqsv": {
   "at": 1794445382406,
@@ -5467,13 +6613,32 @@
   "score": 0.726,
   "status": "matched",
   "path": "data/posters/v3/d7e47a01d446.webp",
-  "prev": "data/posters/v2/d7e47a01d446.webp"
+  "prev": "data/posters/v2/d7e47a01d446.webp",
+  "bg": null
  },
  "veliaht-turek": {
-  "at": 1794446063971,
+  "at": 1794453532834,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for veliaht-turek"
+  "q": "veliaht",
+  "conf": "high",
+  "src": "tvmaze",
+  "ref": "85539",
+  "name": "Veliaht",
+  "premiered": "2025",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/584/1461665.jpg",
+  "w": 694,
+  "h": 1002,
+  "sharp": 69.2,
+  "ent": 7.44,
+  "score": 0.844,
+  "status": "matched",
+  "path": "data/posters/v3/6e3b87c5ec0d.webp",
+  "prev": "data/posters/v2/6e3b87c5ec0d.webp",
+  "bg": {
+   "path": "data/posters/v4/6e3b87c5ec0d.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/584/1461666.jpg"
+  }
  },
  "ulan-istanbul-vqrms": {
   "at": 1794445384210,
@@ -5491,7 +6656,12 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/50d400890c76.webp",
-  "prev": "data/posters/v2/50d400890c76.webp"
+  "prev": "data/posters/v2/50d400890c76.webp",
+  "bg": {
+   "path": "data/posters/v4/50d400890c76.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/404/1010130.jpg"
+  }
  },
  "yeter-smpfq": {
   "at": 1794445385471,
@@ -5509,16 +6679,21 @@
   "score": 0.829,
   "status": "matched",
   "path": "data/posters/v3/260fc26a20c9.webp",
-  "prev": "data/posters/v2/260fc26a20c9.webp"
+  "prev": "data/posters/v2/260fc26a20c9.webp",
+  "bg": {
+   "path": "data/posters/v4/260fc26a20c9.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034827.jpg"
+  }
  },
  "gulumseyeter-vcpam": {
-  "at": 1794446064690,
+  "at": 1794453537628,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for gulumseyeter-vcpam"
  },
  "yawm-akhar-kvqsm": {
-  "at": 1794446066119,
+  "at": 1794453539409,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yawm-akhar-kvqsm"
@@ -5539,29 +6714,34 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/6c075b3e3f22.webp",
-  "prev": "data/posters/v2/6c075b3e3f22.webp"
+  "prev": "data/posters/v2/6c075b3e3f22.webp",
+  "bg": {
+   "path": "data/posters/v4/6c075b3e3f22.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/435/1088244.jpg"
+  }
  },
  "qadari-hqmts": {
-  "at": 1794446067549,
+  "at": 1794453540832,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for qadari-hqmts"
  },
  "karadeniz-hqvms": {
-  "at": 1794445786419,
+  "at": 1794453263667,
   "tries": 1,
   "q": "karadeniz",
   "status": "review",
   "note": "partial ambiguous: Gözleri Karadeniz | Sevdam Karadeniz | Sen Anlat Karadeniz | Kalbimin Rotası Karadeniz"
  },
  "tlsth-vqgmn": {
-  "at": 1794445787763,
+  "at": 1794453265035,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tlsth-vqgmn"
  },
  "kimsin-sen-qvtrs": {
-  "at": 1794445789176,
+  "at": 1794453266450,
   "tries": 1,
   "q": "kimsin sen",
   "note": "candidate rejected: aspect",
@@ -5594,6 +6774,7 @@
   "score": 0.847,
   "status": "matched",
   "path": "data/posters/v3/5fd7938e5f89.webp",
-  "prev": "data/posters/v2/5fd7938e5f89.webp"
+  "prev": "data/posters/v2/5fd7938e5f89.webp",
+  "bg": null
  }
 }

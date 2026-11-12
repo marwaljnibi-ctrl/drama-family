@@ -1,0 +1,14 @@
+// لقطات قاعدة عرض الصور: تفاصيل مسلسل بانر فقط (مثال «هذا البحر سوف يفيض»)، بخلفية سينمائية، وبوستر فقط، وHero بحالاته، وقائمة مختلطة.
+// BASE=http://localhost:8126/ node scripts/shots-images.mjs <label> <outDir>
+import { chromium } from 'playwright'; import { mkdirSync, readFileSync } from 'node:fs';
+const BASE = process.env.BASE; const [label, OUT = 'docs/design'] = process.argv.slice(2); const DIR = `${OUT}/${label}`; mkdirSync(DIR, { recursive: true });
+const d = JSON.parse(readFileSync('data/shows.json', 'utf8').replace(/^\uFEFF/, '')); const by = (f) => d.shows.find(f);
+const banner = by((s) => /هذا البحر سوف يفيض/.test(s.title)), land = by((s) => s.img4 && s.eps.length > 8), poster = by((s) => s.img3 && !s.img4 && s.eps.length > 8);
+const b = await chromium.launch(); const mk = async () => { const c = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'ar' }); await c.route('https://fonts.googleapis.com/**', (r) => r.abort()); await c.route('https://accounts.google.com/**', (r) => r.abort()); await c.route('https://dizi-alerts.fufuu-crafts.workers.dev/**', (r) => r.abort()); return c; };
+const shot = async (p, n) => { await p.waitForTimeout(1800); await p.screenshot({ path: `${DIR}/${n}.jpg`, type: 'jpeg', quality: 86 }); console.log('shot', n); };
+const seed = async (p, s) => p.evaluate(async ({ s, e }) => { const db = await import('./db.js'); await db.raw.putProgress({ key: s + '|' + e.id, showId: s, epId: e.id, epNum: e.n, time: 1250, duration: 2700, done: false, hidden: false, updated: Date.now() }); }, { s: s.id, e: { id: s.eps[2].id, n: s.eps[2].n } });
+for (const [n, s] of [['detail-banner-only', banner], ['detail-backdrop', land], ['detail-poster-no-backdrop', poster]]) { const c = await mk(); const p = await c.newPage(); await p.goto(BASE + '#/show/' + encodeURIComponent(s.id)); await p.waitForSelector('.eps'); await shot(p, n); await c.close(); }
+{ const c = await mk(); const p = await c.newPage(); await p.goto(BASE + '#/home'); await p.waitForSelector('#view .sec'); await shot(p, 'home-new-user-latest'); await c.close(); }
+for (const [n, s] of [['home-continue-backdrop', land], ['home-continue-banner-only', banner], ['home-continue-poster-only', poster]]) { const c = await mk(); const p = await c.newPage(); await p.goto(BASE + '#/home'); await p.waitForSelector('#view .sec'); await seed(p, s); await p.reload(); await p.waitForSelector('#view .sec'); await shot(p, n); await c.close(); }
+{ const c = await mk(); const p = await c.newPage(); await p.goto(BASE + '#/shows'); await p.waitForSelector('#g .card'); await p.evaluate(() => { const v = document.getElementById('view') || document.scrollingElement; }); await shot(p, 'shows-grid'); await c.close(); }
+await b.close();

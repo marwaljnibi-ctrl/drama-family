@@ -15,7 +15,7 @@ const mineCount = () => page.$$eval('#view .sec', (a) => { const s = a.find((x) 
 // T1: أول استخدام: «اكتشف مسلسلك الأول» وبلا قسم متابعة فارغ، وأربعة تبويبات فقط
 await home();
 const first = await page.evaluate(() => ({ text: document.getElementById('view').innerText, tabs: [...document.querySelectorAll('#tabs a')].map((a) => a.textContent.trim()) }));
-T('first-run-cta-and-no-empty-continue', /اكتشف مسلسلك الأول/.test(first.text) && !/متابعة المشاهدة/.test(first.text), first.text.slice(0, 80));
+T('first-run-hero-is-latest-episode', !!(await page.$('.hero-new')) && /شاهد الآن/.test(first.text) && /الحلقة \d+/.test(first.text) && !/متابعة المشاهدة/.test(first.text), first.text.slice(0, 80));
 T('back-button-visible-on-home', await page.evaluate(() => !document.getElementById('back').hidden));
 T('four-tabs-only', first.tabs.length === 4 && first.tabs[0] === 'الرئيسية', first.tabs.join('|'));
 T('discover-not-claimed-personal', /اكتشف مسلسلات/.test(first.text) && !/حسب ذوقك/.test(first.text));
@@ -35,20 +35,14 @@ T('continue-label-is-متابعة-المشاهدة', await page.$$eval('.ccard .
 const withMin = cards.find((c) => /توقفت عند/.test(c.small)), opened = cards.find((c) => !/توقفت عند/.test(c.small));
 T('opened-never-played-not-in-continue', cards.length === 1 && withMin && withMin.bar && !opened, JSON.stringify(cards));
 
-// T2b: إزالة من آخر المشاهدات: صفحة الحلقة ← زر إزالة ← تأكيد؛ لا يُحذف تقدم، وتعود عند مشاهدة جديدة
-await page.goto(BASE + '?demo=1#/watch/demo-a/demo-a-episode-4'); await page.reload(); await page.waitForSelector('#rh');
-let dlg = null; page.once('dialog', (d) => { dlg = d.message(); d.dismiss(); });
-await page.click('#rh'); await page.waitForTimeout(300);
-T('remove-asks-confirmation-and-cancel-keeps', /آخر المشاهدات/.test(dlg || '') && !!(await page.$('#rh')));
-page.once('dialog', (d) => d.accept());
-await page.click('#rh'); await page.waitForTimeout(800);
-T('remove-hides-button-after', !(await page.$('#rh')));
+// T2b: زر «إزالة من آخر المشاهدات» أُزيل من الواجهة؛ حالة الإخفاء القديمة (hidden) تبقى محترمة والبيانات لا تُحذف
+await page.goto(BASE + '?demo=1#/watch/demo-a/demo-a-episode-4'); await page.reload(); await page.waitForSelector('#pl');
+T('remove-from-recent-button-gone', !(await page.$('#rh')) && !/إزالة من آخر المشاهدات/.test(await page.textContent('#view')));
+await page.evaluate(async () => { const db = await import('./db.js'); await db.progress.hideShow('demo-a'); });
 await home();
-T('removed-not-in-continue', (await page.$$('.ccard')).length === 0);
-await page.goto(BASE + '?demo=1#/recent'); await page.reload(); await page.waitForSelector('#view');
-T('removed-not-in-recent-tab', (await page.$$eval('#view .row', (a) => a.length)) === 0);
+T('legacy-hidden-not-in-continue', (await page.$$('.ccard')).length === 0);
 const kept = await page.evaluate(async () => { const db = await import('./db.js'); const p = (await db.progress.all()).find((x) => x.epId === 'demo-a-episode-4'); return !!p && p.time === 600 && p.hidden === true; });
-T('remove-keeps-progress-data', kept);
+T('hide-keeps-progress-data', kept);
 await page.evaluate(async () => { const db = await import('./db.js'); const D = await (await fetch('data/demo.json')).json(); const A = D.shows[0]; await db.progress.save(A.id, A.eps.find((e) => e.n === 4), { time: 700, duration: 2700, done: false }); });
 await home();
 T('new-playback-brings-it-back', (await page.$$('.ccard')).length === 1);
@@ -144,11 +138,26 @@ T('phone-shown-masked-only', !(await page.textContent('body')).includes('5012345
 await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#wa');
 await page.click('#wa'); await page.waitForTimeout(500);
 T('alert-subscribe-sends-showId-title', WA.shows.length === 1 && WA.shows[0].showId === 'demo-a' && !!WA.shows[0].title, JSON.stringify(WA.shows));
-await page.click('#wa'); await page.waitForTimeout(500);
+await page.click('#wa'); await page.waitForSelector('.sheet');
+T('unsubscribe-asks-confirmation-first', WA.shows.length === 1 && /إيقاف تنبيهات هذا المسلسل/.test(await page.textContent('.sheet')));
+await page.click('.sheet [data-no]'); await page.waitForTimeout(300);
+T('unsubscribe-cancel-does-nothing', WA.shows.length === 1 && !(await page.$('.sheet')));
+await page.click('#wa'); await page.waitForSelector('.sheet'); await page.click('.sheet [data-ok]'); await page.waitForTimeout(500);
 T('alert-unsubscribe', WA.shows.length === 0);
 await page.click('#wa'); await page.waitForTimeout(400);
-await page.goto(BASE + '?demo=1#/alerts'); await page.reload(); await page.waitForSelector('#al-stop'); await page.click('#al-stop'); await page.waitForSelector('#al-resume');
+await page.goto(BASE + '?demo=1#/alerts'); await page.reload(); await page.waitForSelector('#al-stop'); await page.click('#al-stop'); await page.waitForSelector('.sheet');
+T('stop-all-asks-confirmation-first', WA.consent === true && /إيقاف جميع تنبيهات واتساب/.test(await page.textContent('.sheet')));
+await page.click('.sheet [data-no]'); await page.waitForTimeout(300);
+T('stop-all-cancel-does-nothing', WA.consent === true && !!(await page.$('#al-stop')) && !WA.calls.some((c) => c.p === '/api/wa/stop'));
+await page.click('#al-stop'); await page.waitForSelector('.sheet'); await page.click('.sheet [data-ok]'); await page.waitForSelector('#al-resume');
 T('stop-all-alerts', WA.consent === false);
+await page.click('#al-resume'); await page.waitForSelector('#al-stop');
+await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#wa'); await page.click('#wa'); await page.waitForTimeout(400);   // اشتراك لتجربة «إلغاء» من القائمة
+await page.goto(BASE + '?demo=1#/alerts'); await page.reload(); await page.waitForSelector('.al-rm');
+await page.click('.al-rm'); await page.waitForSelector('.sheet'); await page.click('.sheet [data-no]'); await page.waitForTimeout(300);
+T('list-cancel-asks-and-cancel-keeps', WA.shows.length === 1);
+await page.click('.al-rm'); await page.waitForSelector('.sheet'); await page.click('.sheet [data-ok]'); await page.waitForTimeout(500);
+T('list-cancel-confirmed-removes', WA.shows.length === 0);
 await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav'); await page.click('#fav'); await page.waitForTimeout(5500);
 T('favorite-synced-to-account', WA.favs.some((f) => f.showId === 'demo-a' && f.on === true));
 
@@ -161,6 +170,18 @@ WA.offline = false; await page.evaluate(() => window.dispatchEvent(new Event('pa
 T('offline-change-delivered-after-reconnect', WA.favs.some((f) => f.showId === 'demo-b' && f.on === JSON.parse(q1).f['demo-b'].on), JSON.stringify(WA.favs));
 const q2 = await page.evaluate(() => localStorage.getItem('df-syncq:g_1')); T('queue-emptied-after-delivery', !/demo-b/.test(q2 || ''), q2);
 await page.reload(); await page.waitForSelector('#fav'); T('favorite-still-local-after-reload', (await page.evaluate(() => document.querySelector('#fav').classList.contains('on'))) === JSON.parse(q1).f['demo-b'].on);
+
+// T12b: تسجيل الخروج: تأكيد، الإلغاء لا يفعل شيئًا، والتأكيد لا يحذف المفضلة ولا التقدم ولا الطابور
+await page.goto(BASE + '?demo=1#/alerts'); await page.reload(); await page.waitForSelector('#al-logout');
+const lo0 = await page.evaluate(async () => { const db = await import('./db.js'); return { f: (await db.favs.all()).length, p: (await db.progress.all()).length }; });
+await page.click('#al-logout'); await page.waitForSelector('.sheet');
+T('logout-asks-confirmation', /تسجيل الخروج/.test(await page.textContent('.sheet')) && /لا يُحذف/.test(await page.textContent('.sheet')));
+await page.click('.sheet [data-no]'); await page.waitForTimeout(400);
+T('logout-cancel-stays-signed-in', !!(await page.evaluate(() => localStorage.getItem('df-session'))) && !WA.calls.some((c) => c.p === '/auth/logout'));
+await page.click('#al-logout'); await page.waitForSelector('.sheet'); await page.click('.sheet [data-ok]'); await page.waitForTimeout(1500);
+const lo1 = await page.evaluate(async () => { const db = await import('./db.js'); return { s: localStorage.getItem('df-session'), f: (await db.favs.all()).length, p: (await db.progress.all()).length }; });
+T('logout-confirmed-signs-out', !lo1.s && WA.calls.some((c) => c.p === '/auth/logout'));
+T('logout-keeps-local-favorites-and-progress', lo1.f === lo0.f && lo1.p === lo0.p, JSON.stringify({ lo0, lo1 }));
 
 // T13: الدخول اختياري: ضيف جديد (سياق نظيف) — رسالة الحساب، إشعار المفضلة مرة واحدة، الحفظ المحلي، ثم دمج بيانات الضيف مع الحساب
 {

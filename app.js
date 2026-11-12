@@ -1,6 +1,6 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage, onWrite } from './db.js';
-import { $, esc, fmt, mb, toast, poster, posterUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
+import { $, esc, fmt, mb, toast, poster, posterUrl, backdropUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
@@ -27,8 +27,12 @@ function arabTestPanel(box, pl, epId) {
 let D;
 let cleanup = null, enterT = 0;
 const LARGE = ['shows', 'favs', 'recent', 'latest', 'alerts', 'login'];
-addEventListener('scroll', () => document.body.classList.toggle('scrolled', scrollY > 48), { passive: true });
-const BUILD = 'df-v31';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+// قاعدة العرض العامة لكل صورة داخل إطار (.pw): نقص (cover) فقط إن كان المفقود أقل من 20% من الصورة؛ وإلا نعرضها كاملة (contain) فوق نسخة ضبابية منها. لا قص عشوائي ولا تمديد.
+document.addEventListener('load', (e) => { const i = e.target; if (!(i instanceof HTMLImageElement) || !i.naturalWidth || !i.naturalHeight) return; const w = i.closest('.pw'); if (!w) return; const r = w.getBoundingClientRect(); if (!r.width || !r.height) return; const ia = i.naturalWidth / i.naturalHeight, ca = r.width / r.height; w.classList.toggle('fit', Math.min(ia, ca) / Math.max(ia, ca) < 0.8); }, true);
+view.addEventListener('scroll', () => document.body.classList.toggle('scrolled', view.scrollTop > 48), { passive: true });
+// ارتفاع التطبيق = الإطار المرئي (يتبع لوحة المفاتيح وشريط Safari) فلا تتحرك الأشرطة ولا تقفز الصفحة
+if (window.visualViewport) { const vv = visualViewport, fit = () => { document.documentElement.style.setProperty('--app-h', Math.round(vv.height) + 'px'); if (scrollY) scrollTo(0, 0); }; vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); fit(); }
+const BUILD = 'df-v32';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -42,7 +46,7 @@ async function route() {
   const TAB = { home: 'home', latest: 'home', shows: 'shows', show: 'shows', watch: 'shows', favs: 'favs', recent: 'recent' }[name];
   document.querySelectorAll('#tabs a').forEach((x) => x.classList.toggle('on', x.dataset.t === TAB));
   backBtn.hidden = false; // زر رجوع في كل صفحة (طلب سابق)
-  window.scrollTo(0, 0);
+  view.scrollTop = 0;
   if (!D) {
     view.innerHTML = name === 'home' ? '' : skeletonGrid();
     if (name === 'home') { const { skeletonHome } = await import('./components.js'); view.innerHTML = skeletonHome(); }
@@ -128,7 +132,8 @@ async function vShow(id) {
   const lastEp = last && findEp(show, last.epId);
   const cont = lastEp ? (last.done ? nextEp(show, lastEp) || lastEp : lastEp) : null;
   const dlAble = show.eps.filter((e) => e.v && e.v.type === 'mp4');
-  view.innerHTML = `${demoBanner()}<div class="hero" style="--bd:url(${esc(posterUrl(show))})">${poster(show)}<div><h2>${esc(show.title)}</h2><small style="color:var(--mute)">${show.eps.length} حلقة</small>
+  const bd = backdropUrl(show);
+  view.innerHTML = `${demoBanner()}<div class="dhero" style="--bd:url(${esc(bd)})">${bd ? `<div class="dh-wrap"><img class="dh-art" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer" src="${esc(bd)}" alt=""></div>` : ''}<div class="dh-body"><h2>${esc(show.title)}</h2><small>${show.eps.length} حلقة</small>
     <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button><button id="wa" class="favbtn">🔔 <span>تنبيه واتساب</span></button></div></div></div>
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'متابعة المشاهدة · حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
@@ -273,12 +278,14 @@ async function vWatch(showId, epId) {
     const ad = embedAdapter({ getFrame: () => pl.querySelector('iframe'), origin: S.origin, id });
     let okMarked = false, loaded = false, base = 0, restored = false; const guardUntil = Date.now() + 30000;
     ad.onRestore(() => { restored = true; });
+    let helloSeen = false; ad.onReady(() => { helloSeen = true; });
+    const helloT = setTimeout(() => { if (!helloSeen && !stale() && !msg.querySelector('.alt')) msg.insertAdjacentHTML('beforeend', '<div class="note">الاستكمال التلقائي لهذا السيرفر يعمل فقط مع إضافة Userscripts. المشاهدة تعمل بدونها.</div>'); }, 8000);
     ad.onReady(async () => { const q = await progress.get(showId, epId); const ok = q && !q.done && q.duration > 0 && q.time > 5; base = ok ? q.time : 0; ad.seekTo(ok ? q.time : null, ok ? q.duration : null); });
     ad.onProgress((t, d) => { if (!okMarked) { okMarked = true; try { localStorage.setItem('df-sv-ok', k); } catch {} }
       if (stale() || noSave) return; if (!restored && Date.now() < guardUntil && base && t < base - 15) return; progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); });
     const fr = pl.querySelector('iframe'); const failT = setTimeout(() => { if (loaded || stale()) return; const alts = alternatives(SRC.filter((x) => !x.href && SERVERS[x.k]).map((x) => x.k), k); if (!alts.length) return; msg.innerHTML = `<div class="note">تأخر تحميل ${esc(S.name)}. ${alts.map((x) => `<button class="alt" data-k="${x}">جرّب ${esc(SERVERS[x].name)}</button>`).join(' ')}</div>`; msg.querySelectorAll('.alt').forEach((b) => (b.onclick = () => select(b.dataset.k))); }, 15000);
     if (fr) fr.addEventListener('load', () => { loaded = true; clearTimeout(failT); });
-    teardown = () => { clearTimeout(failT); ad.destroy(); };
+    teardown = () => { clearTimeout(failT); clearTimeout(helloT); ad.destroy(); };
     msg.innerHTML = S.hint ? `<div class="note">${esc(S.hint)}</div>` : '';
     if (arabTestOn()) arabTestPanel(msg, pl, epId, showId);
   };
@@ -311,11 +318,8 @@ async function vWatch(showId, epId) {
   act.innerHTML = `${dlHref ? `<a style="flex:1;min-width:120px" href="${esc(dlHref)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل</button></a>` : ''}
     ${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : ''}
     ${meta ? `<button id="exp">حفظ في الملفات</button><button id="rm">حذف الملف المحفوظ (${mb(meta.size)})</button>` : ''}`;
-  const inHistory = (await progress.all()).some((p) => p.showId === showId && started(p) && !p.hidden);
   if (stale()) return;
-  if (inHistory) act.insertAdjacentHTML('beforeend', '<button id="rh">إزالة من آخر المشاهدات</button>');
   addImport(act, show, ep, () => route());
-  const rh = $('#rh'); if (rh) rh.onclick = async () => { if (!confirm(`إزالة «${show.title}» من آخر المشاهدات؟\nلن يُحذف تقدمك، وتعود إليها تلقائيًا عند مشاهدة أي حلقة منها.`)) return; noSave = true; stopCur(); await progress.hideShow(showId); toast('أُزيل من آخر المشاهدات'); route(); };
   const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
   const ex = $('#exp'); if (ex) ex.onclick = exportFile;
   const rm = $('#rm'); if (rm) rm.onclick = async () => { stopCur(); await downloads.remove(key); route(); };

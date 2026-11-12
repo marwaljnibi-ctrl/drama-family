@@ -15,7 +15,7 @@ export const norm = (s) => String(s || '').replace(/[ıİşŞğĞçÇöÖüÜ]/g
 export function slugVariants(id) {
   const parts = String(id).toLowerCase().split('-').filter(Boolean); const v = [parts];
   const last = parts[parts.length - 1];
-  if (parts.length > 1 && last.length === 5 && (last.match(/[aeiou]/g) || []).length <= 1) v.unshift(parts.slice(0, -1));
+  if (parts.length > 1 && last.length === 5) { if ((last.match(/[aeiou]/g) || []).length <= 1) v.unshift(parts.slice(0, -1)); else v.push(parts.slice(0, -1)); }   // لاحقة 5 حروف: تُجرَّب أولًا إن بلا حروف علة، وإلا كخيار أخير بعد الاسم الكامل
   return v.map((p) => ({ q: p.join(' '), key: p.join('') })).filter((x) => x.key.length >= 3 && !/^\d+$/.test(x.key));
 }
 
@@ -50,15 +50,32 @@ async function epCount(c, tmdbKey) {
 const near = (a, b, tol) => a != null && Math.abs(a - b) <= Math.max(tol, Math.round(b * (tol === 2 ? 0.05 : 0.1)));
 
 // جودة الصورة: دقة، نسبة عمودية، حدّة (انحراف معياري لمرشّح لابلاس)، وتعدد الألوان
-export async function assess(buf, sharp) {
+export async function assess(buf, sharp, { landscape = false } = {}) {
   const m = await sharp(buf).metadata(); const w = m.width || 0, h = m.height || 0, ar = w / (h || 1);
   const st = await sharp(buf).greyscale().resize({ width: 240 }).convolve({ width: 3, height: 3, kernel: [0, 1, 0, 1, -4, 1, 0, 1, 0], scale: 1, offset: 128 }).stats();
   const full = await sharp(buf).resize({ width: 120 }).stats();
   const sharpV = +st.channels[0].stdev.toFixed(2), ent = +full.entropy.toFixed(2);
   const reasons = [];
-  if (w < 300) reasons.push('low-res'); if (ar < 0.55 || ar > 0.9) reasons.push('aspect'); if (sharpV < 3) reasons.push('soft'); if (ent < 3.2) reasons.push('flat');
+  if (w < (landscape ? 900 : 300)) reasons.push('low-res'); if (landscape ? (ar < 1.5 || ar > 2.1) : (ar < 0.55 || ar > 0.9)) reasons.push('aspect'); if (sharpV < 3) reasons.push('soft'); if (ent < 3.2) reasons.push('flat');
   const score = +(Math.min(w, 1000) / 1000 * 0.45 + Math.min(sharpV / 20, 1) * 0.3 + Math.min(ent / 7.5, 1) * 0.15 + (1 - Math.min(Math.abs(ar - 0.667) / 0.15, 1)) * 0.1).toFixed(3);
-  return { w, h, ar: +ar.toFixed(3), sharp: sharpV, ent, score, ok: reasons.length === 0 || (reasons.length === 1 && reasons[0] === 'low-res' && w >= 200), reasons };   // دقة 200-299 تُقبل وتُسجَّل low-res للمراجعة
+  return { w, h, ar: +ar.toFixed(3), sharp: sharpV, ent, score, ok: reasons.length === 0 || (!landscape && reasons.length === 1 && reasons[0] === 'low-res' && w >= 200), reasons };   // دقة 200-299 تُقبل وتُسجَّل low-res للمراجعة
+}
+
+// خلفية أفقية سينمائية للـHero: أكبر صورة background (نسبة 16:9 تقريبًا، عرض ≥ 1000) من TVmaze، تُحفظ 1000px بجودة 72 في v4. غيابها لا يُعدّ خطأ.
+const DIR4 = 'data/posters/v4';
+export async function pickBackdrop(show, rec, { sharp, dry = false } = {}) {
+  if (rec.src !== 'tvmaze') return { ...rec, bg: null };   // TMDB: backdrops تُضاف عند توفر مفتاح (غير مُجرَّب)
+  const imgs = await jget('https://api.tvmaze.com/shows/' + rec.ref + '/images'); await sleep(550);
+  const cand = (imgs || []).filter((x) => x.type === 'background').map((x) => x.resolutions?.original).filter((o) => o && o.url && o.width >= 1000 && o.width / o.height > 1.5 && o.width / o.height < 2.1).sort((p, q) => q.width - p.width);
+  for (const o of cand.slice(0, 2)) {
+    const r = await fetch(o.url, { headers: { 'user-agent': UA } }); if (!r.ok) continue;
+    const buf = Buffer.from(await r.arrayBuffer()); const a = await assess(buf, sharp, { landscape: true });
+    if (!a.ok) continue;
+    const h = createHash('sha1').update(show.id).digest('hex').slice(0, 12), path = DIR4 + '/' + h + '.webp';
+    if (!dry) { mkdirSync(DIR4, { recursive: true }); writeFileSync(path, await sharp(buf).resize({ width: 1000, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()); }
+    return { ...rec, bg: { path, w: Math.min(o.width, 1000), url: o.url } };
+  }
+  return { ...rec, bg: null };
 }
 
 // يعالج مسلسلًا واحدًا. يعيد سجل القرار (بلا كتابة ملفات إن dry)
@@ -101,7 +118,8 @@ export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sha
   if (!a.ok) return { ...base, status: 'review', note: 'candidate rejected: ' + a.reasons.join(',') };
   const h = createHash('sha1').update(show.id).digest('hex').slice(0, 12), path = DIR + '/' + h + '.webp';
   if (!dry) { mkdirSync(DIR, { recursive: true }); writeFileSync(path, await sharp(buf).resize({ width: 640, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer()); }
-  return { ...base, status: 'matched', path, prev: show.img2 || show.img || null, ...(a.reasons.includes('low-res') ? { lowres: true } : {}) };
+  const matched = { ...base, status: 'matched', path, prev: show.img2 || show.img || null, ...(a.reasons.includes('low-res') ? { lowres: true } : {}) };
+  try { return await pickBackdrop(show, matched, { sharp, dry }); } catch { return matched; }   // فشل شبكة عابر: يُعاد لاحقًا (bg غير مسجّل)
 }
 
 // يُستدعى من sync-qesset بعد تنزيل الصور: يعالج فقط المسلسلات التي لا سجل لها (أو غير المطابقة المستحقة لإعادة المحاولة)
@@ -111,7 +129,12 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
   const now = Date.now();
   for (const s of shows) {
     const r = map[s.id];
-    if (r && r.status === 'matched') { if (r.path && !s.img3 && existsSync(r.path)) s.img3 = r.path; continue; }   // معتمد سابقًا: لا إعادة فحص
+    if (r && r.status === 'matched') {   // معتمد سابقًا: لا إعادة فحص للبوستر؛ تُجلب الخلفية الأفقية مرة واحدة إن لم تُجرَّب بعد
+      if (r.path && !s.img3 && existsSync(r.path)) s.img3 = r.path;
+      if (r.bg === undefined && done < max) { done++; try { map[s.id] = await pickBackdrop(s, r, { sharp }); dirty = true; console.log('backdrop', s.id, map[s.id].bg ? 'ok' : 'none'); } catch (e) { console.log('backdrop error', s.id, String(e).slice(0, 60)); } }
+      const m = map[s.id]; if (m.bg && m.bg.path && !s.img4 && existsSync(m.bg.path)) s.img4 = m.bg.path;
+      continue;
+    }
     if (r && (r.status === 'review' || r.tries >= 4 || now < (r.next || 0))) continue;
     if (done >= max) break;
     done++;
@@ -129,8 +152,17 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
 if (process.argv.includes('--apply')) {
   const f = process.argv[process.argv.indexOf('--apply') + 1]?.endsWith('.json') ? process.argv[process.argv.indexOf('--apply') + 1] : 'data/shows.json';
   const data = JSON.parse(readFileSync(f, 'utf8').replace(/^﻿/, '')), map = JSON.parse(readFileSync(MAP, 'utf8')); let n = 0;
-  for (const s of data.shows) { const r = map[s.id]; if (r && r.status === 'matched' && existsSync(r.path)) { s.img3 = r.path; n++; } }
+  for (const s of data.shows) { const r = map[s.id]; if (r && r.status === 'matched' && existsSync(r.path)) { s.img3 = r.path; n++; if (r.bg && r.bg.path && existsSync(r.bg.path)) s.img4 = r.bg.path; } }
   writeFileSync(f, JSON.stringify(data)); console.log('applied img3 to', n, 'shows'); process.exit(0);
+}
+// node scripts/poster-pick.mjs --backdrops [--limit N]  ← يجلب الخلفيات الأفقية للمسلسلات المطابَقة التي لم تُجرَّب
+if (process.argv.includes('--backdrops')) {
+  const sharp = (await import('sharp')).default; const map = JSON.parse(readFileSync(MAP, 'utf8')); const data = JSON.parse(readFileSync('data/shows.json', 'utf8').replace(/^﻿/, ''));
+  const lim = process.argv.includes('--limit') ? +process.argv[process.argv.indexOf('--limit') + 1] : 1e9; let n = 0, ok = 0;
+  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.bg !== undefined) continue; if (n++ >= lim) break;
+    try { map[s.id] = await pickBackdrop(s, r, { sharp }); if (map[s.id].bg) ok++; console.log(n, s.id, map[s.id].bg ? 'backdrop ' + map[s.id].bg.w : 'none'); } catch (e) { console.log(n, s.id, 'SKIPPED', String(e).slice(0, 50)); }
+    if (n % 10 === 0) writeFileSync(MAP, JSON.stringify(map, null, 1)); }
+  writeFileSync(MAP, JSON.stringify(map, null, 1)); console.log('backdrops:', ok, 'of', n); process.exit(0);
 }
 // CLI: node scripts/poster-pick.mjs [--ids a,b] [--limit N] [--all] [--dry] [--out report.json]
 if (process.argv[1] && process.argv[1].endsWith('poster-pick.mjs') && process.argv.length > 2) {

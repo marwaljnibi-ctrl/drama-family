@@ -1,6 +1,6 @@
 // الصفحة الرئيسية: متابعة المشاهدة ← مسلسلاتي ← مقترحات ← المسلسلات الجديدة (ثم الحلقات الجديدة كقسم فرعي).
 // تعتمد فقط على components/store/recommend. لا بيانات وهمية: كل قسم فارغ يُخفى (إلا عند أول استخدام فتظهر دعوة واضحة).
-import { $, esc, poster, section, showCard, continueCard, emptyState, heartClick, skeletonHome } from './components.js';
+import { $, esc, poster, section, showCard, continueCard, newHero, emptyState, heartClick, skeletonHome } from './components.js';
 import { favs, progress } from './db.js';
 import { continueItems, myShows, newShows, newEpisodes } from './store.js';
 import { recommend } from './recommend.js';
@@ -21,6 +21,7 @@ export async function renderHome(D, view, { demoBanner = '', quiet = false } = {
     parts.push(`<section class="sec has-hero"><div class="sec-h"><h2>متابعة المشاهدة</h2></div>${continueCard(cont[0], true)}</section>`);
     if (cont.length > 1) parts.push(section({ title: 'تابع أيضًا' }, cont.slice(1).map((x) => continueCard(x)).join(''), 'cont'));
   }
+  else if (latest.length) parts.push(`<section class="sec has-hero"><div class="sec-h"><h2>أحدث حلقة</h2></div>${newHero(latest[0])}</section>`);   // لم يبدأ مشاهدة: أحدث مسلسل نزلت له حلقة
   else parts.push(`<section class="sec first">${emptyState('اكتشف مسلسلك الأول', 'اختر مسلسلًا وابدأ المشاهدة. سيظهر هنا فورًا لتستكمله بضغطة واحدة.', { href: '#/shows', label: 'تصفّح المسلسلات' })}</section>`);
 
   // 2) مسلسلاتي (المفضلة)
@@ -36,5 +37,5 @@ export async function renderHome(D, view, { demoBanner = '', quiet = false } = {
   if (fresh.length) parts.push(section({ title: 'المسلسلات الجديدة', sub: 'عناوين أُضيفت حديثًا' }, fresh.slice(0, 12).map((s) => showCard(s, { fav: fv.has(s.id), badge: 'جديد' })).join('')));
 
   view.innerHTML = parts.join('');
-  view.onclick = heartClick(view, fv, () => { const y = scrollY; renderHome(D, view, { demoBanner, quiet: true }).then(() => scrollTo(0, y)); });
+  view.onclick = heartClick(view, fv, () => { const y = view.scrollTop; renderHome(D, view, { demoBanner, quiet: true }).then(() => { view.scrollTop = y; }); });
 }
