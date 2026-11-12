@@ -1,7 +1,7 @@
 // فحوص التصميم الآلية (Chromium بمقاسات iPhone): لا تجاوز أفقي، مناطق لمس ≥ 40px، تقليل الحركة، وقياسات أداء بسيطة.
 // الاستخدام: BASE=http://localhost:8124/ node scripts/test-design.mjs   (يطبع JSON مختصرًا، ويخرج بخطأ عند أي فشل)
 import { chromium } from 'playwright';
-const BASE = process.env.BASE || 'http://localhost:8124/';
+const BASE = process.env.BASE || 'http://localhost:8123/';
 const out = []; const T = (n, ok, d = '') => { out.push(ok); console.log('T', n, ok ? 'PASS' : 'FAIL', d); };
 const SIZES = [[320, 568], [375, 667], [390, 844], [430, 932]];
 const b = await chromium.launch();
