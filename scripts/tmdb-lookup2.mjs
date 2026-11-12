@@ -1,7 +1,0 @@
-// جولة ثانية: بحث TMDB بأسماء تركية مستنتجة يدويًا من معرّفات المسلسلات (للمراجعة البشرية).
-const K = process.env.TMDB_API_KEY; const Q = { 'barbaros-kqvmp': 'Barbaroslar', 'efsane-wqjtm': 'Efsane', 'karayazi-pwlqs': 'Karayazı', 'zengin-kqvmt': 'Zengin ve Fakir', 'bodrummasali-rgxne': 'Bodrum Masalı', 'yazin-hikayesi-vqstm': 'Yazın Hikayesi', 'ogulkokusu-fzqtm': 'Oğul Kokusu', 'banasevmeyi-kmfrs': 'Bana Sevmeyi Anlat', 'evli-cgowr': 'Evli', 'yildizlarsahidim-bqtsv': 'Yıldızlar Şahidim', 'emirin-yolu-kqvts': 'Emirin Yolu', 'cobanyildizi-mfrqe': 'Çoban Yıldızı', 'gulumseyeter-vcpam': 'Gülümse Yeter', 'adisevgi-ltqmp': 'Adı Sevgi', 'fariha-lqvts': 'Adını Feriha Koydum', 'altayer-alrafraf-mqvts': 'Çalıkuşu', 'lissw-hqvnt': 'Hayat Bazen Tatlıdır', 'tabeeb-zplon': 'Doktor', 'azhar-thalj-vqstm': 'Kar Çiçekleri', 'atroq-babi-fqvms': 'Çal Kapımı', 'matha-law-vqstm': 'Ya Çok Seversem', 'oyunu-bozan-nqvst': 'Oyun Bozan', 'tlsth-vqgmn': 'Yıldırım', 'mehmed-vqsmr': 'Mehmed', 'sancak-vqmrs': 'Sancak' };
-for (const [id, q] of Object.entries(Q)) {
-  const r = await (await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${K}&language=tr-TR&query=${encodeURIComponent(q)}`)).json(); const o = [];
-  for (const x of (r.results || []).filter((x) => x.poster_path).slice(0, 3)) { const d = await (await fetch(`https://api.themoviedb.org/3/tv/${x.id}?api_key=${K}`)).json(); o.push(`${x.original_name} ${(x.first_air_date || '').slice(0, 4)} ${(x.origin_country || []).join()} n${d.number_of_episodes} #${x.id}`); }
-  console.log('Q', id, '|', q, '|', o.join(' ; '));
-}

@@ -1,5 +1,5 @@
 name: exp-posters
-# يشغّل بحث البوسترات العمودية (TVmaze + TMDB بالعنوان العربي) للمسلسلات غير المطابَقة، ويرفع النتيجة كـ artifact للمراجعة البصرية (لا يلتزم بأي شيء).
+# تشغيل محرك الهوية على غير المعتمد (+ معايرة على عيّنة معتمدة) ورفع النتيجة كـ artifact للمراجعة. لا يلتزم بأي شيء.
 on:
   push: { branches: ['exp/**'], paths: ['.github/run-posters.txt'] }
   workflow_dispatch: {}
@@ -11,12 +11,22 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm i --no-save --no-audit --no-fund sharp
-      - name: pick posters
+      - name: engine audit on already-approved TMDB matches (calibration, no writes)
+        continue-on-error: true
         env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
+        run: node scripts/poster-pick.mjs --audit --limit 45 2>&1 | tail -n 60
+      - name: resolve the unapproved shows
+        env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
+        run: node scripts/poster-pick.mjs --resolve 2>&1 | tail -n 80
+      - name: what does the source page offer (cast/year/channel)?
+        continue-on-error: true
         run: |
-          echo "tmdb key present: $([ -n "$TMDB_API_KEY" ] && echo yes || echo no)"
-          if [ -f .github/promote.txt ]; then node scripts/tmdb-promote.mjs; exit 0; fi
-          node scripts/poster-pick.mjs --all --out posters-report.json 2>&1 | tail -n 150
-          node scripts/poster-pick.mjs --backdrops 2>&1 | tail -n 20
+          node -e "
+          const u='https://qesset.net/yeni-show/karadeniz-hqvms/';
+          fetch(u,{headers:{'user-agent':'Mozilla/5.0','accept-language':'ar'}}).then(r=>r.text()).then(h=>{
+            const t=h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+            console.log('PAGE', h.length, (h.match(/<title>([^<]*)/)||[])[1]);
+            for (const k of ['بطولة','تمثيل','سنة','القناة','عام الانتاج','قصة','النوع']) { const i=t.indexOf(k); console.log('K',k,i<0?'-':t.slice(Math.max(0,i-30),i+110)); }
+          }).catch(e=>console.log('fetch failed', e.message));"
       - uses: actions/upload-artifact@v4
-        with: { name: posters, path: "data/poster-map.json\ndata/posters\nposters-report.json" }
+        with: { name: posters, path: "data/poster-map.json\ndata/identity-index.json\ndata/posters" }
