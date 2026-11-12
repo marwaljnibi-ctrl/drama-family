@@ -68,7 +68,9 @@ export function makeHttp({ gap = 150 } = {}) {
     for (let i = 0; i < tries; i++) {
       let r; try { r = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/json' } }); } catch { await sleep(1500 * (i + 1)); continue; }   // لا نطبع الرابط (قد يحمل مفتاحًا)
       if (r.status === 429 || r.status >= 500) { await sleep(1500 * (i + 1)); continue; }
-      if (!r.ok) return null; await sleep(gap); try { return await r.json(); } catch { return null; }
+      if (!r.ok) return null; await sleep(/wikidata\.org/.test(url) ? 450 : gap); let j; try { j = await r.json(); } catch { return null; }
+      if (j && j.error && /ratelimit|maxlag|readonly|too-many/i.test(JSON.stringify(j.error)) && i < tries - 1) { await sleep(2500 * (i + 1)); continue; }
+      return j;
     }
     return null;
   }
@@ -120,10 +122,10 @@ export function scoreCandidate(c, x) {
   if (c.wdIdAgree) { s += 1; ev.push('wikidata-id-agrees'); }
   let lat = null; for (const h of x.hints) { const m = latinMatch(h, [c.original, ...c.lat]); if (m && (!lat || m.pts > lat.pts)) lat = m; }
   if (lat) { s += lat.pts; if (lat.strong) strong++; ev.push(lat.tag + ':' + lat.from); }
-  if (c.castN) { if (c.castN >= 3) { s += 4; strong++; ev.push('cast:' + c.castN); } else if (c.castN === 2) { s += 3; strong++; ev.push('cast:2'); } else { s += 1; ev.push('cast:1'); } }
+  if (c.castN) { if (c.castN >= 3) { s += 4; strong++; ev.push('cast:' + c.castN); } else if (c.castN === 2) { s += 3; strong++; ev.push('cast:2'); } else { s += 1.5; ev.push('cast:1'); } }
   if (c.imgDist != null) { if (c.imgDist <= 10) { if (s >= 1) { s += 3; strong++; ev.push('image-match:' + c.imgDist); } else { s += 1; ev.push('image-match-lonely:' + c.imgDist); } } else if (c.imgDist <= 14) { s += 1.5; ev.push('image-near:' + c.imgDist); } }
   if (c.year && x.upYear) { if (c.year > x.upYear + 1) { s -= 3; ev.push('year-after-upload'); } else { s += 0.5; ev.push('year-ok'); } }
-  if (c.eps && x.eps) { const r = Math.min(c.eps, x.eps) / Math.max(c.eps, x.eps); const p = r >= 0.9 ? 1 : r >= 0.75 ? 0.6 : r >= 0.5 ? 0.3 : r < 0.25 ? -0.5 : 0; if (p) { s += p; ev.push('eps:' + c.eps + '~' + x.eps); } }
+  if (c.eps && x.eps) { const r = Math.min(c.eps, x.eps) / Math.max(c.eps, x.eps); const p = r >= 0.9 ? 1.5 : r >= 0.75 ? 0.8 : r >= 0.5 ? 0.3 : r < 0.25 ? -0.5 : 0; if (p) { s += p; ev.push('eps:' + c.eps + '~' + x.eps); } }
   if (x.learned && x.learned === c.ref) { s += 1.5; ev.push('learned-alias'); }
   return { score: +s.toFixed(2), strong, evidence: ev };
 }
@@ -150,9 +152,9 @@ async function castCandidates(ctx, names) {   // اسم ممثل بالعربي�
   const per = new Map();
   for (const n of names.slice(0, 5)) {
     const s = await ctx.json(`${T}/search/person?api_key=${ctx.key}&language=ar&query=${encodeURIComponent(n)}`);
-    const p = (s?.results || []).find((r) => r.known_for_department === 'Acting' || !r.known_for_department); if (!p) continue;
-    const c = await ctx.json(`${T}/person/${p.id}/tv_credits?api_key=${ctx.key}&language=ar`);
-    for (const t of c?.cast || []) if ((t.origin_country || []).includes('TR') || t.original_language === 'tr') { if (!per.has(String(t.id))) per.set(String(t.id), new Set()); per.get(String(t.id)).add(p.id); }
+    const ps = (s?.results || []).filter((r) => r.known_for_department === 'Acting' || !r.known_for_department).slice(0, 2);
+    for (const p of ps) { const c = await ctx.json(`${T}/person/${p.id}/tv_credits?api_key=${ctx.key}&language=ar`);
+      for (const t of c?.cast || []) if ((t.origin_country || []).includes('TR') || t.original_language === 'tr') { if (!per.has(String(t.id))) per.set(String(t.id), new Set()); per.get(String(t.id)).add(n); } }   // نعدّ الأسماء (لا معرّفات الأشخاص) كي لا يُحسب نفس الممثل مرتين
   }
   return new Map([...per].map(([id, s]) => [id, s.size]));
 }
