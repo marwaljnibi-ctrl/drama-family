@@ -17,7 +17,7 @@ await home();
 const first = await page.evaluate(() => ({ text: document.getElementById('view').innerText, tabs: [...document.querySelectorAll('#tabs a')].map((a) => a.textContent.trim()) }));
 T('first-run-hero-is-latest-episode', !!(await page.$('.hero-new')) && /شاهد الآن/.test(first.text) && /الحلقة \d+/.test(first.text) && !/متابعة المشاهدة/.test(first.text), first.text.slice(0, 80));
 T('back-button-visible-on-home', await page.evaluate(() => !document.getElementById('back').hidden));
-T('five-tabs-per-approved-icons', first.tabs.length === 5 && first.tabs.join('|') === 'الرئيسية|المسلسلات|آخر المشاهدات|تنبيهاتي|المفضلة', first.tabs.join('|'));
+T('four-tabs-only', first.tabs.length === 4 && first.tabs.join('|') === 'الرئيسية|المسلسلات|المفضلة|آخر المشاهدات', first.tabs.join('|'));
 T('discover-not-claimed-personal', /اكتشف المسلسلات/.test(first.text) && !/حسب ذوقك/.test(first.text));
 
 // T2: بيانات متابعة: ترتيب الأقسام، والدقيقة والشريط فقط عند وجود مدة مثبتة

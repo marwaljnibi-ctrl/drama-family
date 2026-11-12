@@ -10,7 +10,7 @@ for (const [w, h] of [[320, 568], [390, 844], [430, 932]]) {
   await p.goto(BASE + '#/home'); await p.waitForSelector('#view .sec');
   T(`${w}px logo wordmark in home header`, await p.evaluate(() => { const i = document.querySelector('#title img.wm'); return !!i && i.complete && i.naturalWidth > 100 && i.getBoundingClientRect().height > 20; }));
   const tabs = await p.evaluate(() => [...document.querySelectorAll('#tabs a')].map((a) => ({ t: a.dataset.t, w: Math.round(a.getBoundingClientRect().width), h: Math.round(a.getBoundingClientRect().height), svg: !!a.querySelector('svg'), fill: getComputedStyle(a.querySelector('svg')).fill })));
-  T(`${w}px five outline tabs (home, shows, recent, alerts, favs), all tappable`, tabs.map((x) => x.t).join() === 'home,shows,recent,alerts,favs' && tabs.every((x) => x.svg && x.fill === 'none' && x.w >= 48 && x.h >= 44), JSON.stringify(tabs));
+  T(`${w}px four outline tabs (home, shows, favs, recent), all tappable`, tabs.map((x) => x.t).join() === 'home,shows,favs,recent' && tabs.every((x) => x.svg && x.fill === 'none' && x.w >= 48 && x.h >= 44), JSON.stringify(tabs));
   // صفحة الحلقة: خيار تنبيه واتساب + جرس خطي، ولا إيموجي
   await p.goto(BASE + `#/watch/${encodeURIComponent(s.id)}/${encodeURIComponent(s.eps[1].id)}`); await p.waitForSelector('#wa', { timeout: 8000 });
   const wa = await p.evaluate(() => { const x = document.querySelector('#wa'); return { svg: !!x.querySelector('svg path'), fill: getComputedStyle(x.querySelector('svg')).fill, txt: x.textContent.trim(), emoji: /🔔|🔕/.test(document.body.innerText) }; });

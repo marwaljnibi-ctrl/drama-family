@@ -222,3 +222,10 @@ button.danger{background:var(--accent-fill);color:#fff}
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
 @media (prefers-contrast:more){:root{--text-2:rgba(245,245,247,.82);--text-3:rgba(245,245,247,.66);--line:rgba(255,255,255,.28)}}
+
+/* اقتراح الحلقة التالية: شريط هادئ تحت المشغّل، لا يغطي الفيديو ولا يشغّل شيئًا */
+.nx{display:flex;align-items:center;gap:var(--sp-3);margin:var(--sp-3) 0;padding:var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-2);background:var(--bg-2);border-radius:var(--radius);box-shadow:0 0 0 .5px rgba(242,86,106,.35);font:600 14px/1.4 var(--font);animation:nxin .25s var(--ease)}
+.nx>span{flex:1}
+.nx .nx-x{min-width:44px;min-height:44px;background:none;color:var(--text-3)}
+@keyframes nxin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.nx{animation:none}}

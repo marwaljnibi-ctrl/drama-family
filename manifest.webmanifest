@@ -9,6 +9,7 @@
   "background_color": "#08080A",
   "theme_color": "#08080A",
   "icons": [
+    { "src": "icons/dizi-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",

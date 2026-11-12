@@ -38,7 +38,7 @@ document.addEventListener('load', (e) => { const i = e.target; if (!(i instanceo
 view.addEventListener('scroll', () => document.body.classList.toggle('scrolled', view.scrollTop > 48), { passive: true });
 // ارتفاع التطبيق = الإطار المرئي (يتبع لوحة المفاتيح وشريط Safari) فلا تتحرك الأشرطة ولا تقفز الصفحة
 if (window.visualViewport) { const vv = visualViewport, fit = () => { document.documentElement.style.setProperty('--app-h', Math.round(vv.height) + 'px'); if (scrollY) scrollTo(0, 0); }; vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); fit(); }
-const BUILD = 'df-v35';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v36';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -49,7 +49,7 @@ async function route() {
   view.onclick = null;
   let [, name, a, b] = (location.hash || '#/home').split('/');
   if (!name || name === 'new') name = 'home';
-  const TAB = { home: 'home', latest: 'home', shows: 'shows', show: 'shows', watch: 'shows', favs: 'favs', recent: 'recent', alerts: 'alerts', login: 'alerts' }[name];
+  const TAB = { home: 'home', latest: 'home', shows: 'shows', show: 'shows', watch: 'shows', favs: 'favs', recent: 'recent', alerts: '', login: '' }[name];
   document.querySelectorAll('#tabs a').forEach((x) => x.classList.toggle('on', x.dataset.t === TAB));
   backBtn.hidden = false; // زر رجوع في كل صفحة (طلب سابق)
   const prev = document.body.dataset.page; if (KEEP.includes(prev)) SCROLL[prev] = view.scrollTop;   // احفظ موضع القائمة قبل مغادرتها
@@ -57,11 +57,11 @@ async function route() {
   if (!D) {
     view.innerHTML = name === 'home' ? '' : skeletonGrid();
     if (name === 'home') { const { skeletonHome } = await import('./components.js'); view.innerHTML = skeletonHome(); }
-    try { D = await loadData(); } catch { view.innerHTML = '<div class="empty">تعذّر تحميل قائمة المسلسلات.<br>تأكد من الاتصال ثم أعد المحاولة.</div>'; return; }
+    try { D = await loadData(); } catch { view.innerHTML = '<div class="empty">تعذّر تحميل قائمة المسلسلات.<br>تأكد من الاتصال ثم أعد المحاولة.<br><button class="pri" id="retry-data">إعادة المحاولة</button></div>'; const rd = document.getElementById('retry-data'); if (rd) rd.onclick = () => route(); return; }
   }
   const R = { alerts: () => (getSession() ? renderAlerts(view) : vLogin()), login: vLogin, home: vHome, latest: vLatest, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
   titleEl.textContent = { home: 'Dizi', latest: 'الحلقات الجديدة', shows: 'المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات', alerts: 'حسابي', login: 'تسجيل الدخول' }[name] || 'Dizi';
-  if (name === 'home') titleEl.innerHTML = '<img class="wm" src="icons/dizi-wordmark.png" alt="Dizi">';
+  if (name === 'home') titleEl.innerHTML = '<img class="wm" src="icons/dizi-wordmark.svg" alt="Dizi">';
   document.body.dataset.page = name; view.dataset.title = titleEl.textContent; view.toggleAttribute('data-large', LARGE.includes(name));
   view.classList.remove('enter'); void view.offsetWidth; view.classList.add('enter'); clearTimeout(enterT); enterT = setTimeout(() => view.classList.remove('enter'), 700);
   await (R[name] || vHome)();
@@ -153,7 +153,7 @@ function bindSwipeRemove(list) {
 
 // ---------- صفحة المسلسل ----------
 async function vShow(id) {
-  const show = D.byId.get(id); if (!show) return (view.innerHTML = '<div class="empty">المسلسل غير موجود.</div>');
+  const show = D.byId.get(id); if (!show) return (view.innerHTML = '<div class="empty">المسلسل غير موجود.<br><a href="#/shows"><button>كل المسلسلات</button></a></div>');
   titleEl.textContent = show.title;
   const [fv, prog, dls] = await Promise.all([favs.has(id), progress.all(), downloads.meta()]);
   const mine = new Map(prog.filter((p) => p.showId === id && started(p)).map((p) => [p.epId, p]));
@@ -223,9 +223,13 @@ function addImport(container, show, ep, onDone) {
   container.append(btn, inp);
 }
 
+// مشغّل مفضّل لكل مسلسل (محليًا على الجهاز): آخر سيرفر نجح فعلًا مع هذا المسلسل. يمكن تغييره بالضغط على أي سيرفر آخر في أي وقت.
+const SV_KEY = 'df-sv-show';
+const showSv = (id) => { try { return (JSON.parse(localStorage.getItem(SV_KEY) || '{}'))[id] || null; } catch { return null; } };
+const setShowSv = (id, k) => { try { const m = JSON.parse(localStorage.getItem(SV_KEY) || '{}'); delete m[id]; m[id] = k; const ks = Object.keys(m); for (const x of ks.slice(0, Math.max(0, ks.length - 300))) delete m[x]; localStorage.setItem(SV_KEY, JSON.stringify(m)); } catch {} };
 async function vWatch(showId, epId) {
   const show = D.byId.get(showId), ep = show && findEp(show, epId);
-  if (!ep) return (view.innerHTML = '<div class="empty">الحلقة غير موجودة.</div>');
+  if (!ep) return (view.innerHTML = '<div class="empty">الحلقة غير موجودة.<br><a href="#/shows"><button>كل المسلسلات</button></a></div>');
   titleEl.textContent = `${show.title} - حلقة ${ep.n}`;
   const key = showId + '|' + epId;
   // تنقّل سريع: إن تغيّر المسار أثناء الانتظار فهذه صفحة قديمة، تتوقف ولا تلمس الصفحة الجديدة
@@ -250,9 +254,18 @@ async function vWatch(showId, epId) {
     <div class="actions" id="srv"></div>
     <div class="actions" id="act"></div>
     <div id="msg"></div>
+    <div id="nx"></div>
     <div class="actions">${next ? `<a style="flex:1" href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button style="width:100%">الحلقة التالية (${esc(next.n)})</button></a>` : ''}<a style="flex:1" href="#/show/${encodeURIComponent(showId)}"><button style="width:100%">كل الحلقات</button></a></div>
     <div class="actions"><button id="wa" class="favbtn">${BELL}<span>تنبيه واتساب</span></button></div>`;
-  const pl = $('#pl'), srv = $('#srv'), act = $('#act'), msg = $('#msg');
+  const pl = $('#pl'), srv = $('#srv'), act = $('#act'), msg = $('#msg'), nxEl = $('#nx');
+  // اقتراح «الحلقة التالية»: عند اقتراب النهاية فقط، مرة واحدة لكل حلقة في الجلسة، ولا يشغّل شيئًا تلقائيًا. لا يظهر إن كانت المدة غير معروفة أو لا توجد حلقة تالية.
+  const NXK = 'df-nx|' + key; let nxShown = false; try { nxShown = sessionStorage.getItem(NXK) === '1'; } catch {}
+  const nearEnd = (t, d) => {
+    if (!next || nxShown || stale() || !(d > 120) || !(t > 0) || !(d - t <= 75 || t / d >= 0.96)) return;
+    nxShown = true; try { sessionStorage.setItem(NXK, '1'); } catch {}
+    nxEl.innerHTML = `<div class="nx" role="status"><span>الحلقة ${esc(next.n)} جاهزة</span><a href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button class="pri">التالية</button></a><button class="nx-x" aria-label="لاحقًا">✕</button></div>`;
+    nxEl.querySelector('.nx-x').onclick = () => { nxEl.innerHTML = ''; };
+  };
   bindShowAlert($('#wa'), showId, show.title);
   const setDone = async (done) => { await progress.save(showId, ep, { done, ...(done ? {} : { time: 0 }) }, { force: true }); toast(done ? 'تم وضع علامة ✓' : 'أُعيدت الحلقة للبداية'); route(); };
   if (!p0) await progress.save(showId, ep, { done: false });
@@ -290,13 +303,13 @@ async function vWatch(showId, epId) {
       if (!armed) { if (tries >= 2 && v.currentTime > 5) armed = true; else return; }
       if (!(v.duration > 0)) return;
       const now = Date.now(); if (!force && now - lastSave < 3000) return; lastSave = now;
-      const t = v.currentTime, d = v.duration;
+      const t = v.currentTime, d = v.duration; nearEnd(t, d);
       return progress.save(showId, ep, { time: t, duration: d, done: p0 && p0.done && t < d * 0.9 ? false : (d - t < tail() || t / d > 0.95) })
         .then(() => { v.dataset.savedAt = t.toFixed(1); }).catch(() => {});
     };
     v.addEventListener('timeupdate', () => save(false));
     v.addEventListener('pause', () => save(true));
-    v.addEventListener('ended', () => { progress.save(showId, ep, { time: v.duration, duration: v.duration, done: true }); toast('اكتملت الحلقة ✓'); });
+    v.addEventListener('ended', () => { nearEnd(v.duration - 1, v.duration); progress.save(showId, ep, { time: v.duration, duration: v.duration, done: true }); toast('اكتملت الحلقة ✓'); });
     const vis = () => document.visibilityState === 'hidden' && save(true);
     document.addEventListener('visibilitychange', vis); addEventListener('pagehide', vis);
     teardown = () => { save(true); clearTimeout(retryT); document.removeEventListener('visibilitychange', vis); removeEventListener('pagehide', vis); try { v.pause(); v.removeAttribute('src'); v.load(); } catch {} };
@@ -312,9 +325,10 @@ async function vWatch(showId, epId) {
     let helloSeen = false; ad.onReady(() => { helloSeen = true; });
     const helloT = setTimeout(() => { if (!helloSeen && !stale() && !msg.querySelector('.alt')) msg.insertAdjacentHTML('beforeend', '<div class="note">الاستكمال التلقائي لهذا السيرفر يعمل فقط مع إضافة Userscripts. المشاهدة تعمل بدونها.</div>'); }, 8000);
     ad.onReady(async () => { const q = await progress.get(showId, epId); const ok = q && !q.done && q.duration > 0 && q.time > 5; base = ok ? q.time : 0; ad.seekTo(ok ? q.time : null, ok ? q.duration : null); });
-    ad.onProgress((t, d) => { if (!okMarked) { okMarked = true; try { localStorage.setItem('df-sv-ok', k); } catch {} }
+    ad.onProgress((t, d) => { if (!okMarked) { okMarked = true; try { localStorage.setItem('df-sv-ok', k); } catch {} setShowSv(showId, k); }
+      nearEnd(t, d);
       if (stale() || noSave) return; if (!restored && Date.now() < guardUntil && base && t < base - 15) return; progress.save(showId, ep, { time: t, duration: d, done: d - t < Math.min(20, d * 0.05), by: 'ext' }).catch(() => {}); });
-    const fr = pl.querySelector('iframe'); const failT = setTimeout(() => { if (loaded || stale()) return; const alts = alternatives(SRC.filter((x) => !x.href && SERVERS[x.k]).map((x) => x.k), k); if (!alts.length) return; msg.innerHTML = `<div class="note">تأخر تحميل ${esc(S.name)}. ${alts.map((x) => `<button class="alt" data-k="${x}">جرّب ${esc(SERVERS[x].name)}</button>`).join(' ')}</div>`; msg.querySelectorAll('.alt').forEach((b) => (b.onclick = () => select(b.dataset.k))); }, 15000);
+    const fr = pl.querySelector('iframe'); const failT = setTimeout(() => { if (loaded || stale()) return; const alts = alternatives(SRC.filter((x) => !x.href && SERVERS[x.k]).map((x) => x.k), k); if (!alts.length) { msg.innerHTML = `<div class="note">تأخر تحميل ${esc(S.name)}. قد يكون الاتصال بطيئًا. <button class="alt" id="retry-pl">إعادة تحميل المشغّل</button></div>`; const rb = msg.querySelector('#retry-pl'); if (rb) rb.onclick = () => select(k); return; } msg.innerHTML = `<div class="note">تأخر تحميل ${esc(S.name)}. <button class="alt" id="retry-pl">إعادة المحاولة</button> ${alts.map((x) => `<button class="alt" data-k="${x}">جرّب ${esc(SERVERS[x].name)}</button>`).join(' ')}</div>`; msg.querySelectorAll('.alt[data-k]').forEach((b) => (b.onclick = () => select(b.dataset.k))); const rb2 = msg.querySelector('#retry-pl'); if (rb2) rb2.onclick = () => select(k); }, 15000);
     if (fr) fr.addEventListener('load', () => { loaded = true; clearTimeout(failT); });
     teardown = () => { clearTimeout(failT); clearTimeout(helloT); ad.destroy(); };
     msg.innerHTML = S.hint ? `<div class="note">${esc(S.hint)}</div>` : '';
@@ -368,7 +382,7 @@ async function vWatch(showId, epId) {
   let pref = null; try { pref = localStorage.getItem('df-sv-ok'); } catch {}
   const playable = SRC.filter((s) => !s.href);
   if (!playable.length) { pl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#000;color:#aaa;font-size:15px;padding:16px;text-align:center">لا يوجد مشغّل متاح لهذه الحلقة الآن.</div>'; return; }
-  const first = (DEFERRED && meta && 'f') || pickDefault(playable.map((s) => s.k), pref);
+  const first = (DEFERRED && meta && 'f') || pickDefault(playable.map((s) => s.k), playable.some((s) => s.k === showSv(showId)) ? showSv(showId) : pref);
   select(first);
 }
 
