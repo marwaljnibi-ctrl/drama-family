@@ -162,7 +162,7 @@ main[data-large]::before{content:attr(data-title);display:block;font:800 32px/1.
 .ccard.hero-c .cm b{font:800 30px/1.25 var(--font);-webkit-line-clamp:2;text-shadow:0 2px 18px rgba(0,0,0,.5)}
 .ccard.hero-c .cm small{font-size:14px;color:rgba(245,245,247,.82)}
 .ccard.hero-c .go{display:inline-flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;margin-top:var(--sp-3);min-height:50px;border-radius:var(--radius);background:#fff;color:#0a0a0c;font:700 16px/1 var(--font)}
-.ccard.hero-c .go::before{content:"";width:0;height:0;border-block:7px solid transparent;border-inline-start:11px solid currentColor;transform:scaleX(-1)}
+.ccard.hero-c .go::before{content:"";width:11px;height:14px;background:currentColor;clip-path:polygon(0 0,100% 50%,0 100%)}
 
 .empty-card{background:var(--bg-2);border-radius:var(--radius-l);padding:var(--sp-5) var(--sp-4);text-align:center}
 .empty-card b{display:block;font:700 var(--fs-l)/1.45 var(--font);margin-bottom:var(--sp-1)}
