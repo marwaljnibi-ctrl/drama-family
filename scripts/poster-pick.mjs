@@ -58,6 +58,8 @@ export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sha
   const b = ident.best; const poster = await choosePoster(b, ctx);
   const base = { ...rec, conf: (b.evidence || []).includes('manual-override') ? 'manual' : 'identity', src: b.src, ref: b.ref, name: b.original, premiered: b.year, idscore: b.score, evidence: b.evidence };
   if (!poster) return { ident, rec: { ...base, status: 'review', note: 'identity confirmed (' + b.original + ') but no suitable vertical poster yet' } };
+  // القاعدة الدائمة: لا يُعتمد بوستر إلا إن كان 2:3 حقيقيًا. غير ذلك = غلاف مؤقت + سجل مراجعة (تُعاد المحاولة لاحقًا بمصادر أخرى)، ولا قص ولا تمديد.
+  if (!strictOk(poster.a.w, poster.a.h)) return { ident, rec: { ...base, status: 'review', note: 'identity confirmed (' + b.original + ') but best poster is not 2:3 (ratio ' + (poster.a.w / poster.a.h).toFixed(2) + ') — placeholder until a real 2:3 poster exists' } };
   const { path } = await saveImages(show, { sharp, buf: poster.buf }, dry);
   return { ident, rec: { ...base, status: 'matched', url: poster.url, lang: poster.lang, w: poster.a.w, h: poster.a.h, sharp: poster.a.sharp, ent: poster.a.ent, score: poster.a.score, path, prev: show.img2 || show.img || null, ...(poster.a.reasons.includes('low-res') ? { lowres: true } : {}) } };
 }
@@ -138,6 +140,42 @@ if (isMain && has('--reratio')) {
       else { map[s.id] = { ...r, rerated: Date.now() }; keep++; } } catch (e) { console.log('reratio error', s.id, String(e).slice(0, 60)); }
     if (n % 10 === 0) save(MAP, map); }
   save(MAP, map); console.log('reratio: upgraded', up, 'kept', keep, 'of', n); process.exit(0);
+}
+// ---- مصدر إضافي بلا تخمين: التحقق من الهوية عبر سلسلة معرّفات (TVmaze externals → IMDb/TVDB → TMDB find) ----
+// القاعدة الدائمة للأتمتة: لا يُقبل بوستر في Dizi إلا إذا كان (1) لنفس المسلسل بدليل هوية، و(2) عموديًا 2:3 حقيقيًا (strictOk). غير ذلك = غلاف مؤقت + سجل في poster-review.
+export const IS_ACCEPTABLE = (a) => !!(a && a.ok !== false && strictOk(a.w, a.h));
+const yearOf = (v) => { const m = /([0-9]{4})/.exec(String(v || '')); return m ? +m[1] : null; };
+// هل نتيجة TMDB هي نفس مسلسلنا؟ التركي + السنة ±1 إلزاميان؛ وإن لم تأتِ عبر معرّف خارجي مؤكَّد (بحث بالاسم) يلزم تطابق الاسم تقريبًا تامًا.
+export function xrefIdentityOk(cur, hit, { viaId = true } = {}) {
+  if (!hit) return { ok: false, reason: 'no tmdb hit' };
+  const tr = (hit.origin_country || []).includes('TR') || hit.original_language === 'tr'; if (!tr) return { ok: false, reason: 'not turkish' };
+  const y = yearOf(hit.first_air_date), y0 = yearOf(cur.premiered); if (!y || !y0 || Math.abs(y - y0) > 1) return { ok: false, reason: 'year mismatch ' + y + ' vs ' + y0 };
+  if (!viaId) { const a = norm(cur.name || ''), ok = [hit.name, hit.original_name].some((n) => n && (norm(n) === a || dice(norm(n), a) >= 0.92)); if (!ok) return { ok: false, reason: 'name mismatch' }; }
+  return { ok: true };
+}
+// node scripts/poster-pick.mjs --xref [--limit N]  ← لما بقي غير 2:3: يبحث عن بوستر 2:3 لنفس المسلسل عبر TMDB (بمعرّف IMDb/TVDB الذي يعطيه TVmaze). يحتاج TMDB_API_KEY (سرّ GitHub فقط).
+if (isMain && has('--xref')) {
+  const key = process.env.TMDB_API_KEY || ''; if (!key) { console.log('xref: TMDB_API_KEY missing (runs in CI only)'); process.exit(0); }
+  const sharp = (await import('sharp')).default; const map = J(MAP, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp(); const ctx = { ...http, key, sharp }; const lim = arg('--limit') ? +arg('--limit') : 1e9; let n = 0, up = 0, no = 0; const TM = 'https://api.themoviedb.org/3';
+  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.conf === 'manual' || strictOk(r.w, r.h) || r.xref) continue; if (n++ >= lim) break;
+    const note = (why) => { map[s.id] = { ...r, xref: Date.now(), xrefNote: why }; no++; console.log('xref keep', s.id, why); };
+    try {
+      let hit = null, viaId = true;
+      if (r.src === 'tvmaze') { const tv = await ctx.json('https://api.tvmaze.com/shows/' + r.ref), e = (tv && tv.externals) || {};
+        const q = e.imdb ? { id: e.imdb, ext: 'imdb_id' } : e.thetvdb ? { id: e.thetvdb, ext: 'tvdb_id' } : null;
+        if (q) { const j = await ctx.json(TM + '/find/' + q.id + '?api_key=' + key + '&external_source=' + q.ext); hit = j && j.tv_results && j.tv_results[0]; } }
+      else if (r.src === 'tmdb') { hit = { id: r.ref, ...(await ctx.json(TM + '/tv/' + r.ref + '?api_key=' + key)) }; }
+      if (!hit) { viaId = false; const j = await ctx.json(TM + '/search/tv?api_key=' + key + '&query=' + encodeURIComponent(r.name || '') + '&first_air_date_year=' + (yearOf(r.premiered) || '')); const rs = (j && j.results) || []; const ok = rs.filter((x) => xrefIdentityOk(r, x, { viaId: false }).ok); hit = ok.length === 1 ? ok[0] : null; }
+      const idv = xrefIdentityOk(r, hit, { viaId }); if (!idv.ok) { note(idv.reason); continue; }
+      const c = await choosePoster({ src: 'tmdb', ref: hit.id }, ctx); const a = c && c.a;
+      if (!IS_ACCEPTABLE(a)) { note('no 2:3 poster on tmdb:' + hit.id); continue; }
+      if (a.score < (r.score || 0) - 0.08) { note('2:3 found but lower quality'); continue; }
+      const { path } = await saveImages(s, { sharp, buf: c.buf }, false);
+      map[s.id] = { ...r, src: 'tmdb', ref: String(hit.id), url: c.url, lang: c.lang, w: a.w, h: a.h, sharp: a.sharp, ent: a.ent, score: a.score, path, xref: Date.now(), prevRatio: +(r.w / r.h).toFixed(3), prevSrc: r.src + ':' + r.ref, rerated: Date.now() }; up++; console.log('xref 2:3', s.id, (r.w / r.h).toFixed(3), '->', a.ar, 'via', viaId ? 'id' : 'search');
+    } catch (e) { console.log('xref error', s.id, String(e).slice(0, 80)); }
+    if (n % 10 === 0) save(MAP, map); }
+  save(MAP, map); try { const pr = J(REV, { items: {} }); const rv = buildReview(map, loadIndex(), pr.items || {}); save(REV, { updated: new Date().toISOString(), ...rv }); } catch {}
+  console.log('xref: upgraded', up, 'kept', no, 'of', n); process.exit(0);
 }
 // node scripts/poster-pick.mjs --review  ← يعيد بناء data/poster-review.json ويطبع الحالات التي تنتظر مراجعة
 if (isMain && has('--review')) { const rv = buildReview(J(MAP, {}), loadIndex(), J(REV, { items: {} }).items || {}); save(REV, { updated: new Date().toISOString(), ...rv }); console.log('review items:', rv.count); for (const x of Object.values(rv.items)) console.log(x.status, x.id, x.tries + ' tries', x.candidates[0] ? '| best: ' + x.candidates[0].name + ' ' + x.candidates[0].score : '', x.note); process.exit(0); }
