@@ -5,16 +5,23 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { assess, portraitOk, PORTRAIT_MIN, PORTRAIT_MAX } from './lib/images.mjs';
-import { resolveIdentity, choosePoster, chooseBackdrop, makeHttp, arKey, norm, slugVariants, dice } from './lib/identity.mjs';
+import { resolveIdentity, choosePoster, chooseBackdrop, makeHttp, buildCatalog, catalogIndex, arKey, norm, slugVariants, dice } from './lib/identity.mjs';
 export { assess, portraitOk, PORTRAIT_MIN, PORTRAIT_MAX, norm, slugVariants, dice };
 
-const MAP = 'data/poster-map.json', IDX = 'data/identity-index.json', OVR = 'data/identity-overrides.json', DIR = 'data/posters/v3', DIR4 = 'data/posters/v4';
+const CAT = 'data/tr-catalog.json', MAP = 'data/poster-map.json', IDX = 'data/identity-index.json', OVR = 'data/identity-overrides.json', DIR = 'data/posters/v3', DIR4 = 'data/posters/v4';
 const J = (f, d) => (existsSync(f) ? JSON.parse(readFileSync(f, 'utf8').replace(/^﻿/, '')) : d);
 const save = (f, o) => writeFileSync(f, JSON.stringify(o, null, 1));
 const DAY = 864e5, BACKOFF = [1, 3, 7, 14, 30];
 export const nextTry = (tries, now = Date.now()) => now + BACKOFF[Math.min(tries, BACKOFF.length) - 1] * DAY;
 const hashOf = (id) => createHash('sha1').update(id).digest('hex').slice(0, 12);
 const slim = (c) => ({ src: c.src, ref: c.ref, name: c.original, premiered: c.year, score: c.score, evidence: c.evidence });
+// فهرس تركي مُخزَّن: يُبنى عند الحاجة فقط (غير موجود/أقدم من 45 يومًا) وبمفتاح TMDB؛ غيابه لا يعطّل شيئًا
+export async function getCatalog({ http = makeHttp(), key = process.env.TMDB_API_KEY, force = false } = {}) {
+  const c = J(CAT, null); const fresh = c && Date.now() - c.at < (c.items?.length >= 200 ? 45 : 1) * DAY;   // فهرس صغير/فاشل يُعاد بعد يوم فقط
+  if (fresh && !force) return catalogIndex(c.items); if (!key) return c ? catalogIndex(c.items) : null;
+  const items = await buildCatalog({ ...http, key }); if (items.length < 200 && c && c.items?.length >= 200) return catalogIndex(c.items);   // فشل جزئي: نُبقي القديم
+  writeFileSync(CAT, JSON.stringify({ at: Date.now(), items })); return catalogIndex(items);
+}
 export const loadIndex = () => { const i = J(IDX, null) || {}; return { v: 1, shows: i.shows || {}, aliases: i.aliases || {} }; };
 
 // يسجّل هوية في الفهرس الدائم (المؤكَّد لا يُستبدل بغير المؤكَّد أبدًا) ويتعلّم أسماءه العربية كأسماء بديلة
@@ -35,9 +42,9 @@ async function saveImages(show, poster, bd, dry) {
 }
 
 // يعالج مسلسلًا واحدًا. يعيد { rec (قرار البوستر), ident (الهوية) } بلا كتابة سجلات (الصور تُكتب إلا إن dry)
-export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sharp, dry = false, http = makeHttp(), override = null, known = null, learned = null, cast = null, tries = 1 } = {}) {
+export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sharp, dry = false, http = makeHttp(), override = null, known = null, learned = null, cast = null, catalog = null, tries = 1 } = {}) {
   const ctx = { ...http, key: tmdbKey || '', sharp }; const rec = { at: Date.now(), tries };
-  const ident = known ? { status: 'confirmed', best: { ...known, evidence: known.evidence || [], score: known.score || 0 }, cands: [] } : await resolveIdentity(show, ctx, { override, learned, cast });
+  const ident = known ? { status: 'confirmed', best: { ...known, evidence: known.evidence || [], score: known.score || 0 }, cands: [] } : await resolveIdentity(show, ctx, { override, learned, cast, catalog });
   if (ident.status !== 'confirmed') return { ident, rec: { ...rec, status: ident.cands?.length ? 'review' : 'unmatched', note: ident.reason || 'no candidates', cands: (ident.cands || []).map(slim) } };
   const b = ident.best; const poster = await choosePoster(b, ctx);
   const base = { ...rec, conf: (b.evidence || []).includes('manual-override') ? 'manual' : 'identity', src: b.src, ref: b.ref, name: b.original, premiered: b.year, idscore: b.score, evidence: b.evidence };
@@ -57,7 +64,7 @@ export async function pickBackdropFor(show, rec, { sharp, tmdbKey = process.env.
 // يُستدعى من sync-qesset: كل مسلسل بلا قرار نهائي يمرّ بالمحرك عند استحقاقه؛ المعتمد لا يُعاد فحصه ولا يُستبدل (إلا بتصحيح يدوي مختلف في identity-overrides.json)
 export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMDB_API_KEY } = {}) {
   let sharp = null; try { sharp = (await import('sharp')).default; } catch { return; }
-  const map = J(MAP, {}), idx = loadIndex(), ovr = J(OVR, {}), http = makeHttp(); let done = 0, dirty = false; const now = Date.now();
+  const map = J(MAP, {}), idx = loadIndex(), ovr = J(OVR, {}), http = makeHttp(); let done = 0, dirty = false, catalog; const now = Date.now();
   for (const s of shows) {
     const r = map[s.id], ov = ovr[s.id] && ovr[s.id].tmdb ? ovr[s.id] : null; const forced = !!ov && !(r && r.status === 'matched' && String(r.ref) === String(ov.tmdb));
     if (r && r.status === 'matched' && !forced) {
@@ -69,11 +76,13 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
     if (!forced && r && now < (r.next || 0)) continue;
     if (done >= max) break; done++;
     try {
+      if (catalog === undefined) { try { catalog = tmdbKey ? await getCatalog({ http, key: tmdbKey }) : null; } catch { catalog = null; } }
       const tries = (r && r.tries ? r.tries : 0) + 1, i0 = idx.shows[s.id];
       const known = !forced && i0 && i0.status === 'confirmed' ? { src: i0.src, ref: i0.ref, original: i0.original, year: i0.year, ar: i0.ar, lat: i0.lat, imdb: i0.imdb, evidence: i0.evidence, score: i0.score } : null;
-      const { rec, ident } = await pickPoster(s, { sharp, tmdbKey, http, override: ov, known, learned: idx.aliases[arKey(s.title)] || null, cast: i0?.cast || null, tries });
-      if (rec.status !== 'matched') rec.next = nextTry(tries, now);
-      map[s.id] = rec; if (!known) recordIdentity(idx, s, ident, tries, now); dirty = true; if (rec.status === 'matched') { s.img3 = rec.path; if (rec.bg && rec.bg.path) s.img4 = rec.bg.path; }
+      const { rec, ident } = await pickPoster(s, { sharp, tmdbKey, http, override: ov, known, learned: idx.aliases[arKey(s.title)] || null, cast: i0?.cast || null, catalog, tries });
+      if (rec.status !== 'matched') rec.next = ident.transient ? now + 6 * 3600e3 : nextTry(tries, now);   // فشل شبكة عابر ≠ "غير موجود": إعادة بعد 6 ساعات بلا زيادة التباعد
+      if (ident.transient && rec.status !== 'matched') rec.tries = tries - 1;
+      map[s.id] = rec; if (!known && !(ident.transient && ident.status !== 'confirmed')) recordIdentity(idx, s, ident, tries, now); dirty = true; if (rec.status === 'matched') { s.img3 = rec.path; if (rec.bg && rec.bg.path) s.img4 = rec.bg.path; }
       console.log('poster', s.id, rec.status, rec.name || '', rec.w ? rec.w + 'x' + rec.h : '', (rec.evidence || []).join(','));
     } catch (e) { console.log('poster error', s.id, String(e).slice(0, 80)); }
   }
@@ -95,14 +104,16 @@ if (isMain && has('--backdrops')) {
   for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.bg !== undefined && !(r.bg === null && r.src === 'tmdb' && !r.bgAt)) continue; if (n++ >= lim) break; try { map[s.id] = await pickBackdropFor(s, r, { sharp }); if (map[s.id].bg) ok++; } catch {} if (n % 10 === 0) save(MAP, map); }
   save(MAP, map); console.log('backdrops:', ok, 'of', n); process.exit(0);
 }
+// node scripts/poster-pick.mjs --catalog  ← يعيد بناء فهرس المسلسلات التركية
+if (isMain && has('--catalog')) { const m = await getCatalog({ force: true }); console.log('catalog keys:', m ? m.size : 0); process.exit(0); }
 // node scripts/poster-pick.mjs --resolve [--ids a,b] [--all] [--limit N] [--force]  ← يعالج غير المعتمد (أو المحدَّد) ويطبع الأدلة
 if (isMain && has('--resolve')) {
-  const sharp = (await import('sharp')).default; const map = J(MAP, {}), idx = loadIndex(), ovr = J(OVR, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp();
+  const sharp = (await import('sharp')).default; const map = J(MAP, {}), idx = loadIndex(), ovr = J(OVR, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp(); const catalog = await getCatalog({ http });
   let list = data.shows; if (arg('--ids')) { const ids = new Set(arg('--ids').split(',')); list = list.filter((s) => ids.has(s.id)); } else if (!has('--all')) list = list.filter((s) => !map[s.id] || map[s.id].status !== 'matched');
   if (arg('--limit')) list = list.slice(0, +arg('--limit')); const c = {};
   for (const s of list) {
     const r = map[s.id]; if (r && r.status === 'matched' && !has('--force') && !(ovr[s.id])) continue; if (r && r.conf === 'manual' && !(ovr[s.id])) continue;
-    const tries = (r && r.tries ? r.tries : 0) + 1; const { rec, ident } = await pickPoster(s, { sharp, http, override: ovr[s.id]?.tmdb ? ovr[s.id] : null, learned: idx.aliases[arKey(s.title)] || null, cast: idx.shows[s.id]?.cast || null, tries });
+    const tries = (r && r.tries ? r.tries : 0) + 1; const { rec, ident } = await pickPoster(s, { sharp, http, override: ovr[s.id]?.tmdb ? ovr[s.id] : null, learned: idx.aliases[arKey(s.title)] || null, cast: idx.shows[s.id]?.cast || null, catalog, tries });
     if (rec.status !== 'matched') rec.next = nextTry(tries); map[s.id] = rec; recordIdentity(idx, s, ident, tries); c[rec.status] = (c[rec.status] || 0) + 1; save(MAP, map); save(IDX, idx);
     const b = ident.best; console.log(rec.status.toUpperCase(), s.id, '|', s.title, '|', b ? `${b.original} (${b.year}) ${b.src}#${b.ref} score=${b.score} [${(b.evidence || []).join(',')}]` : ident.reason, rec.status !== 'matched' ? '| ' + (rec.note || '') + ' | ' + (ident.cands || []).map((x) => `${x.original}(${x.year})#${x.ref}:${x.score}`).join(' ; ') : '');
   }
@@ -110,7 +121,7 @@ if (isMain && has('--resolve')) {
 }
 // node scripts/poster-pick.mjs --audit [--limit N]  ← يعيد حل مسلسلات TMDB المعتمدة بلا كتابة، ويقارن بالمسجَّل (معايرة المحرك)
 if (isMain && has('--audit')) {
-  const sharp = (await import('sharp')).default; const map = J(MAP, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp(); const ctx = { ...http, key: process.env.TMDB_API_KEY, sharp }; const c = { agree: 0, diff: 0, unresolved: 0 }; let n = 0; const lim = arg('--limit') ? +arg('--limit') : 40;
-  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.src !== 'tmdb') continue; if (n++ >= lim) break; const x = await resolveIdentity(s, ctx); const k = x.status === 'confirmed' ? (String(x.best.ref) === String(r.ref) ? 'agree' : 'diff') : 'unresolved'; c[k]++; console.log(k.toUpperCase(), s.id, '|', s.title, '| stored', r.name, '#' + r.ref, '| engine', x.best ? x.best.original + ' #' + x.best.ref + ' ' + x.best.score + ' [' + (x.best.evidence || []).join(',') + ']' : x.reason); }
+  const sharp = (await import('sharp')).default; const map = J(MAP, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp(); const ctx = { ...http, key: process.env.TMDB_API_KEY, sharp }; const catalog = await getCatalog({ http }); const c = { agree: 0, diff: 0, unresolved: 0 }; let n = 0; const lim = arg('--limit') ? +arg('--limit') : 40;
+  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.src !== 'tmdb') continue; if (n++ >= lim) break; const x = await resolveIdentity(s, ctx, { catalog }); const k = x.status === 'confirmed' ? (String(x.best.ref) === String(r.ref) ? 'agree' : 'diff') : 'unresolved'; c[k]++; console.log(k.toUpperCase(), s.id, '|', s.title, '| stored', r.name, '#' + r.ref, '| engine', x.best ? x.best.original + ' #' + x.best.ref + ' ' + x.best.score + ' [' + (x.best.evidence || []).join(',') + ']' : x.reason); }
   console.log(JSON.stringify(c)); process.exit(0);
 }

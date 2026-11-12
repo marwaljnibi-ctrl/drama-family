@@ -64,6 +64,7 @@ function latinMatch(h, names) {
 
 // ---------- HTTP ----------
 export function makeHttp({ gap = 150 } = {}) {
+  const stats = { fail: 0 };
   async function json(url, tries = 3) {
     for (let i = 0; i < tries; i++) {
       let r; try { r = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/json' } }); } catch { await sleep(1500 * (i + 1)); continue; }   // لا نطبع الرابط (قد يحمل مفتاحًا)
@@ -72,11 +73,11 @@ export function makeHttp({ gap = 150 } = {}) {
       if (j && j.error && /ratelimit|maxlag|readonly|too-many/i.test(JSON.stringify(j.error)) && i < tries - 1) { await sleep(2500 * (i + 1)); continue; }
       return j;
     }
-    return null;
+    stats.fail++; return null;
   }
   async function page(url) { const r = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; DiziIdentityBot/1.0)', 'accept-language': 'ar' } }); if (!r.ok) return ''; const h = await r.text(); return /cf-challenge|Just a moment|challenge-platform/i.test(h.slice(0, 4000)) ? '' : h; }
   async function buf(url) { try { const r = await fetch(url, { headers: { 'user-agent': UA } }); if (!r.ok) return null; return Buffer.from(await r.arrayBuffer()); } catch { return null; } }
-  return { json, buf, page };
+  return { json, buf, page, stats };
 }
 
 // ---------- المصادر ----------
@@ -159,10 +160,20 @@ async function castCandidates(ctx, names) {   // اسم ممثل بالعربي�
   return new Map([...per].map(([id, s]) => [id, s.size]));
 }
 
+// ---------- فهرس المسلسلات التركية (TMDB discover) ----------
+// slug الرابط يلصق الكلمات (icimdekifirtina) بينما TMDB يفصلها؛ نبني مرة كل 45 يومًا قائمة [id, الاسم الأصلي, الاسم, السنة] ونطابق المفتاح الملصوق تطابقًا تامًا.
+export async function buildCatalog(ctx, { pages = 200 } = {}) {
+  const out = [];
+  for (let p = 1; p <= pages; p++) { const j = await ctx.json(`${T}/discover/tv?api_key=${ctx.key}&language=tr-TR&with_origin_country=TR&with_original_language=tr&sort_by=popularity.desc&page=${p}`); if (!j?.results?.length) break; for (const r of j.results) out.push([r.id, r.original_name || '', r.name || '', +String(r.first_air_date || '').slice(0, 4) || 0]); if (p >= (j.total_pages || 1)) break; }
+  return out;
+}
+export function catalogIndex(items) { const m = new Map(); for (const [id, a, b] of items || []) for (const n of new Set([a, b])) { const k = norm(n); if (k.length >= 3) { if (!m.has(k)) m.set(k, []); if (!m.get(k).includes(id)) m.get(k).push(id); } } return m; }
+
 // ---------- قلب المحرك ----------
 // ctx: { json, buf, page?, key (TMDB), sharp?, root? }. show: {id,title,url,poster,img,img2,eps,hints?:{names,cast}}. extra: { override?:{tmdb}, learned?:string, cast?:string[] }
 // تمرّ المطابقة بمرحلتين: (1) العنوان العربي وأسماؤه + الاسم اللاتيني + ويكي داتا؛ (2) إن لم تُحسم: ممثلو صفحة المصدر. وبصمة الصورة تُضاف لأعلى المرشحين في كل مرحلة.
 export async function resolveIdentity(show, ctx, extra = {}) {
+  const f0 = ctx.stats ? ctx.stats.fail : 0;
   const arV = arVariants(show.title), hints = latinHints(show), upYear = sourceYear(show), eps = Array.isArray(show.eps) ? show.eps.length : +show.eps || 0;
   const x = { arKeys: new Set([arKey(show.title), ...arV.map(arKey)].filter(Boolean)), arTok: new Set(arTokens(show.title)), hints, upYear, eps, learned: extra.learned || null };
   const queries = { ar: arV, lat: hints.map((h) => h.q) };
@@ -174,7 +185,8 @@ export async function resolveIdentity(show, ctx, extra = {}) {
     try { wd = await wikidata(ctx, [...arV.map((q) => ({ q, lang: 'ar' })), ...hints.slice(0, 2).map((h) => ({ q: h.q, lang: 'en' }))]); } catch { wd = []; }
     if (ctx.key) {
       for (const q of arV) for (const r of await tmdbSearch(ctx, q, 'ar')) hit(String(r.id), 'tmdb-ar');
-      for (const h of hints.slice(0, 3)) for (const r of await tmdbSearch(ctx, h.q, 'tr-TR')) hit(String(r.id), 'tmdb-hint');
+      for (const h of hints.slice(0, 3)) for (const q of [h.q, ...(h.tokens.length > 1 && h.key.length >= 5 ? [h.key] : [])]) for (const r of await tmdbSearch(ctx, q, 'tr-TR')) hit(String(r.id), 'tmdb-hint');
+      if (extra.catalog) for (const h of hints) for (const id of extra.catalog.get(h.key) || []) hit(String(id), 'catalog');
       if (extra.learned) hit(String(extra.learned), 'learned');
       for (const e of wd) { if (e.tmdb) hit(e.tmdb, 'wikidata'); else if (e.imdb) { const f = await ctx.json(`${T}/find/${e.imdb}?api_key=${ctx.key}&external_source=imdb_id`); for (const r of f?.tv_results || []) hit(String(r.id), 'wikidata-imdb'); } }
     }
@@ -213,7 +225,7 @@ export async function resolveIdentity(show, ctx, extra = {}) {
     if (cast.length) { for (const [id, n] of await castCandidates(ctx, cast)) if (n >= 1) { castN.set(id, n); hit(id, 'cast'); } if (castN.size) { scored = await evaluate(); d = decide(scored); } }
   }
   const top = [...scored].sort((a, b) => b.score - a.score).slice(0, 3).map(({ images, via, ...c }) => ({ ...c, via: [...(via || [])] }));
-  return { ...d, cands: top, queries, hints: hints.map((h) => h.q), cast: cast || [] };
+  return { ...d, cands: top, queries, hints: hints.map((h) => h.q), cast: cast || [], transient: !!ctx.stats && ctx.stats.fail > f0 };
 }
 
 // ---------- اختيار أفضل بوستر عمودي لهوية مؤكدة ----------

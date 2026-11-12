@@ -2,7 +2,7 @@
 // يغطي: أسماء عربية بديلة مختلفة تمامًا عن التركي، تغيّر الاسم التركي، إعادة الإنتاج، العمل غير التركي، الممثلين، والأدلة والعتبات.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { norm, normAr, arKey, arTokens, arVariants, latinHints, sourceYear, fileHint, scoreCandidate, decide, resolveIdentity, parseCast, makeHttp } from './lib/identity.mjs';
+import { catalogIndex, norm, normAr, arKey, arTokens, arVariants, latinHints, sourceYear, fileHint, scoreCandidate, decide, resolveIdentity, parseCast, makeHttp } from './lib/identity.mjs';
 
 // ---------- عالم محاكى ----------
 const TV = {
@@ -13,6 +13,7 @@ const TV = {
   105: { name: 'Ask Yolu', original: 'Ask Yolu', first: '2020-01-01', eps: 60, imdb: 'tt105', ar: [], alt: [] },
   106: { name: 'Love Story', original: 'Love Story', first: '2019-01-01', eps: 10, imdb: 'tt106', ar: ['قصة حب'], alt: [], foreign: true },
   107: { name: 'عنوان لا علاقة له', original: 'Gizli Hikaye', first: '2019-03-01', eps: 12, imdb: 'tt107', ar: ['عنوان لا علاقة له'], alt: [] },
+  109: { name: 'عنوان ثالث', original: 'İçimdeki Fırtına', first: '2017-05-01', eps: 6, imdb: 'tt109', ar: [], alt: [] },
   108: { name: 'عنوان آخر', original: 'Baska Hikaye', first: '2019-03-01', eps: 12, imdb: 'tt108', ar: [], alt: [] },
 };
 const WD = [
@@ -33,7 +34,7 @@ const route = (u) => {
   }
   if (u.includes('/search/person')) { const id = PEOPLE[q]; return { results: id ? [{ id, known_for_department: 'Acting' }] : [] }; }
   const pc = /\/person\/(\d+)\/tv_credits/.exec(u); if (pc) return { cast: (CREDITS[pc[1]] || []).map((id) => ({ id, origin_country: tr(TV[id]), original_language: 'tr' })) };
-  if (u.includes('/search/tv')) { const lang = (/language=([^&]*)/.exec(u) || [])[1]; return { results: Object.entries(TV).filter(([, e]) => (lang === 'ar' ? e.ar.some((a) => arTokens(a).join(' ').includes(arTokens(q).join(' ')) && arTokens(q).length) : words(q).every((w) => words(e.original + ' ' + e.alt.join(' ')).some((n) => n.startsWith(w) || w.startsWith(n))))).map(([id, e]) => ({ id: +id, origin_country: tr(e), original_language: e.foreign ? 'en' : 'tr' })) }; }
+  if (u.includes('/search/tv')) { const lang = (/language=([^&]*)/.exec(u) || [])[1]; return { results: Object.entries(TV).filter(([, e]) => (lang === 'ar' ? e.ar.some((a) => arTokens(a).join(' ').includes(arTokens(q).join(' ')) && arTokens(q).length) : words(q).every((w) => words(e.original + ' ' + e.alt.join(' ')).some((n) => n.startsWith(w))))).map(([id, e]) => ({ id: +id, origin_country: tr(e), original_language: e.foreign ? 'en' : 'tr' })) }; }
   const d = /\/tv\/(\d+)\?/.exec(u); if (d) { const e = TV[d[1]]; return e && { id: +d[1], name: e.name, original_name: e.original, first_air_date: e.first, number_of_episodes: e.eps, origin_country: tr(e), original_language: e.foreign ? 'en' : 'tr', external_ids: { imdb_id: e.imdb }, translations: { translations: e.ar.map((n) => ({ iso_639_1: 'ar', data: { name: n } })) }, alternative_titles: { results: e.alt.map((title) => ({ title })) }, networks: [] }; }
   return null;
 };
@@ -113,4 +114,12 @@ test('makeHttp: never logs the request URL (it can carry the TMDB key) and degra
   globalThis.fetch = async () => { throw new Error('boom api_key=SECRET'); };
   try { const h = makeHttp({ gap: 0 }); assert.equal(await h.json('https://x.test/?api_key=SECRET', 1), null); assert.equal(await h.buf('https://x.test/'), null); }
   finally { globalThis.fetch = realFetch; console.log = realLog; } assert.ok(!/SECRET/.test(logged));
+});
+test('engine: glued slug (icimdekifirtina) is found through the Turkish catalog by exact key, and a network failure is reported as transient (not as "unknown")', async () => {
+  const show = S({ id: 'icimdekifirtina-pzvrl', title: 'مسلسل الإعصار الذي بداخلي', n: 6, poster: 'https://qesset.net/wp-content/uploads/2018/05/q-large.jpg' });
+  const none = await resolveIdentity(show, ctxFor()); assert.notEqual(none.status, 'confirmed');
+  const r = await resolveIdentity(show, ctxFor(), { catalog: catalogIndex([[109, 'İçimdeki Fırtına', 'İçimdeki Fırtına', 2017]]) });
+  assert.equal(r.status, 'confirmed', JSON.stringify(r.cands)); assert.equal(r.best.ref, '109');
+  const stats = { fail: 0 }; const down = await resolveIdentity(show, ctxFor({ stats, json: async () => { stats.fail++; return null; } }));
+  assert.equal(down.status, 'unresolved'); assert.equal(down.transient, true);
 });
