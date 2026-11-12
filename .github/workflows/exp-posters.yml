@@ -1,0 +1,21 @@
+name: exp-posters
+# يشغّل بحث البوسترات العمودية (TVmaze + TMDB بالعنوان العربي) للمسلسلات غير المطابَقة، ويرفع النتيجة كـ artifact للمراجعة البصرية (لا يلتزم بأي شيء).
+on:
+  push: { branches: ['exp/**'], paths: ['.github/run-posters.txt'] }
+  workflow_dispatch: {}
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i --no-save --no-audit --no-fund sharp
+      - name: pick posters
+        env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
+        run: |
+          echo "tmdb key present: $([ -n "$TMDB_API_KEY" ] && echo yes || echo no)"
+          node scripts/poster-pick.mjs --all --out posters-report.json 2>&1 | tail -n 150
+          node scripts/poster-pick.mjs --backdrops 2>&1 | tail -n 20
+      - uses: actions/upload-artifact@v4
+        with: { name: posters, path: "data/poster-map.json\ndata/posters\nposters-report.json" }
