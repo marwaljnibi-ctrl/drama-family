@@ -54,7 +54,7 @@ export function latinHints(show) {
 function latinMatch(h, names) {
   const ht = h.tokens.filter((t) => t.length >= 3); let best = null;
   for (const n of names) {
-    const k = norm(n); if (!k) continue; if (k === h.key) return { pts: 3.5, tag: 'latin-exact', strong: true, from: h.from };
+    const k = norm(n); if (!k) continue; if (k === h.key) return { pts: 4, tag: 'latin-exact', strong: true, from: h.from };
     const nt = tokensOf(n); const hit = ht.filter((t) => nt.some((u) => u === t || (t.length >= 4 && u.startsWith(t)) || (u.length >= 4 && t.startsWith(u)))).length; const frac = ht.length ? hit / ht.length : 0;
     if (frac === 1 && (ht.length >= 2 || (ht[0] && ht[0].length >= 6))) best = best && best.pts >= 2 ? best : { pts: 2, tag: 'latin-tokens', strong: false, from: h.from };
     else if (frac >= 0.6 && ht.length >= 3 && !best) best = { pts: 1.5, tag: 'latin-partial', strong: false, from: h.from };
@@ -72,8 +72,9 @@ export function makeHttp({ gap = 150 } = {}) {
     }
     return null;
   }
+  async function page(url) { const r = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; DiziIdentityBot/1.0)', 'accept-language': 'ar' } }); if (!r.ok) return ''; const h = await r.text(); return /cf-challenge|Just a moment|challenge-platform/i.test(h.slice(0, 4000)) ? '' : h; }
   async function buf(url) { try { const r = await fetch(url, { headers: { 'user-agent': UA } }); if (!r.ok) return null; return Buffer.from(await r.arrayBuffer()); } catch { return null; } }
-  return { json, buf };
+  return { json, buf, page };
 }
 
 // ---------- المصادر ----------
@@ -119,14 +120,14 @@ export function scoreCandidate(c, x) {
   if (c.wdIdAgree) { s += 1; ev.push('wikidata-id-agrees'); }
   let lat = null; for (const h of x.hints) { const m = latinMatch(h, [c.original, ...c.lat]); if (m && (!lat || m.pts > lat.pts)) lat = m; }
   if (lat) { s += lat.pts; if (lat.strong) strong++; ev.push(lat.tag + ':' + lat.from); }
-  if (c.imgDist != null) { if (c.imgDist <= 10) { s += 3; strong++; ev.push('image-match:' + c.imgDist); } else if (c.imgDist <= 14) { s += 1.5; ev.push('image-near:' + c.imgDist); } }
+  if (c.castN) { if (c.castN >= 3) { s += 4; strong++; ev.push('cast:' + c.castN); } else if (c.castN === 2) { s += 3; strong++; ev.push('cast:2'); } else { s += 1; ev.push('cast:1'); } }
+  if (c.imgDist != null) { if (c.imgDist <= 10) { if (s >= 1) { s += 3; strong++; ev.push('image-match:' + c.imgDist); } else { s += 1; ev.push('image-match-lonely:' + c.imgDist); } } else if (c.imgDist <= 14) { s += 1.5; ev.push('image-near:' + c.imgDist); } }
   if (c.year && x.upYear) { if (c.year > x.upYear + 1) { s -= 3; ev.push('year-after-upload'); } else { s += 0.5; ev.push('year-ok'); } }
-  if (c.eps && x.eps) { const r = Math.min(c.eps, x.eps) / Math.max(c.eps, x.eps); const p = r >= 0.9 ? 1 : r >= 0.75 ? 0.6 : r >= 0.5 ? 0.3 : r < 0.25 ? -1 : 0; if (p) { s += p; ev.push('eps:' + c.eps + '~' + x.eps); } }
+  if (c.eps && x.eps) { const r = Math.min(c.eps, x.eps) / Math.max(c.eps, x.eps); const p = r >= 0.9 ? 1 : r >= 0.75 ? 0.6 : r >= 0.5 ? 0.3 : r < 0.25 ? -0.5 : 0; if (p) { s += p; ev.push('eps:' + c.eps + '~' + x.eps); } }
   if (x.learned && x.learned === c.ref) { s += 1.5; ev.push('learned-alias'); }
-  if (x.cast?.length && c.cast?.length) { const A = new Set(c.cast.map(norm)); const n = x.cast.map(norm).filter((q) => A.has(q)).length; if (n >= 2) { s += 2; strong++; ev.push('cast:' + n); } }
   return { score: +s.toFixed(2), strong, evidence: ev };
 }
-export function decide(scored, { min = 4.5, margin = 1.5 } = {}) {
+export function decide(scored, { min = 4, margin = 1.5 } = {}) {
   const r = [...scored].sort((a, b) => b.score - a.score); const best = r[0], second = r[1];
   if (!best) return { status: 'unresolved', reason: 'no candidates' };
   if (best.score < min) return { status: 'unresolved', reason: 'score ' + best.score + ' < ' + min, best };
@@ -135,15 +136,38 @@ export function decide(scored, { min = 4.5, margin = 1.5 } = {}) {
   return { status: 'confirmed', best };
 }
 
+// ---------- الممثلون من صفحة المصدر (دليل مستقل عن العنوان) ----------
+export function parseCast(html) {   // "بطولة : آسيا قصاب ، أولاش تونا ، … -->"
+  const t = String(html || '').replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&#?\w+;/g, ' ').replace(/\s+/g, ' ');
+  const m = /بطولة\s*[:：]\s*(.{4,400}?)(?:-->|الحلقة|\||$)/.exec(t); if (!m) return [];
+  return m[1].split(/[،,]/).map((s) => s.trim()).filter((n) => { const w = n.split(' ').length; return w >= 2 && w <= 4 && /[؀-ۿ]/.test(n); }).slice(0, 6);
+}
+export async function fetchSourceCast(show, ctx) {   // مرة واحدة لكل مسلسل غير محسوم؛ يفشل بهدوء إن حُجب المصدر
+  if (!show.url || !ctx.page) return [];
+  try { return parseCast(await ctx.page(show.url)); } catch { return []; }
+}
+async function castCandidates(ctx, names) {   // اسم ممثل بالعربية ← شخص في TMDB ← أعماله التركية؛ عدد الممثلين المشتركين في العمل = قوة الدليل
+  const per = new Map();
+  for (const n of names.slice(0, 5)) {
+    const s = await ctx.json(`${T}/search/person?api_key=${ctx.key}&language=ar&query=${encodeURIComponent(n)}`);
+    const p = (s?.results || []).find((r) => r.known_for_department === 'Acting' || !r.known_for_department); if (!p) continue;
+    const c = await ctx.json(`${T}/person/${p.id}/tv_credits?api_key=${ctx.key}&language=ar`);
+    for (const t of c?.cast || []) if ((t.origin_country || []).includes('TR') || t.original_language === 'tr') { if (!per.has(String(t.id))) per.set(String(t.id), new Set()); per.get(String(t.id)).add(p.id); }
+  }
+  return new Map([...per].map(([id, s]) => [id, s.size]));
+}
+
 // ---------- قلب المحرك ----------
-// ctx: { json, buf, key (TMDB), sharp?, root? }. show: {id,title,poster,img,img2,eps}. extra: { override?:{tmdb}, learned?:string (tmdb id) }
+// ctx: { json, buf, page?, key (TMDB), sharp?, root? }. show: {id,title,url,poster,img,img2,eps,hints?:{names,cast}}. extra: { override?:{tmdb}, learned?:string, cast?:string[] }
+// تمرّ المطابقة بمرحلتين: (1) العنوان العربي وأسماؤه + الاسم اللاتيني + ويكي داتا؛ (2) إن لم تُحسم: ممثلو صفحة المصدر. وبصمة الصورة تُضاف لأعلى المرشحين في كل مرحلة.
 export async function resolveIdentity(show, ctx, extra = {}) {
   const arV = arVariants(show.title), hints = latinHints(show), upYear = sourceYear(show), eps = Array.isArray(show.eps) ? show.eps.length : +show.eps || 0;
-  const x = { arKeys: new Set([arKey(show.title), ...arV.map(arKey)].filter(Boolean)), arTok: new Set(arTokens(show.title)), hints, upYear, eps, learned: extra.learned || null, cast: show.hints?.cast };
+  const x = { arKeys: new Set([arKey(show.title), ...arV.map(arKey)].filter(Boolean)), arTok: new Set(arTokens(show.title)), hints, upYear, eps, learned: extra.learned || null };
   const queries = { ar: arV, lat: hints.map((h) => h.q) };
   const pool = new Map(); const hit = (id, how) => { if (!pool.has(id)) pool.set(id, new Set()); pool.get(id).add(how); };
-  let wd = [];
-  if (extra.override?.tmdb) { hit(String(extra.override.tmdb), 'manual'); }
+  const cache = new Map(), imgCache = new Map(); let wd = [];
+  const detail = async (id) => { if (!cache.has(id)) cache.set(id, await tmdbCandidate(ctx, id)); const c = cache.get(id); return c ? { ...c, via: new Set(pool.get(id) || []) } : null; };
+  if (extra.override?.tmdb) hit(String(extra.override.tmdb), 'manual');
   else {
     try { wd = await wikidata(ctx, [...arV.map((q) => ({ q, lang: 'ar' })), ...hints.slice(0, 2).map((h) => ({ q: h.q, lang: 'en' }))]); } catch { wd = []; }
     if (ctx.key) {
@@ -153,37 +177,41 @@ export async function resolveIdentity(show, ctx, extra = {}) {
       for (const e of wd) { if (e.tmdb) hit(e.tmdb, 'wikidata'); else if (e.imdb) { const f = await ctx.json(`${T}/find/${e.imdb}?api_key=${ctx.key}&external_source=imdb_id`); for (const r of f?.tv_results || []) hit(String(r.id), 'wikidata-imdb'); } }
     }
   }
-  let cands = [];
-  if (ctx.key) {
-    const ids = [...pool.entries()].sort((a, b) => b[1].size - a[1].size).slice(0, 8).map((e) => e[0]);
-    for (const id of ids) { const c = await tmdbCandidate(ctx, id); if (c) { c.via = pool.get(id); cands.push(c); } }
-  } else cands = await tvmazeCandidates(ctx, hints);
-  // ربط Wikidata بالمرشح (معرّف TMDB أو IMDb) وقياس تطابق عنوان المصدر مع تسميات ويكي داتا العربية
-  for (const c of cands) {
-    for (const e of wd) {
-      if (!((c.src === 'tmdb' && e.tmdb === c.ref) || (e.imdb && c.imdb && e.imdb === c.imdb))) continue;
-      const keys = e.ar.map(arKey); const exact = keys.some((k) => x.arKeys.has(k));
-      const a = e.ar.flatMap(arTokens); const shared = a.filter((t) => x.arTok.has(t)).length; const j = shared / (new Set([...a, ...x.arTok]).size || 1);
-      const m = exact ? 'exact' : shared >= 2 && j >= 0.5 ? 'tokens' : null; if (m && (c.wd !== 'exact')) c.wd = m;
-      if (e.imdb && c.imdb && e.imdb === c.imdb && e.tmdb === c.ref) c.wdIdAgree = true;
-      c.ar = [...new Set([...c.ar, ...e.ar])]; c.lat = [...new Set([...c.lat, ...e.lat])]; c.wikidata = e.qid;
+  const castN = new Map();
+  async function evaluate() {
+    let cands = [];
+    if (ctx.key) { const ids = [...pool.entries()].sort((a, b) => (castN.get(b[0]) || 0) - (castN.get(a[0]) || 0) || b[1].size - a[1].size).slice(0, 8).map((e) => e[0]); for (const id of ids) { const c = await detail(id); if (c) cands.push(c); } }
+    else cands = await tvmazeCandidates(ctx, hints);
+    for (const c of cands) {   // ربط Wikidata بالمرشح (معرّف TMDB أو IMDb) وقياس تطابق عنوان المصدر مع تسميات ويكي داتا العربية
+      c.castN = castN.get(c.ref) || 0;
+      for (const e of wd) {
+        if (!((c.src === 'tmdb' && e.tmdb === c.ref) || (e.imdb && c.imdb && e.imdb === c.imdb))) continue;
+        const exact = e.ar.map(arKey).some((k) => x.arKeys.has(k)); const a = e.ar.flatMap(arTokens); const shared = a.filter((t) => x.arTok.has(t)).length; const j = shared / (new Set([...a, ...x.arTok]).size || 1);
+        const m = exact ? 'exact' : shared >= 2 && j >= 0.5 ? 'tokens' : null; if (m && c.wd !== 'exact') c.wd = m;
+        if (e.imdb && c.imdb && e.imdb === c.imdb && e.tmdb === c.ref) c.wdIdAgree = true;
+        c.ar = [...new Set([...c.ar, ...e.ar])]; c.lat = [...new Set([...c.lat, ...e.lat])]; c.wikidata = e.qid;
+      }
     }
-  }
-  if (extra.override?.tmdb) { const c = cands[0]; if (!c) return { status: 'unresolved', reason: 'override id not found on TMDB', cands: [] }; return { status: 'confirmed', best: { ...c, score: 99, strong: 9, evidence: ['manual-override'] }, cands: [] }; }
-  let scored = cands.map((c) => ({ ...c, ...scoreCandidate(c, x) }));
-  // أدلة بصرية للمرشحين الأعلى فقط (طلب صور واحد لكل مرشح؛ تُعاد استخدامه لاختيار البوستر)
-  if (ctx.key && ctx.sharp && scored.length) {
-    const bp = show.img2 || show.img; const path = bp && ((ctx.root || '.') + '/' + bp); let bh = null;
-    try { if (path && existsSync(path)) bh = await dhash(readFileSync(path), ctx.sharp); } catch {}
-    if (bh) for (const c of scored.sort((a, b) => b.score - a.score).slice(0, 3)) {
-      if (!c.tr) continue; c.images = await ctx.json(`${T}/tv/${c.ref}/images?api_key=${ctx.key}&include_image_language=ar,tr,en,null`); let best = null;
-      for (const b of (c.images?.backdrops || []).slice(0, 8)) { const buf = await ctx.buf('https://image.tmdb.org/t/p/w300' + b.file_path); if (!buf) continue; try { const d = hamming(bh, await dhash(buf, ctx.sharp)); if (best == null || d < best) best = d; } catch {} }
-      if (best != null) c.imgDist = best;
+    let scored = cands.map((c) => ({ ...c, ...scoreCandidate(c, x) }));
+    if (ctx.key && ctx.sharp && scored.length) {   // أدلة بصرية للمرشحين الأعلى (طلب صور واحد لكل مرشح، يُعاد استخدامه لاختيار البوستر)
+      const bp = show.img2 || show.img; const path = bp && ((ctx.root || '.') + '/' + bp); let bh = null;
+      try { if (path && existsSync(path)) bh = await dhash(readFileSync(path), ctx.sharp); } catch {}
+      if (bh) for (const c of [...scored].sort((a, b) => b.score - a.score).slice(0, 3)) {
+        if (!c.tr) continue; if (!imgCache.has(c.ref)) imgCache.set(c.ref, await ctx.json(`${T}/tv/${c.ref}/images?api_key=${ctx.key}&include_image_language=ar,tr,en,null`)); c.images = imgCache.get(c.ref); let best = null;
+        if (c.imgDist == null) { for (const b of (c.images?.backdrops || []).slice(0, 8)) { const buf = await ctx.buf('https://image.tmdb.org/t/p/w300' + b.file_path); if (!buf) continue; try { const d = hamming(bh, await dhash(buf, ctx.sharp)); if (best == null || d < best) best = d; } catch {} } if (best != null) c.imgDist = best; }
+      }
+      scored = scored.map((c) => ({ ...c, ...scoreCandidate(c, x) }));
     }
-    scored = scored.map((c) => ({ ...c, ...scoreCandidate(c, x) }));
+    return scored;
   }
-  const d = decide(scored); const top = [...scored].sort((a, b) => b.score - a.score).slice(0, 3).map(({ images, via, ...c }) => ({ ...c, via: [...(via || [])] }));
-  return { ...d, cands: top, queries, hints: hints.map((h) => h.q) };
+  let scored = await evaluate(), d = decide(scored), cast = extra.cast || show.hints?.cast || null;
+  if (extra.override?.tmdb) { const c = scored[0]; if (!c) return { status: 'unresolved', reason: 'override id not found on TMDB', cands: [] }; return { status: 'confirmed', best: { ...c, score: 99, strong: 9, evidence: ['manual-override'] }, cands: [], queries, hints: [] }; }
+  if (d.status !== 'confirmed' && ctx.key) {   // المرحلة 2: الممثلون
+    if (!cast) cast = await fetchSourceCast(show, ctx);
+    if (cast.length) { for (const [id, n] of await castCandidates(ctx, cast)) if (n >= 1) { castN.set(id, n); hit(id, 'cast'); } if (castN.size) { scored = await evaluate(); d = decide(scored); } }
+  }
+  const top = [...scored].sort((a, b) => b.score - a.score).slice(0, 3).map(({ images, via, ...c }) => ({ ...c, via: [...(via || [])] }));
+  return { ...d, cands: top, queries, hints: hints.map((h) => h.q), cast: cast || [] };
 }
 
 // ---------- اختيار أفضل بوستر عمودي لهوية مؤكدة ----------

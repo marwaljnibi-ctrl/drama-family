@@ -22,9 +22,9 @@ export function recordIdentity(idx, show, ident, tries, now = Date.now()) {
   const old = idx.shows[show.id];
   if (ident.status === 'confirmed') {
     const b = ident.best; const names = (a) => [...new Set(a)].slice(0, 14);
-    idx.shows[show.id] = { status: 'confirmed', src: b.src, ref: b.ref, imdb: b.imdb || null, wikidata: b.wikidata || null, original: b.original, year: b.year, ar: names([show.title, ...(b.ar || [])]), lat: names(b.lat || []), score: b.score, evidence: b.evidence, manual: (b.evidence || []).includes('manual-override') || undefined, at: now };
+    idx.shows[show.id] = { status: 'confirmed', src: b.src, ref: b.ref, imdb: b.imdb || null, wikidata: b.wikidata || null, original: b.original, year: b.year, ar: names([show.title, ...(b.ar || [])]), lat: names(b.lat || []), score: b.score, evidence: b.evidence, manual: (b.evidence || []).includes('manual-override') || undefined, cast: ident.cast?.length ? ident.cast : old?.cast, at: now };
     for (const n of [show.title, ...(b.ar || [])]) { const k = arKey(n); if (k.length >= 3 && b.src === 'tmdb' && !(idx.aliases[k] && idx.aliases[k] !== b.ref)) idx.aliases[k] = b.ref; }
-  } else if (!old || old.status !== 'confirmed') idx.shows[show.id] = { status: 'unresolved', tries, checked: now, next: nextTry(tries, now), reason: ident.reason, cands: (ident.cands || []).map(slim) };
+  } else if (!old || old.status !== 'confirmed') idx.shows[show.id] = { status: 'unresolved', tries, checked: now, next: nextTry(tries, now), reason: ident.reason, cast: ident.cast?.length ? ident.cast : old?.cast, cands: (ident.cands || []).map(slim) };
 }
 
 async function saveImages(show, poster, bd, dry) {
@@ -35,9 +35,9 @@ async function saveImages(show, poster, bd, dry) {
 }
 
 // يعالج مسلسلًا واحدًا. يعيد { rec (قرار البوستر), ident (الهوية) } بلا كتابة سجلات (الصور تُكتب إلا إن dry)
-export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sharp, dry = false, http = makeHttp(), override = null, known = null, learned = null, tries = 1 } = {}) {
+export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sharp, dry = false, http = makeHttp(), override = null, known = null, learned = null, cast = null, tries = 1 } = {}) {
   const ctx = { ...http, key: tmdbKey || '', sharp }; const rec = { at: Date.now(), tries };
-  const ident = known ? { status: 'confirmed', best: { ...known, evidence: known.evidence || [], score: known.score || 0 }, cands: [] } : await resolveIdentity(show, ctx, { override, learned });
+  const ident = known ? { status: 'confirmed', best: { ...known, evidence: known.evidence || [], score: known.score || 0 }, cands: [] } : await resolveIdentity(show, ctx, { override, learned, cast });
   if (ident.status !== 'confirmed') return { ident, rec: { ...rec, status: ident.cands?.length ? 'review' : 'unmatched', note: ident.reason || 'no candidates', cands: (ident.cands || []).map(slim) } };
   const b = ident.best; const poster = await choosePoster(b, ctx);
   const base = { ...rec, conf: (b.evidence || []).includes('manual-override') ? 'manual' : 'identity', src: b.src, ref: b.ref, name: b.original, premiered: b.year, idscore: b.score, evidence: b.evidence };
@@ -71,7 +71,7 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
     try {
       const tries = (r && r.tries ? r.tries : 0) + 1, i0 = idx.shows[s.id];
       const known = !forced && i0 && i0.status === 'confirmed' ? { src: i0.src, ref: i0.ref, original: i0.original, year: i0.year, ar: i0.ar, lat: i0.lat, imdb: i0.imdb, evidence: i0.evidence, score: i0.score } : null;
-      const { rec, ident } = await pickPoster(s, { sharp, tmdbKey, http, override: ov, known, learned: idx.aliases[arKey(s.title)] || null, tries });
+      const { rec, ident } = await pickPoster(s, { sharp, tmdbKey, http, override: ov, known, learned: idx.aliases[arKey(s.title)] || null, cast: i0?.cast || null, tries });
       if (rec.status !== 'matched') rec.next = nextTry(tries, now);
       map[s.id] = rec; if (!known) recordIdentity(idx, s, ident, tries, now); dirty = true; if (rec.status === 'matched') { s.img3 = rec.path; if (rec.bg && rec.bg.path) s.img4 = rec.bg.path; }
       console.log('poster', s.id, rec.status, rec.name || '', rec.w ? rec.w + 'x' + rec.h : '', (rec.evidence || []).join(','));
@@ -102,7 +102,7 @@ if (isMain && has('--resolve')) {
   if (arg('--limit')) list = list.slice(0, +arg('--limit')); const c = {};
   for (const s of list) {
     const r = map[s.id]; if (r && r.status === 'matched' && !has('--force') && !(ovr[s.id])) continue; if (r && r.conf === 'manual' && !(ovr[s.id])) continue;
-    const tries = (r && r.tries ? r.tries : 0) + 1; const { rec, ident } = await pickPoster(s, { sharp, http, override: ovr[s.id]?.tmdb ? ovr[s.id] : null, learned: idx.aliases[arKey(s.title)] || null, tries });
+    const tries = (r && r.tries ? r.tries : 0) + 1; const { rec, ident } = await pickPoster(s, { sharp, http, override: ovr[s.id]?.tmdb ? ovr[s.id] : null, learned: idx.aliases[arKey(s.title)] || null, cast: idx.shows[s.id]?.cast || null, tries });
     if (rec.status !== 'matched') rec.next = nextTry(tries); map[s.id] = rec; recordIdentity(idx, s, ident, tries); c[rec.status] = (c[rec.status] || 0) + 1; save(MAP, map); save(IDX, idx);
     const b = ident.best; console.log(rec.status.toUpperCase(), s.id, '|', s.title, '|', b ? `${b.original} (${b.year}) ${b.src}#${b.ref} score=${b.score} [${(b.evidence || []).join(',')}]` : ident.reason, rec.status !== 'matched' ? '| ' + (rec.note || '') + ' | ' + (ident.cands || []).map((x) => `${x.original}(${x.year})#${x.ref}:${x.score}`).join(' ; ') : '');
   }
