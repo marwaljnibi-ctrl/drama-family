@@ -9,7 +9,8 @@ export const mb = (b) => (b / 1048576).toFixed(0) + ' MB';
 export function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 3200); }
 
 // الصور: النسخة الأوضح (img2، 600px) إن وُجدت، ثم القديمة، ثم رابط المصدر
-export const poster = (s, cls = '') => { const src = asset(s.img2 || s.img) || s.poster; return src ? `<img class="${cls}" loading="lazy" referrerpolicy="no-referrer" src="${esc(src)}" alt="">` : `<div class="ph ${cls}"></div>`; };
+export const posterUrl = (s) => asset(s.img2 || s.img) || s.poster || '';
+export const poster = (s, cls = '') => { const src = posterUrl(s); return src ? `<img class="${cls}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt="">` : `<div class="ph ${cls}"></div>`; };
 
 // قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
 export const HEART = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
@@ -37,10 +38,11 @@ export const showCard = (s, o = {}) => `<div class="card"><a href="${showHref(s)
 
 // بطاقة متابعة: item = { show, ep (الحلقة المستهدفة), kind: 'continue'|'next', hasMinute, time, duration, epNum }
 // الدقيقة والشريط يظهران فقط حين تكون القيم مثبتة (duration > 0)؛ لا تخمين.
-export function continueCard(it) {
+export function continueCard(it, hero = false) {
   const pct = it.hasMinute ? Math.min(100, (it.time / it.duration) * 100) : 0;
   const line = it.kind === 'next' ? `الحلقة التالية · ${it.ep.n}` : `حلقة ${it.ep.n}${it.hasMinute ? ' · توقفت عند ' + fmt(it.time) : ''}`;
-  return `<a class="ccard" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
+  const pic = hero ? poster(it.show).replace('loading="lazy"', 'loading="eager" fetchpriority="high"') : poster(it.show);
+  return `<a class="ccard${hero ? ' hero-c' : ''}" href="${watchHref(it.show, it.ep)}">${pic}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
 }
 
 // قسم بصف أفقي: head = { title, sub?, all? (رابط عرض الكل) }

@@ -1,6 +1,6 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage, onWrite } from './db.js';
-import { $, esc, fmt, mb, toast, poster, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
+import { $, esc, fmt, mb, toast, poster, posterUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
@@ -25,8 +25,10 @@ function arabTestPanel(box, pl, epId) {
   addEventListener('message', arabMsgH); draw();
 }
 let D;
-let cleanup = null;
-const BUILD = 'df-v29';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+let cleanup = null, enterT = 0;
+const LARGE = ['shows', 'favs', 'recent', 'latest', 'alerts', 'login'];
+addEventListener('scroll', () => document.body.classList.toggle('scrolled', scrollY > 48), { passive: true });
+const BUILD = 'df-v30';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -48,6 +50,8 @@ async function route() {
   }
   const R = { alerts: () => (getSession() ? renderAlerts(view) : vLogin()), login: vLogin, home: vHome, latest: vLatest, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
   titleEl.textContent = { home: 'Dizi', latest: 'الحلقات الجديدة', shows: 'المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات', alerts: 'حسابي', login: 'تسجيل الدخول' }[name] || 'Dizi';
+  document.body.dataset.page = name; view.dataset.title = titleEl.textContent; view.toggleAttribute('data-large', LARGE.includes(name));
+  view.classList.remove('enter'); void view.offsetWidth; view.classList.add('enter'); clearTimeout(enterT); enterT = setTimeout(() => view.classList.remove('enter'), 700);
   await (R[name] || vHome)();
 }
 backBtn.onclick = () => { if (history.length > 1) history.back(); else location.hash = '#/home'; };
@@ -124,11 +128,11 @@ async function vShow(id) {
   const lastEp = last && findEp(show, last.epId);
   const cont = lastEp ? (last.done ? nextEp(show, lastEp) || lastEp : lastEp) : null;
   const dlAble = show.eps.filter((e) => e.v && e.v.type === 'mp4');
-  view.innerHTML = `${demoBanner()}<div class="hero">${poster(show)}<div><h2>${esc(show.title)}</h2><small style="color:var(--mute)">${show.eps.length} حلقة</small>
+  view.innerHTML = `${demoBanner()}<div class="hero" style="--bd:url(${esc(posterUrl(show))})">${poster(show)}<div><h2>${esc(show.title)}</h2><small style="color:var(--mute)">${show.eps.length} حلقة</small>
     <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button><button id="wa" class="favbtn">🔔 <span>تنبيه واتساب</span></button></div></div></div>
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'متابعة المشاهدة · حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
-    <div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>`;
+    <h3 class="eps-h">الحلقات</h3><div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>`;
   bindShowAlert($('#wa'), id, show.title);
   $('#fav').onclick = async () => { const b = $('#fav'); const on = await favs.toggle(id); b.classList.toggle('on', on); b.querySelector('span').textContent = on ? 'في المفضلة' : 'أضف للمفضلة'; pop(b); };
   const da = $('#dlall');
@@ -357,9 +361,9 @@ if (!getSession()) onWrite((t, v) => { if (t === 'fav' && v.on) favNudge(); });
 (async () => {
   prepareDb(); await importGuest();
   const top = document.getElementById('top'), ac = document.createElement('a');
-  ac.id = 'acct'; ac.href = '#/alerts'; ac.style.cssText = 'margin-inline-start:auto;text-decoration:none;color:inherit;padding:4px 8px;white-space:nowrap';
-  if (getSession()) { ac.textContent = '👤'; ac.style.fontSize = '20px'; ac.setAttribute('aria-label', 'حسابي'); }
-  else { ac.textContent = 'تسجيل الدخول'; ac.style.fontSize = '14px'; }
+  ac.id = 'acct'; ac.href = '#/alerts';
+  if (getSession()) { ac.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'; ac.setAttribute('aria-label', 'حسابي'); }
+  else ac.textContent = 'تسجيل الدخول';
   top.append(ac);
   persistStorage();
   route();
