@@ -18,5 +18,5 @@ export function recommend({ shows, favIds, seenIds, limit = 12, day = Math.floor
     if (items.length >= 3) return { mode: 'personal', title: 'مقترحات حسب ذوقك', sub: 'بحسب تصنيفات ما أحببتموه وشاهدتموه', items };
   }
   const items = pool.slice().sort((a, b) => hash(day + ':' + a.id) - hash(day + ':' + b.id)).slice(0, limit);
-  return { mode: 'discover', title: 'اكتشف مسلسلات', sub: 'مسلسلات لم تشاهدوها بعد', items };
+  return { mode: 'discover', title: 'اكتشف المسلسلات', sub: 'مسلسلات لم تشاهدوها بعد', items };
 }

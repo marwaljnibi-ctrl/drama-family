@@ -1,11 +1,12 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage, onWrite } from './db.js';
-import { $, esc, fmt, mb, toast, confirmSheet, poster, posterUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
+import { $, esc, fmt, mb, toast, confirmSheet, poster, posterUrl, heartBtn, HEART, BELL, remLabel, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
 import { SERVERS, pickDefault, alternatives } from './servers.js';
 import { canReloadNow } from './guards.js';
+import { searchShows } from './search.js';
 import { renderAlerts, bindShowAlert, askOnboarding } from './alerts.js';
 import { getSession, prepareDb, renderLogin } from './auth.js';
 import { startSync, importGuest, whenSynced } from './sync.js';
@@ -28,6 +29,8 @@ function arabTestPanel(box, pl, epId) {
 const DEFERRED = (() => { try { return localStorage.getItem('df-deferred') === '1'; } catch { return false; } })();
 let D;
 let cleanup = null, enterT = 0;
+// مواضع التمرير المحفوظة لقوائم التصفح (الرجوع من مسلسل/حلقة يعيد المستخدم لنفس المكان)
+const KEEP = ['shows', 'favs', 'recent', 'latest'], SCROLL = {}; let SHOWS_Q = '';
 const LARGE = ['shows', 'favs', 'recent', 'latest', 'alerts', 'login'];
 // قاعدة العرض: كل صورة داخل إطار (.pw) بوستر عمودي 2:3 (cover على نسبة قريبة جدًا فلا قص يُذكر)
 document.addEventListener('load', (e) => { const i = e.target; if (!(i instanceof HTMLImageElement) || !i.naturalWidth || !i.naturalHeight) return; const w = i.closest('.pw'); if (!w) return;
@@ -35,7 +38,7 @@ document.addEventListener('load', (e) => { const i = e.target; if (!(i instanceo
 view.addEventListener('scroll', () => document.body.classList.toggle('scrolled', view.scrollTop > 48), { passive: true });
 // ارتفاع التطبيق = الإطار المرئي (يتبع لوحة المفاتيح وشريط Safari) فلا تتحرك الأشرطة ولا تقفز الصفحة
 if (window.visualViewport) { const vv = visualViewport, fit = () => { document.documentElement.style.setProperty('--app-h', Math.round(vv.height) + 'px'); if (scrollY) scrollTo(0, 0); }; vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); fit(); }
-const BUILD = 'df-v34';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v35';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -46,9 +49,10 @@ async function route() {
   view.onclick = null;
   let [, name, a, b] = (location.hash || '#/home').split('/');
   if (!name || name === 'new') name = 'home';
-  const TAB = { home: 'home', latest: 'home', shows: 'shows', show: 'shows', watch: 'shows', favs: 'favs', recent: 'recent' }[name];
+  const TAB = { home: 'home', latest: 'home', shows: 'shows', show: 'shows', watch: 'shows', favs: 'favs', recent: 'recent', alerts: 'alerts', login: 'alerts' }[name];
   document.querySelectorAll('#tabs a').forEach((x) => x.classList.toggle('on', x.dataset.t === TAB));
   backBtn.hidden = false; // زر رجوع في كل صفحة (طلب سابق)
+  const prev = document.body.dataset.page; if (KEEP.includes(prev)) SCROLL[prev] = view.scrollTop;   // احفظ موضع القائمة قبل مغادرتها
   view.scrollTop = 0;
   if (!D) {
     view.innerHTML = name === 'home' ? '' : skeletonGrid();
@@ -57,9 +61,11 @@ async function route() {
   }
   const R = { alerts: () => (getSession() ? renderAlerts(view) : vLogin()), login: vLogin, home: vHome, latest: vLatest, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
   titleEl.textContent = { home: 'Dizi', latest: 'الحلقات الجديدة', shows: 'المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات', alerts: 'حسابي', login: 'تسجيل الدخول' }[name] || 'Dizi';
+  if (name === 'home') titleEl.innerHTML = '<img class="wm" src="icons/dizi-wordmark.png" alt="Dizi">';
   document.body.dataset.page = name; view.dataset.title = titleEl.textContent; view.toggleAttribute('data-large', LARGE.includes(name));
   view.classList.remove('enter'); void view.offsetWidth; view.classList.add('enter'); clearTimeout(enterT); enterT = setTimeout(() => view.classList.remove('enter'), 700);
   await (R[name] || vHome)();
+  if (KEEP.includes(name) && SCROLL[name] > 0 && document.body.dataset.page === name) view.scrollTop = SCROLL[name];   // الرجوع إلى القائمة: نفس المكان تمامًا
 }
 backBtn.onclick = () => { if (history.length > 1) history.back(); else location.hash = '#/home'; };
 addEventListener('hashchange', route);
@@ -93,13 +99,11 @@ async function vShows() {
   const fv = new Set((await favs.all()).map((f) => f.showId));
   view.innerHTML = demoBanner() + '<input class="search" id="q" type="search" placeholder="ابحث عن مسلسل" enterkeyhint="search" autocomplete="off"><div class="grid" id="g"></div>';
   const g = $('#g');
-  const norm = (s) => s.replace(/[ً-ٟـ]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').toLowerCase();
   const draw = () => {
-    const q = norm($('#q').value.trim());
-    const list = D.shows.filter((s) => !q || norm(s.title).includes(q));
-    g.innerHTML = list.length ? list.map((s) => showCard(s, { fav: fv.has(s.id) })).join('') : '<div class="empty" style="grid-column:1/-1">لا نتائج.</div>';
+    const qv = $('#q').value.trim(); const list = searchShows(D.shows, qv);   // بحث محلي: عربي/تركي، تساهل إملائي، الأدق أولًا
+    g.innerHTML = list.length ? list.map((s) => showCard(s, { fav: fv.has(s.id) })).join('') : `<div class="empty" style="grid-column:1/-1">لا نتائج لـ «${esc(qv)}».<br><small>جرّب جزءًا من الاسم أو اسمه بالتركية.</small></div>`;
   };
-  $('#q').oninput = draw; draw();
+  $('#q').value = SHOWS_Q; $('#q').oninput = () => { SHOWS_Q = $('#q').value; draw(); }; draw();   // البحث محفوظ مع الموضع
   g.onclick = heartClick(view, fv);
 }
 // ---------- المفضلة ----------
@@ -120,8 +124,31 @@ async function vRecent() {
   view.innerHTML = demoBanner() + `<div class="list">${items.map((it) => {
     const pct = it.hasMinute ? Math.min(100, (it.time / it.duration) * 100) : 0;
     const info = it.kind === 'finished' ? `حلقة ${it.epNum} مكتملة ✓ · آخر حلقة متاحة` : it.kind === 'next' ? `حلقة ${it.epNum} مكتملة ✓ · التالية: ${it.ep.n}` : `حلقة ${it.ep.n}${it.hasMinute ? ' · توقفت عند ' + fmt(it.time) : ' · قيد المشاهدة'}`;
-    return `<div class="row"><a href="#/show/${encodeURIComponent(it.show.id)}" style="display:contents">${poster(it.show)}</a><div class="m"><b>${esc(it.show.title)}</b><small>${esc(info)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}</div><a href="#/watch/${encodeURIComponent(it.show.id)}/${encodeURIComponent(it.ep.id)}"><button class="pri">${it.kind === 'next' ? 'التالية' : it.kind === 'finished' ? 'إعادة' : 'متابعة المشاهدة'}</button></a></div>`;
+    return `<div class="sw" data-id="${esc(it.show.id)}" data-t="${esc(it.show.title)}"><button class="sw-del" tabindex="-1" aria-hidden="true">إزالة</button><div class="row sw-row"><a href="#/show/${encodeURIComponent(it.show.id)}" style="display:contents">${poster(it.show)}</a><div class="m"><b>${esc(it.show.title)}</b><small>${esc(info)}</small>${remLabel(it) ? `<small class="rem">${remLabel(it)}</small>` : ''}${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<button class="rm-mini" aria-label="إزالة ${esc(it.show.title)} من آخر المشاهدات">إزالة</button></div><a href="#/watch/${encodeURIComponent(it.show.id)}/${encodeURIComponent(it.ep.id)}"><button class="pri">${it.kind === 'next' ? 'التالية' : it.kind === 'finished' ? 'إعادة' : 'متابعة المشاهدة'}</button></a></div></div>`;
   }).join('')}</div>`;
+  bindSwipeRemove(view.querySelector('.list'));
+}
+
+// إزالة من «آخر المشاهدات» بالسحب (RTL: نحو اليمين يكشف «إزالة» عند الحافة اليسرى) أو بزر «إزالة»؛ دائمًا بتأكيد، وتُخفي المسلسل من القائمة فقط (progress.hideShow): لا يُحذف تقدم ولا مفضلة.
+function bindSwipeRemove(list) {
+  if (!list) return;
+  const W = 96, closeAll = (except) => list.querySelectorAll('.sw.open').forEach((x) => { if (x !== except) setX(x, 0, true); });
+  const setX = (sw, x, anim) => { const r = sw.querySelector('.sw-row'); r.style.transition = anim ? 'transform .22s var(--ease)' : 'none'; r.style.transform = x ? `translateX(${x}px)` : ''; sw.classList.toggle('open', x >= W); sw.classList.toggle('rev', x > 0); sw.querySelector('.sw-del').tabIndex = x >= W ? 0 : -1; sw.querySelector('.sw-del').setAttribute('aria-hidden', x >= W ? 'false' : 'true'); };
+  const remove = async (sw) => {
+    const ok = await confirmSheet({ title: 'إزالة من آخر المشاهدات؟', text: `«${sw.dataset.t}»: يُزال من القائمة فقط. لا يُحذف تقدمك ولا مفضلتك، ويعود تلقائيًا عند مشاهدة أي حلقة منه.`, ok: 'تأكيد الإزالة', danger: true });
+    if (!ok) return setX(sw, 0, true);   // إلغاء: تعود البطاقة إلى مكانها
+    await progress.hideShow(sw.dataset.id); sw.classList.add('gone'); setTimeout(() => { sw.remove(); if (!list.querySelector('.sw')) route(); }, 260);
+  };
+  let st = null, dragged = false;
+  list.addEventListener('pointerdown', (e) => { const sw = e.target.closest('.sw'); if (!sw || e.target.closest('.sw-del, .rm-mini')) return; closeAll(sw); st = { sw, x: e.clientX, y: e.clientY, base: sw.classList.contains('open') ? W : 0, lock: null, id: e.pointerId }; dragged = false; });
+  list.addEventListener('pointermove', (e) => { if (!st || e.pointerId !== st.id) return; const dx = e.clientX - st.x, dy = e.clientY - st.y;
+    if (st.lock === null) { if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return; st.lock = Math.abs(dx) > Math.abs(dy) * 1.4 ? 'h' : 'v'; if (st.lock === 'h') { try { st.sw.setPointerCapture(e.pointerId); } catch {} } }
+    if (st.lock !== 'h') return; dragged = true; st.cur = Math.max(0, Math.min(W + 24, st.base + dx)); setX(st.sw, st.cur, false); });
+  const end = () => { if (!st) return; const s = st; st = null; if (s.lock === 'h') setX(s.sw, s.cur >= W * 0.5 ? W : 0, true); };
+  list.addEventListener('pointerup', end); list.addEventListener('pointercancel', end);
+  list.addEventListener('click', (e) => { const sw = e.target.closest('.sw'); if (!sw) return;
+    if (e.target.closest('.sw-del') || e.target.closest('.rm-mini')) { e.preventDefault(); remove(sw); return; }
+    if (dragged || sw.classList.contains('open')) { e.preventDefault(); e.stopPropagation(); if (!dragged) setX(sw, 0, true); dragged = false; } }, true);
 }
 
 // ---------- صفحة المسلسل ----------
@@ -136,7 +163,7 @@ async function vShow(id) {
   const cont = lastEp ? (last.done ? nextEp(show, lastEp) || lastEp : lastEp) : null;
   const dlAble = show.eps.filter((e) => e.v && e.v.type === 'mp4');
   view.innerHTML = `${demoBanner()}<div class="dhero">${poster(show, 'dh-img')}<div class="dh-body"><h2>${esc(show.title)}</h2><small>${show.eps.length} حلقة</small>
-    <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button><button id="wa" class="favbtn">🔔 <span>تنبيه واتساب</span></button></div></div></div>
+    <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button><button id="wa" class="favbtn">${BELL}<span>تنبيه واتساب</span></button></div></div></div>
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'متابعة المشاهدة · حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${DEFERRED && dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
     <h3 class="eps-h">الحلقات</h3><div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${DEFERRED && dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>`;
@@ -223,8 +250,10 @@ async function vWatch(showId, epId) {
     <div class="actions" id="srv"></div>
     <div class="actions" id="act"></div>
     <div id="msg"></div>
-    <div class="actions">${next ? `<a style="flex:1" href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button style="width:100%">الحلقة التالية (${esc(next.n)})</button></a>` : ''}<a style="flex:1" href="#/show/${encodeURIComponent(showId)}"><button style="width:100%">كل الحلقات</button></a></div>`;
+    <div class="actions">${next ? `<a style="flex:1" href="#/watch/${encodeURIComponent(showId)}/${encodeURIComponent(next.id)}"><button style="width:100%">الحلقة التالية (${esc(next.n)})</button></a>` : ''}<a style="flex:1" href="#/show/${encodeURIComponent(showId)}"><button style="width:100%">كل الحلقات</button></a></div>
+    <div class="actions"><button id="wa" class="favbtn">${BELL}<span>تنبيه واتساب</span></button></div>`;
   const pl = $('#pl'), srv = $('#srv'), act = $('#act'), msg = $('#msg');
+  bindShowAlert($('#wa'), showId, show.title);
   const setDone = async (done) => { await progress.save(showId, ep, { done, ...(done ? {} : { time: 0 }) }, { force: true }); toast(done ? 'تم وضع علامة ✓' : 'أُعيدت الحلقة للبداية'); route(); };
   if (!p0) await progress.save(showId, ep, { done: false });
   if (stale()) return;

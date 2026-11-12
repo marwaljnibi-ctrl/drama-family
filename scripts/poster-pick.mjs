@@ -17,6 +17,13 @@ export const nextTry = (tries, now = Date.now()) => now + BACKOFF[Math.min(tries
 // identity-overrides.json: { id: { tmdb: 123 } } تصحيح قاطع (يتفوق دائمًا) | { id: { names: ['Turkish Name'] } } تلميح اسم يتحقق منه المحرك بالأدلة (سنة/حلقات/ممثلون/صورة)
 const withHints = (s, o) => (o && o.names ? { ...s, hints: { ...(s.hints || {}), names: o.names } } : s);
 const hashOf = (id) => createHash('sha1').update(id).digest('hex').slice(0, 12);
+const REV = 'data/poster-review.json';
+// قائمة المراجعة: كل مسلسل بلا بوستر معتمد (لم يُحسم/بحاجة مراجعة) مع سبب ومرشحين وموعد المحاولة التالية. تُحدَّث تلقائيًا مع المزامنة؛ لا إشعارات ولا تنبيهات (لا تكرار). since يُحفظ من أول ظهور.
+export function buildReview(map, idx, prev = {}) {
+  const items = {};
+  for (const [id, r] of Object.entries(map)) { if (!r || r.status === 'matched') continue; items[id] = { id, status: r.status, note: r.note || '', tries: r.tries || 0, since: prev[id]?.since || r.at || Date.now(), next: r.next || null, tr: idx?.shows?.[id]?.original || null, candidates: (r.cands || []).slice(0, 3).map((c) => ({ name: c.name, ref: c.ref, year: c.premiered, score: c.score })) }; }
+  return { count: Object.keys(items).length, items };
+}
 const slim = (c) => ({ src: c.src, ref: c.ref, name: c.original, premiered: c.year, score: c.score, evidence: c.evidence });
 // فهرس تركي مُخزَّن: يُبنى عند الحاجة فقط (غير موجود/أقدم من 45 يومًا) وبمفتاح TMDB؛ غيابه لا يعطّل شيئًا
 export async function getCatalog({ http = makeHttp(), key = process.env.TMDB_API_KEY, force = false } = {}) {
@@ -59,6 +66,7 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
   let sharp = null; try { sharp = (await import('sharp')).default; } catch { return; }
   const map = J(MAP, {}), idx = loadIndex(), ovr = J(OVR, {}), http = makeHttp(); let done = 0, dirty = false, catalog; const now = Date.now();
   for (const s of shows) {
+    { const i0 = idx.shows[s.id], r0 = map[s.id]; const tn = (i0 && i0.status === 'confirmed' && i0.original) || (r0 && r0.status === 'matched' && r0.name); if (tn) s.tr = tn; }   // الاسم التركي للبحث المحلي
     const r = map[s.id], ov = ovr[s.id] && ovr[s.id].tmdb ? ovr[s.id] : null; const forced = !!ov && !(r && r.status === 'matched' && String(r.ref) === String(ov.tmdb));
     if (r && r.status === 'matched' && !forced) {
       if (portraitOk(r) && !s.img3 && existsSync(r.path)) s.img3 = r.path;
@@ -77,7 +85,7 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
       console.log('poster', s.id, rec.status, rec.name || '', rec.w ? rec.w + 'x' + rec.h : '', (rec.evidence || []).join(','));
     } catch (e) { console.log('poster error', s.id, String(e).slice(0, 80)); }
   }
-  if (dirty) { save(MAP, map); save(IDX, idx); }
+  if (dirty) { save(MAP, map); save(IDX, idx); try { const pr = J(REV, { items: {} }); const rv = buildReview(map, idx, pr.items || {}); save(REV, { updated: new Date().toISOString(), ...rv }); } catch {} }
 }
 
 // ===== CLI =====
@@ -86,7 +94,8 @@ const isMain = A[1] && A[1].endsWith('poster-pick.mjs');
 // node scripts/poster-pick.mjs --apply [file]  ← يضيف img3 (بوستر عمودي 2:3 فقط) من السجل إلى shows.json (بلا أي تغيير آخر)
 if (isMain && has('--apply')) {
   const f = arg('--apply')?.endsWith('.json') ? arg('--apply') : 'data/shows.json'; const data = J(f, {}), map = J(MAP, {}); let n = 0;
-  for (const s of data.shows) { const r = map[s.id]; if (portraitOk(r) && existsSync(r.path)) { s.img3 = r.path; n++; } delete s.img4; }
+  const idx0 = loadIndex();
+  for (const s of data.shows) { const r = map[s.id]; if (portraitOk(r) && existsSync(r.path)) { s.img3 = r.path; n++; } delete s.img4; const i0 = idx0.shows[s.id]; const tn = (i0 && i0.status === 'confirmed' && i0.original) || (r && r.status === 'matched' && r.name); if (tn) s.tr = tn; }   // s.tr = الاسم التركي المؤكَّد (للبحث المحلي فقط)
   writeFileSync(f, JSON.stringify(data)); console.log('applied img3 to', n, 'shows'); process.exit(0);
 }
 // node scripts/poster-pick.mjs --catalog  ← يعيد بناء فهرس المسلسلات التركية
@@ -130,3 +139,5 @@ if (isMain && has('--reratio')) {
     if (n % 10 === 0) save(MAP, map); }
   save(MAP, map); console.log('reratio: upgraded', up, 'kept', keep, 'of', n); process.exit(0);
 }
+// node scripts/poster-pick.mjs --review  ← يعيد بناء data/poster-review.json ويطبع الحالات التي تنتظر مراجعة
+if (isMain && has('--review')) { const rv = buildReview(J(MAP, {}), loadIndex(), J(REV, { items: {} }).items || {}); save(REV, { updated: new Date().toISOString(), ...rv }); console.log('review items:', rv.count); for (const x of Object.values(rv.items)) console.log(x.status, x.id, x.tries + ' tries', x.candidates[0] ? '| best: ' + x.candidates[0].name + ' ' + x.candidates[0].score : '', x.note); process.exit(0); }

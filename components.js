@@ -32,6 +32,8 @@ export const poster = (s, cls = '') => {
 
 // قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
 export const HEART = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+// جرس خطي مجوّف بنفس أسلوب وحجم القلب (Lucide Bell): يمتلئ عند التفعيل كالقلب
+export const BELL = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>';
 export const heartBtn = (id, on) => `<button class="heart ${on ? 'on' : ''}" data-id="${esc(id)}" aria-pressed="${on}" aria-label="مفضلة">${HEART}</button>`;
 export const pop = (el) => { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); };
 
@@ -57,13 +59,15 @@ export const showCard = (s, o = {}) => `<div class="card"><a href="${showHref(s)
 // بطاقة متابعة: item = { show, ep (الحلقة المستهدفة), kind: 'continue'|'next', hasMinute, time, duration, epNum }
 // الدقيقة والشريط يظهران فقط حين تكون القيم مثبتة (duration > 0)؛ لا تخمين.
 // بطل «حلقة جديدة» لمن لم يبدأ مشاهدة: it = { show, ep }
+// الوقت المتبقي: فقط حين تكون المدة معروفة بدقة من المشغّل (duration > 60ث) ولم تنتهِ الحلقة؛ لا تقدير ولا طلبات خارجية
+export const remLabel = (it) => { if (!(it && it.hasMinute && it.duration > 60 && it.time >= 0 && it.time < it.duration - 20)) return ''; const m = Math.max(1, Math.ceil((it.duration - it.time) / 60)); return 'متبقي ' + m + ' ' + (m === 1 ? 'دقيقة' : m === 2 ? 'دقيقتان' : m <= 10 ? 'دقائق' : 'دقيقة'); };
 export function newHero(it) {
   return `<a class="hero-c hero-new" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>الحلقة ${esc(it.ep.n)}</small><span class="go">شاهد الآن</span></div></a>`;
 }
 export function continueCard(it, hero = false) {
   const pct = it.hasMinute ? Math.min(100, (it.time / it.duration) * 100) : 0;
   const line = it.kind === 'next' ? `الحلقة التالية · ${it.ep.n}` : `حلقة ${it.ep.n}${it.hasMinute ? ' · توقفت عند ' + fmt(it.time) : ''}`;
-  return `<a class="ccard${hero ? ' hero-c' : ''}" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
+  return `<a class="ccard${hero ? ' hero-c' : ''}" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${remLabel(it) ? `<small class="rem">${remLabel(it)}</small>` : ''}${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
 }
 
 // قسم بصف أفقي: head = { title, sub?, all? (رابط عرض الكل) }

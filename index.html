@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- حماية Dizi نفسه: لا سكربتات إلا من الموقع وGoogle Sign-In وhls.js؛ لا إطارات إلا مشغّلا Arab HD وOK؛ لا اتصال إلا بالـWorker والبيانات. لا تمسّ ما بداخل مشغّل الطرف الثالث (خارج صلاحية الموقع). للتراجع: احذف هذا الوسم. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com/gsi/client https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data:; connect-src 'self' https://dizi-alerts.fufuu-crafts.workers.dev https://marwaljnibi-ctrl.github.io https://accounts.google.com/gsi/ https://*.cloudflareinsights.com; frame-src https://arabhd.onl https://ok.ru https://accounts.google.com/gsi/; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Dizi</title>
 <meta name="theme-color" content="#08080A">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,10 +23,11 @@
 <header id="top"><button id="back" hidden aria-label="رجوع"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><h1 id="title">Dizi</h1></header>
 <main id="view"></main>
 <nav id="tabs">
-  <a href="#/home" data-t="home"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>الرئيسية</a>
-  <a href="#/shows" data-t="shows"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1" /> <rect width="7" height="7" x="14" y="3" rx="1" /> <rect width="7" height="7" x="14" y="14" rx="1" /> <rect width="7" height="7" x="3" y="14" rx="1" /></svg>المسلسلات</a>
-  <a href="#/favs" data-t="favs"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>المفضلة</a>
-  <a href="#/recent" data-t="recent"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /> <path d="M12 7v5l4 2" /></svg>آخر المشاهدات</a>
+  <a href="#/home" data-t="home" aria-label="الرئيسية"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>الرئيسية</span></a>
+  <a href="#/shows" data-t="shows" aria-label="المسلسلات"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg><span>المسلسلات</span></a>
+  <a href="#/recent" data-t="recent" aria-label="آخر المشاهدات"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg><span>آخر المشاهدات</span></a>
+  <a href="#/alerts" data-t="alerts" aria-label="تنبيهاتي"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span>تنبيهاتي</span></a>
+  <a href="#/favs" data-t="favs" aria-label="المفضلة"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span>المفضلة</span></a>
 </nav>
 <div id="toast" hidden></div>
 <script type="module" src="app.js"></script>

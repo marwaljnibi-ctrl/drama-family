@@ -73,3 +73,28 @@ test('permanent rule: every approved poster (img3 candidate) in the library is a
   assert.equal(portraitOk({ status: 'matched', w: 600, h: 326, path: 'x' }), false);   // الأفقية مرفوضة دائمًا
   assert.equal(portraitOk({ status: 'matched', w: 640, h: 960, path: 'x' }), true);
 });
+
+test('safety: a broken image link or a throwing request on one show never stops the others; unresolved shows land in the review list once, without duplicates', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'poster-')); const prev = process.cwd(); process.chdir(dir); mkdirSync('data', { recursive: true });
+  const port = await noisy(680, 1000); const realFetch = globalThis.fetch; const json = (o) => new Response(JSON.stringify(o));
+  const W = { 401: { name: 'سليم', original: 'Saglam Dizi', ar: ['سليم'] }, 402: { name: 'معطوب', original: 'Kirik Dizi', ar: ['معطوب'] }, 403: { name: 'رماه', original: 'Atan Dizi', ar: ['رماه'] } };
+  globalThis.fetch = async (u) => {
+    u = String(u); const q = decodeURIComponent((/[?&](?:search|query)=([^&]*)/.exec(u) || [])[1] || '');
+    if (u.includes('wikidata.org')) return json({ search: [], entities: {} });
+    if (u.includes('/search/tv')) { const lang = (/language=([^&]*)/.exec(u) || [])[1]; if (q === 'رماه') throw new Error('network down for this one'); return json({ results: Object.entries(W).filter(([, e]) => lang === 'ar' && e.ar.includes(q)).map(([id]) => ({ id: +id, origin_country: ['TR'], original_language: 'tr', name: W[id].name, original_name: W[id].original })) }); }
+    const im = /\/tv\/(\d+)\/images/.exec(u); if (im) return json({ posters: [{ file_path: im[1] === '402' ? '/missing.jpg' : '/ok.jpg', width: 680, height: 1000, aspect_ratio: 0.68, iso_639_1: null, vote_average: 5, vote_count: 3 }], backdrops: [] });
+    const d = /\/tv\/(\d+)\?/.exec(u); if (d && W[d[1]]) return json({ id: +d[1], name: W[d[1]].name, original_name: W[d[1]].original, first_air_date: '2023-01-01', number_of_episodes: 10, origin_country: ['TR'], original_language: 'tr', external_ids: {} });
+    if (u.endsWith('/ok.jpg')) return new Response(port); return new Response('', { status: 404 });   // missing.jpg = رابط صورة معطوب
+  };
+  try {
+    const mk = () => [{ id: 'a-saglam', title: 'مسلسل سليم', eps: Array.from({ length: 10 }, () => ({})) }, { id: 'b-kirik', title: 'مسلسل معطوب', eps: Array.from({ length: 10 }, () => ({})) }, { id: 'c-atan', title: 'مسلسل رماه', eps: Array.from({ length: 10 }, () => ({})) }];
+    const s = mk(); await upgradePosters(s, { max: 10, tmdbKey: 'k' });
+    const map = JSON.parse(readFileSync('data/poster-map.json', 'utf8')); const rv = JSON.parse(readFileSync('data/poster-review.json', 'utf8'));
+    assert.equal(map['a-saglam'].status, 'matched'); assert.ok(s[0].img3 && existsSync(s[0].img3), 'the healthy show is not affected by the failures of the others');
+    assert.notEqual(map['b-kirik'].status, 'matched'); assert.equal(s[1].img3, undefined, 'a broken image link never becomes img3 (no broken image shown)');
+    assert.notEqual(map['c-atan'].status, 'matched'); assert.equal(s[2].img3, undefined);
+    assert.ok(rv.items['b-kirik'] && rv.items['c-atan'] && !rv.items['a-saglam'], 'only the unresolved ones are in the review list'); assert.equal(rv.count, 2);
+    const since = rv.items['b-kirik'].since; map['b-kirik'].next = Date.now() - 1; writeFileSync('data/poster-map.json', JSON.stringify(map)); await upgradePosters(mk(), { max: 10, tmdbKey: 'k' });
+    const rv2 = JSON.parse(readFileSync('data/poster-review.json', 'utf8')); assert.equal(rv2.items['b-kirik'].since, since, 'first-seen time is kept (no repeated alert, no duplicate entry)'); assert.equal(rv2.count, 2);
+  } finally { globalThis.fetch = realFetch; process.chdir(prev); }
+});

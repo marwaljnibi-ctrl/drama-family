@@ -12,7 +12,7 @@ test('recommend: no genres in index -> honest discover mode, excludes favs and s
   const shows = ['a', 'b', 'c', 'd', 'e'].map((x) => mk(x));
   const r = recommend({ shows, favIds: new Set(['a']), seenIds: new Set(['b']), day: 1 });
   assert.equal(r.mode, 'discover');
-  assert.equal(r.title, 'اكتشف مسلسلات');
+  assert.equal(r.title, 'اكتشف المسلسلات');
   assert.deepEqual(r.items.map((s) => s.id).sort(), ['c', 'd', 'e']);
 });
 test('recommend: discover order is stable within a day and changes across days', () => {

@@ -1,0 +1,55 @@
+{
+ "updated": "2026-11-12T17:46:48.350Z",
+ "count": 3,
+ "items": {
+  "yazin-hikayesi-vqstm": {
+   "id": "yazin-hikayesi-vqstm",
+   "status": "unmatched",
+   "note": "no candidates",
+   "tries": 4,
+   "since": 1794500149647,
+   "next": 1795709753765,
+   "tr": null,
+   "candidates": []
+  },
+  "evli-cgowr": {
+   "id": "evli-cgowr",
+   "status": "review",
+   "note": "score 0.5 < 4",
+   "tries": 4,
+   "since": 1794500153767,
+   "next": 1795709758936,
+   "tr": null,
+   "candidates": [
+    {
+     "name": "Yeni Evli",
+     "ref": "228309",
+     "year": 2007,
+     "score": 0.5
+    },
+    {
+     "name": "Evli ve Öfkeli",
+     "ref": "84838",
+     "year": 2015,
+     "score": 0.5
+    },
+    {
+     "name": "Evli ve Çocuklu",
+     "ref": "207944",
+     "year": 2004,
+     "score": 0.5
+    }
+   ]
+  },
+  "emirin-yolu-kqvts": {
+   "id": "emirin-yolu-kqvts",
+   "status": "unmatched",
+   "note": "no candidates",
+   "tries": 4,
+   "since": 1794500158938,
+   "next": 1795709763156,
+   "tr": null,
+   "candidates": []
+  }
+ }
+}

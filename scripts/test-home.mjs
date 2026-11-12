@@ -17,8 +17,8 @@ await home();
 const first = await page.evaluate(() => ({ text: document.getElementById('view').innerText, tabs: [...document.querySelectorAll('#tabs a')].map((a) => a.textContent.trim()) }));
 T('first-run-hero-is-latest-episode', !!(await page.$('.hero-new')) && /شاهد الآن/.test(first.text) && /الحلقة \d+/.test(first.text) && !/متابعة المشاهدة/.test(first.text), first.text.slice(0, 80));
 T('back-button-visible-on-home', await page.evaluate(() => !document.getElementById('back').hidden));
-T('four-tabs-only', first.tabs.length === 4 && first.tabs[0] === 'الرئيسية', first.tabs.join('|'));
-T('discover-not-claimed-personal', /اكتشف مسلسلات/.test(first.text) && !/حسب ذوقك/.test(first.text));
+T('five-tabs-per-approved-icons', first.tabs.length === 5 && first.tabs.join('|') === 'الرئيسية|المسلسلات|آخر المشاهدات|تنبيهاتي|المفضلة', first.tabs.join('|'));
+T('discover-not-claimed-personal', /اكتشف المسلسلات/.test(first.text) && !/حسب ذوقك/.test(first.text));
 
 // T2: بيانات متابعة: ترتيب الأقسام، والدقيقة والشريط فقط عند وجود مدة مثبتة
 await page.evaluate(async () => {
@@ -80,7 +80,7 @@ T('favorites-single-source', mine1 === 1 && favN === 1, `home=${mine1} favs=${fa
 // T6: إضافة من صف الاكتشاف تظهر في مسلسلاتي (نجعل demo-b غير مشاهد ليظهر في الاكتشاف)
 await page.evaluate(async () => { const db = await import('./db.js'); for (const p of await db.progress.all()) if (p.showId === 'demo-b') await db.progress.reset(p.showId, p.epId); });
 await home();
-await page.click('#view .sec:has-text("اكتشف مسلسلات") .heart >> nth=0'); await page.waitForTimeout(1000);
+await page.click('#view .sec:has-text("اكتشف المسلسلات") .heart >> nth=0'); await page.waitForTimeout(1000);
 T('add-from-discover-appears-in-mine', (await mineCount()) === 2, 'mine=' + (await mineCount()));
 
 // T7: «حلقة جديدة» فقط لحلقة ظهرت بعد آخر حالة (مفضلة قديمة) وبعد بداية التتبع
