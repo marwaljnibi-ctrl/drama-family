@@ -625,10 +625,27 @@
   "bg": null
  },
  "adisevgi-ltqmp": {
-  "at": 1794482234587,
+  "at": 1794483443283,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for adisevgi-ltqmp"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "195021",
+  "name": "Adı Sevgi",
+  "premiered": "2022",
+  "url": "https://image.tmdb.org/t/p/w780/4VhQQdiwbGIXc50pXv9aQRgkxqe.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 57.36,
+  "ent": 7.18,
+  "score": 0.894,
+  "path": "data/posters/v3/b31a012eb791.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/b31a012eb791.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/x2yZO6UTq8MKq3L04tmushXZ6BD.jpg"
+  }
  },
  "adi-mutluluk-hqvrs": {
   "at": 1794444881738,
@@ -697,10 +714,27 @@
   }
  },
  "fariha-lqvts": {
-  "at": 1794482237467,
+  "at": 1794483443857,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for fariha-lqvts"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "47711",
+  "name": "Adını Feriha Koydum",
+  "premiered": "2011",
+  "url": "https://image.tmdb.org/t/p/w780/asSZjCDwf5kEA4VpWb6LJSvbiSS.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 98.44,
+  "ent": 6.94,
+  "score": 0.89,
+  "path": "data/posters/v3/a984cfaccbaf.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/a984cfaccbaf.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/wmxEmmo3fmTCFeBDfFA8FaenaRv.jpg"
+  }
  },
  "iyidir-hvmqs": {
   "at": 1794445816567,
@@ -880,11 +914,27 @@
   }
  },
  "efsane-wqjtm": {
-  "at": 1794482241533,
+  "at": 1794483446200,
   "tries": 1,
-  "q": "efsane",
-  "status": "review",
-  "note": "partial ambiguous: Adı Efsane | Efsane T | Tarihin Efsaneleri | Savaşın Efsaneleri | Savaşın Efsaneleri | Şehir Efsanesi | Adı Efsane | Efsane T"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "72066",
+  "name": "Adı Efsane",
+  "premiered": "2017",
+  "url": "https://image.tmdb.org/t/p/w780/nEh6X8vYxhPKK2e6RPj29q2dajL.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 67.28,
+  "ent": 7.47,
+  "score": 0.9,
+  "path": "data/posters/v3/3900b3406407.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/3900b3406407.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/jjEiGZI19d2LOxUHAnsNWOWrqnj.jpg"
+  }
  },
  "icimdekifirtina-pzvrl": {
   "at": 1794482242444,
@@ -1014,10 +1064,27 @@
   }
  },
  "alp-arslan-kqvdr": {
-  "at": 1794482245477,
+  "at": 1794483436147,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alp-arslan-kqvdr"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "138171",
+  "name": "Alparslan: Büyük Selçuklu",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/zXnP3YEN3saxyncRLz7kxc6TvjX.jpg",
+  "w": 780,
+  "h": 1147,
+  "sharp": 66.44,
+  "ent": 7.21,
+  "score": 0.887,
+  "path": "data/posters/v3/37aa20f777d9.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/37aa20f777d9.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/hOxTHKWxKM69OOg4C3WIfMqaOt6.jpg"
+  }
  },
  "kalbimdeki-deniz-sqvpm": {
   "at": 1794444908830,
@@ -1083,11 +1150,27 @@
   "bg": null
  },
  "barbaros-kqvmp": {
-  "at": 1794482255283,
+  "at": 1794483438416,
   "tries": 1,
-  "q": "barbaros",
-  "status": "review",
-  "note": "partial ambiguous: Barbaros Hayreddin: Sultanın Fermanı | Barbaros Tapan'la Hayallerin İzinde | Barbaroslar: Akdeniz'in Kılıcı | Barbaroslar: Akdeniz'in Kılıcı | Barbaros Hayreddin: Sultanın Fermanı"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "132752",
+  "name": "Barbaroslar: Akdeniz'in Kılıcı",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/1VqjAWF5rW431wY4eEoV9oIyx0L.jpg",
+  "w": 780,
+  "h": 1152,
+  "sharp": 67.01,
+  "ent": 7.62,
+  "score": 0.894,
+  "path": "data/posters/v3/7626350c768b.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/7626350c768b.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/leOTbaxPLkybrnj7kfEDlitYsDo.jpg"
+  }
  },
  "kizilelma-vsrqm": {
   "at": 1794482256198,
@@ -1169,13 +1252,27 @@
   "bg": null
  },
  "ilk-ask-lpvrm": {
-  "at": 1794456187158,
+  "at": 1794483431630,
   "tries": 1,
-  "q": "ilk ask",
-  "status": "review",
-  "note": "partial name \"4N1K İlk Aşk\" but episodes 25 vs 12",
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "80664",
   "name": "4N1K İlk Aşk",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/158/395828.jpg"
+  "premiered": "2018",
+  "url": "https://image.tmdb.org/t/p/w780/rXyKDyojRZCZJlspuK6Vi0miomK.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 77.16,
+  "ent": 7.75,
+  "score": 0.901,
+  "path": "data/posters/v3/c4591b099593.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/c4591b099593.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/vsFlEfRmsjfnCoLLOzc4aBK2LL2.jpg"
+  }
  },
  "ask-laftan-kqvmt": {
   "at": 1794445840784,
@@ -1312,17 +1409,50 @@
   }
  },
  "hayat-vqrnt": {
-  "at": 1794482263894,
+  "at": 1794483432282,
   "tries": 1,
-  "q": "hayat",
-  "status": "review",
-  "note": "partial ambiguous: Hayat Bilgisi | Tatlı Hayat | Leyla: Hayat... Aşk... Adalet... | Aci hayat | O Hayat Benim | Hayat Şarkısı | Yeni Hayat | Elde Var Hayat | Hayat Devam Ediyor | Merhaba Hayat | Yeni Hayat | Hayat Türküsü | Hayat Yolunda | Gelsin Hayat Bildiği Gibi | Hayat Ağacı | Hayat Sırları | Hayat Şarkısı | Hayat Sırları | Yeni Hayat | Tatlı Hayat | Hayat Yolunda | Acı Hayat | Hayat Bilgisi | O Hayat Benim | Hayat Sevince Güzel | Hayat Bazen Tatlıdır"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "67112",
+  "name": "Hayat Sevince Güzel",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/fBR2dvJ2APprMD1dF7nOVi6EpcJ.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 66.45,
+  "ent": 7.53,
+  "score": 0.901,
+  "path": "data/posters/v3/25ed29529e36.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/25ed29529e36.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/wlRVSV30kzKoYhl3t9hGd5cdL4P.jpg"
+  }
  },
  "lissw-hqvnt": {
-  "at": 1794482264805,
+  "at": 1794483444475,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for lissw-hqvnt"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "50541",
+  "name": "Hayat Bazen Tatlıdır",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/70TDqXwWmJd54YGiONbGVqiMc50.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 84.96,
+  "ent": 7.6,
+  "score": 0.901,
+  "path": "data/posters/v3/f8fe0bc83c6e.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/f8fe0bc83c6e.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/31m5lWAFPZHKAe7022H0Bf0LbSi.jpg"
+  }
  },
  "hizmetciler-fvqsn": {
   "at": 1794444933818,
@@ -1762,11 +1892,27 @@
   "note": "no Turkish-name match for altayer-alrafraf-mqvts"
  },
  "sosyete-jrqmv": {
-  "at": 1794482281907,
+  "at": 1794483432884,
   "tries": 1,
-  "q": "sosyete",
-  "status": "review",
-  "note": "partial ambiguous: Jet Sosyete | Yüksek Sosyete | Yüksek Sosyete | Jet Sosyete"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "67611",
+  "name": "Yüksek Sosyete",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/yO65pGxDZEjKd4wxskOefRf8Vuu.jpg",
+  "w": 780,
+  "h": 1091,
+  "sharp": 73.28,
+  "ent": 7.6,
+  "score": 0.869,
+  "path": "data/posters/v3/0bd6f2118223.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/0bd6f2118223.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/1PdiTuQR1N00imcl9AknXcuHmuO.jpg"
+  }
  },
  "tabeeb-zplon": {
   "at": 1794482282826,
@@ -1903,10 +2049,27 @@
   "bg": null
  },
  "abqari-kntvs": {
-  "at": 1794482291477,
+  "at": 1794483433344,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for abqari-kntvs"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "256400",
+  "name": "Deha",
+  "premiered": "2024",
+  "url": "https://image.tmdb.org/t/p/w780/icPHnFkJBBds6rw4IHf5qR93FJt.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 68.94,
+  "ent": 7.53,
+  "score": 0.901,
+  "path": "data/posters/v3/079ccbd6e49f.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/079ccbd6e49f.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/kt7JCtDy5bfCW0z8zxMF7lHeUG3.jpg"
+  }
  },
  "sahane-damat-kvrps": {
   "at": 1794444976180,
@@ -3231,10 +3394,27 @@
   }
  },
  "yildizlarsahidim-bqtsv": {
-  "at": 1794482326503,
+  "at": 1794483440522,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yildizlarsahidim-bqtsv"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "71558",
+  "name": "Yıldızlar Şahidim",
+  "premiered": "2017",
+  "url": "https://image.tmdb.org/t/p/w780/bLMizYImXIlwPhSCMNa7NvOPfx2.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 67.43,
+  "ent": 7.58,
+  "score": 0.901,
+  "path": "data/posters/v3/ff6ee5ee1b6a.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/ff6ee5ee1b6a.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/u7aQlPQyczh3o2tHXpZ9nzxBrSH.jpg"
+  }
  },
  "kismet-vqprs": {
   "at": 1794445068247,
@@ -3509,10 +3689,27 @@
   }
  },
  "atroq-babi-fqvms": {
-  "at": 1794482336115,
+  "at": 1794483444943,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for atroq-babi-fqvms"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "104877",
+  "name": "Sen Çal Kapımı",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/nzBenFJ2D2MCWTwTt2uc4BGWLtA.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 88.33,
+  "ent": 7.42,
+  "score": 0.899,
+  "path": "data/posters/v3/97bd247b203e.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/97bd247b203e.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/9qq8LpOoBLYq8MxiMugn0gf9qJd.jpg"
+  }
  },
  "her-yerde-sen-kqvhs": {
   "at": 1794445086417,
@@ -4017,10 +4214,27 @@
   }
  },
  "uckizkardes-mplfv": {
-  "at": 1794482344000,
+  "at": 1794483436604,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for uckizkardes-mplfv"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "158339",
+  "name": "Üç Kız Kardeş",
+  "premiered": "2022",
+  "url": "https://image.tmdb.org/t/p/w780/a46cKxbo0CnQO1aK0FhpHB1yTeG.jpg",
+  "w": 780,
+  "h": 1147,
+  "sharp": 75.73,
+  "ent": 7.48,
+  "score": 0.892,
+  "path": "data/posters/v3/b21fde6aa08c.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/b21fde6aa08c.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/gCLhbOZJaYv5HjKMU4aMntLMUQs.jpg"
+  }
  },
  "uc-kurus-bqvnt": {
   "at": 1794445119318,
@@ -4473,10 +4687,27 @@
   }
  },
  "olenekadar-rmpts": {
-  "at": 1794482361049,
+  "at": 1794483437042,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for olenekadar-rmpts"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "69540",
+  "name": "Ölene Kadar",
+  "premiered": "2017",
+  "url": "https://image.tmdb.org/t/p/w780/akBIMMsWkZP3a01a5jhrNL75BCr.jpg",
+  "w": 780,
+  "h": 1147,
+  "sharp": 63.63,
+  "ent": 6.97,
+  "score": 0.882,
+  "path": "data/posters/v3/b8d73bbbf8b1.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/b8d73bbbf8b1.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/qwk6qFyb9ASZdiWCAma8kHcn1Ps.jpg"
+  }
  },
  "son-nefesime-kadar-hqvmt": {
   "at": 1794445151061,
@@ -4602,10 +4833,27 @@
   "bg": null
  },
  "bodrummasali-rgxne": {
-  "at": 1794482368353,
+  "at": 1794483439038,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for bodrummasali-rgxne"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "69460",
+  "name": "Bodrum Masalı",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/4wK7LemDEfPNz47OUwc32HBlHXw.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 68.28,
+  "ent": 7.89,
+  "score": 0.901,
+  "path": "data/posters/v3/ee79882496b1.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/ee79882496b1.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/ybEFM4RWLK7yhOys4jXOPnFiLn3.jpg"
+  }
  },
  "jazeera-kvmts": {
   "at": 1794482371234,
@@ -5912,10 +6160,27 @@
   "bg": null
  },
  "banasevmeyi-kmfrs": {
-  "at": 1794482415188,
+  "at": 1794483439922,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for banasevmeyi-kmfrs"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "83738",
+  "name": "Bana Sevmeyi Anlat",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/4evki7xoVBfZUjBdCFFTHh76Bxi.jpg",
+  "w": 780,
+  "h": 1092,
+  "sharp": 70.4,
+  "ent": 7.73,
+  "score": 0.869,
+  "path": "data/posters/v3/5e33ae49a04f.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/5e33ae49a04f.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/dXwp72Byk3XeQmTDJnLLOClQnxF.jpg"
+  }
  },
  "ali-riza-hqmnt": {
   "at": 1794482418063,
@@ -6355,11 +6620,27 @@
   }
  },
  "eskiya-kqvmt": {
-  "at": 1794482438384,
+  "at": 1794483437513,
   "tries": 1,
-  "q": "eskiya",
-  "status": "review",
-  "note": "partial ambiguous: Eşkıya Dünyaya Hükümdar Olmaz | Eşkıya Dünyaya Hükümdar Olmaz"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "64535",
+  "name": "Eşkıya Dünyaya Hükümdar Olmaz",
+  "premiered": "2015",
+  "url": "https://image.tmdb.org/t/p/w780/9dCHYc4knzkr5bUiUaVrjnQtfNU.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 40.95,
+  "ent": 6.64,
+  "score": 0.884,
+  "path": "data/posters/v3/2649fcf5b003.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/2649fcf5b003.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/7JXIMbLcKW4tDqTYhl6V3giXo10.jpg"
+  }
  },
  "ruzgarin-kalbi-fqsmv": {
   "at": 1794446011447,
@@ -7310,10 +7591,27 @@
   }
  },
  "cobanyildizi-mfrqe": {
-  "at": 1794482473608,
+  "at": 1794483441361,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for cobanyildizi-mfrqe"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "71402",
+  "name": "Çoban Yıldızı",
+  "premiered": "2017",
+  "url": "https://image.tmdb.org/t/p/w780/rRnZnWtq3QrxoCL7xeO3UxJix6E.jpg",
+  "w": 780,
+  "h": 1221,
+  "sharp": 78.37,
+  "ent": 7.86,
+  "score": 0.882,
+  "path": "data/posters/v3/d70a355c781b.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/d70a355c781b.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/ddOQYN17ySEYU3buXTk96HjRoNW.jpg"
+  }
  },
  "najmat-alshamal-bqvnt": {
   "at": 1794482476503,
@@ -7417,10 +7715,27 @@
   "bg": null
  },
  "benbucihana-vtspq": {
-  "at": 1794482479208,
+  "at": 1794483437959,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for benbucihana-vtspq"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "210676",
+  "name": "Ben Bu Cihana Sığmazam",
+  "premiered": "2022",
+  "url": "https://image.tmdb.org/t/p/w780/coV7lnv9A0eExfKh5rWcxiG52zZ.jpg",
+  "w": 780,
+  "h": 1147,
+  "sharp": 74.2,
+  "ent": 7.33,
+  "score": 0.889,
+  "path": "data/posters/v3/5c11fbdc97b3.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/5c11fbdc97b3.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/2S88JqwIwwtDUScNDjq0Rqrn3LU.jpg"
+  }
  },
  "busehir-jtvqm": {
   "at": 1794446054657,
@@ -7749,10 +8064,27 @@
   }
  },
  "gulumseyeter-vcpam": {
-  "at": 1794482486174,
+  "at": 1794483441992,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for gulumseyeter-vcpam"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "101081",
+  "name": "Gülümse Yeter",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/qWInmkRCspb3vFryBaU1OsSVpTy.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 79.54,
+  "ent": 5.19,
+  "score": 0.855,
+  "path": "data/posters/v3/2cf64702b787.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/2cf64702b787.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/oQit1RDUB0Nm2cf6R0R9mx1uHWh.jpg"
+  }
  },
  "yawm-akhar-kvqsm": {
   "at": 1794482489063,
@@ -7811,10 +8143,27 @@
   "note": "partial ambiguous: Sevdam Karadeniz | Sen Anlat Karadeniz | Gözleri Karadeniz | İstikamet Karadeniz | Dalga Karadeniz'in Gizli Gücü | Gözleri Karadeniz | Sevdam Karadeniz | Sen Anlat Karadeniz | Kalbimin Rotası Karadeniz"
  },
  "tlsth-vqgmn": {
-  "at": 1794482205690,
+  "at": 1794483445556,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tlsth-vqgmn"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tmdb",
+  "ref": "48732",
+  "name": "Eve Düşen Yıldırım",
+  "premiered": "2012",
+  "url": "https://image.tmdb.org/t/p/w780/cJDXe3UW89hdBESpzDlHtUOk4bV.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 62.79,
+  "ent": 7.66,
+  "score": 0.901,
+  "path": "data/posters/v3/dadffec9b657.webp",
+  "note": "approved after human review of Arabic/Turkish title + year + episode count",
+  "bg": {
+   "path": "data/posters/v4/dadffec9b657.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/dpX5iaSBGEGFmUwvJP2enDBt7Ce.jpg"
+  }
  },
  "kimsin-sen-qvtrs": {
   "at": 1794482208579,
