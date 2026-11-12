@@ -56,7 +56,7 @@ async function rawTR(q, tmdbKey) {
 }
 async function arabicTMDB(show, mine, tmdbKey) {   // TMDB يحوي ترجمات عربية لكثير من المسلسلات التركية: بحث بالعنوان العربي + بلد تركيا + تطابق عدد الحلقات
   if (!tmdbKey) return [];
-  const q = String(show.title || '').replace(/^مسلسلs+/, '').replace(/[«»]/g, '').trim(); if (q.length < 2) return [];
+  const q = String(show.title || '').replace(/^مسلسل\s+/, '').replace(/[«»]/g, '').trim(); if (q.length < 2) return [];
   const j = await jget(`https://api.themoviedb.org/3/search/tv?api_key=${encodeURIComponent(tmdbKey)}&language=ar&query=${encodeURIComponent(q)}`); await sleep(120);
   const ok = []; for (const r of (j?.results || []).slice(0, 5)) { if (!r.poster_path || !(r.origin_country || []).includes('TR')) continue; const c = { src: 'tmdb', ref: String(r.id), name: r.original_name || r.name, premiered: (r.first_air_date || '').slice(0, 4), url: 'https://image.tmdb.org/t/p/w780' + r.poster_path }; const n = await epCount(c, tmdbKey); if (near(n, mine, 2)) ok.push({ ...c, n, sim: 1 }); }
   return ok;
