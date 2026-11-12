@@ -23,6 +23,7 @@ jobs:
         run: cp test/clip.mp4 test/big.mp4 && head -c 700M /dev/zero >> test/big.mp4 && ls -la test/big.mp4
       - name: import e2e (local server)
         run: |
+          node scripts/poster-pick.mjs --apply data/shows.json   # يطبّق سجل البوسترات (img3/img4) على لقطة الفهرس للاختبار
           node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
           sleep 2
           node scripts/test-import.mjs
