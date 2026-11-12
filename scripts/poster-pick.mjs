@@ -13,6 +13,8 @@ const J = (f, d) => (existsSync(f) ? JSON.parse(readFileSync(f, 'utf8').replace(
 const save = (f, o) => writeFileSync(f, JSON.stringify(o, null, 1));
 const DAY = 864e5, BACKOFF = [1, 3, 7, 14, 30];
 export const nextTry = (tries, now = Date.now()) => now + BACKOFF[Math.min(tries, BACKOFF.length) - 1] * DAY;
+// identity-overrides.json: { id: { tmdb: 123 } } تصحيح قاطع (يتفوق دائمًا) | { id: { names: ['Turkish Name'] } } تلميح اسم يتحقق منه المحرك بالأدلة (سنة/حلقات/ممثلون/صورة)
+const withHints = (s, o) => (o && o.names ? { ...s, hints: { ...(s.hints || {}), names: o.names } } : s);
 const hashOf = (id) => createHash('sha1').update(id).digest('hex').slice(0, 12);
 const slim = (c) => ({ src: c.src, ref: c.ref, name: c.original, premiered: c.year, score: c.score, evidence: c.evidence });
 // فهرس تركي مُخزَّن: يُبنى عند الحاجة فقط (غير موجود/أقدم من 45 يومًا) وبمفتاح TMDB؛ غيابه لا يعطّل شيئًا
@@ -79,7 +81,7 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
       if (catalog === undefined) { try { catalog = tmdbKey ? await getCatalog({ http, key: tmdbKey }) : null; } catch { catalog = null; } }
       const tries = (r && r.tries ? r.tries : 0) + 1, i0 = idx.shows[s.id];
       const known = !forced && i0 && i0.status === 'confirmed' ? { src: i0.src, ref: i0.ref, original: i0.original, year: i0.year, ar: i0.ar, lat: i0.lat, imdb: i0.imdb, evidence: i0.evidence, score: i0.score } : null;
-      const { rec, ident } = await pickPoster(s, { sharp, tmdbKey, http, override: ov, known, learned: idx.aliases[arKey(s.title)] || null, cast: i0?.cast || null, catalog, tries });
+      const { rec, ident } = await pickPoster(withHints(s, ovr[s.id]), { sharp, tmdbKey, http, override: ov, known, learned: idx.aliases[arKey(s.title)] || null, cast: i0?.cast || null, catalog, tries });
       if (rec.status !== 'matched') rec.next = ident.transient ? now + 6 * 3600e3 : nextTry(tries, now);   // فشل شبكة عابر ≠ "غير موجود": إعادة بعد 6 ساعات بلا زيادة التباعد
       if (ident.transient && rec.status !== 'matched') rec.tries = tries - 1;
       map[s.id] = rec; if (!known && !(ident.transient && ident.status !== 'confirmed')) recordIdentity(idx, s, ident, tries, now); dirty = true; if (rec.status === 'matched') { s.img3 = rec.path; if (rec.bg && rec.bg.path) s.img4 = rec.bg.path; }
@@ -112,8 +114,8 @@ if (isMain && has('--resolve')) {
   let list = data.shows; if (arg('--ids')) { const ids = new Set(arg('--ids').split(',')); list = list.filter((s) => ids.has(s.id)); } else if (!has('--all')) list = list.filter((s) => !map[s.id] || map[s.id].status !== 'matched');
   if (arg('--limit')) list = list.slice(0, +arg('--limit')); const c = {};
   for (const s of list) {
-    const r = map[s.id]; if (r && r.status === 'matched' && !has('--force') && !(ovr[s.id])) continue; if (r && r.conf === 'manual' && !(ovr[s.id])) continue;
-    const tries = (r && r.tries ? r.tries : 0) + 1; const { rec, ident } = await pickPoster(s, { sharp, http, override: ovr[s.id]?.tmdb ? ovr[s.id] : null, learned: idx.aliases[arKey(s.title)] || null, cast: idx.shows[s.id]?.cast || null, catalog, tries });
+    const r = map[s.id]; if (r && r.status === 'matched' && !has('--force') && !(ovr[s.id]?.tmdb)) continue; if (r && r.conf === 'manual' && !(ovr[s.id]?.tmdb)) continue;
+    const tries = (r && r.tries ? r.tries : 0) + 1; const { rec, ident } = await pickPoster(withHints(s, ovr[s.id]), { sharp, http, override: ovr[s.id]?.tmdb ? ovr[s.id] : null, learned: idx.aliases[arKey(s.title)] || null, cast: idx.shows[s.id]?.cast || null, catalog, tries });
     if (rec.status !== 'matched') rec.next = nextTry(tries); map[s.id] = rec; recordIdentity(idx, s, ident, tries); c[rec.status] = (c[rec.status] || 0) + 1; save(MAP, map); save(IDX, idx);
     const b = ident.best; console.log(rec.status.toUpperCase(), s.id, '|', s.title, '|', b ? `${b.original} (${b.year}) ${b.src}#${b.ref} score=${b.score} [${(b.evidence || []).join(',')}]` : ident.reason, rec.status !== 'matched' ? '| ' + (rec.note || '') + ' | ' + (ident.cands || []).map((x) => `${x.original}(${x.year})#${x.ref}:${x.score}`).join(' ; ') : '');
   }
@@ -121,7 +123,13 @@ if (isMain && has('--resolve')) {
 }
 // node scripts/poster-pick.mjs --audit [--limit N]  ← يعيد حل مسلسلات TMDB المعتمدة بلا كتابة، ويقارن بالمسجَّل (معايرة المحرك)
 if (isMain && has('--audit')) {
-  const sharp = (await import('sharp')).default; const map = J(MAP, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp(); const ctx = { ...http, key: process.env.TMDB_API_KEY, sharp }; const catalog = await getCatalog({ http }); const c = { agree: 0, diff: 0, unresolved: 0 }; let n = 0; const lim = arg('--limit') ? +arg('--limit') : 40;
-  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.src !== 'tmdb') continue; if (n++ >= lim) break; const x = await resolveIdentity(s, ctx, { catalog }); const k = x.status === 'confirmed' ? (String(x.best.ref) === String(r.ref) ? 'agree' : 'diff') : 'unresolved'; c[k]++; console.log(k.toUpperCase(), s.id, '|', s.title, '| stored', r.name, '#' + r.ref, '| engine', x.best ? x.best.original + ' #' + x.best.ref + ' ' + x.best.score + ' [' + (x.best.evidence || []).join(',') + ']' : x.reason); }
+  const sharp = (await import('sharp')).default; const map = J(MAP, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp(); const ctx = { ...http, key: process.env.TMDB_API_KEY, sharp }; const catalog = await getCatalog({ http }); const ovr0 = J(OVR, {}); const c = { agree: 0, diff: 0, unresolved: 0 }; let n = 0; const lim = arg('--limit') ? +arg('--limit') : 40;
+  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.src !== 'tmdb') continue; if (n++ >= lim) break; const x = await resolveIdentity(withHints(s, ovr0[s.id]), ctx, { catalog }); const k = x.status === 'confirmed' ? (String(x.best.ref) === String(r.ref) ? 'agree' : 'diff') : 'unresolved'; c[k]++; console.log(k.toUpperCase(), s.id, '|', s.title, '| stored', r.name, '#' + r.ref, '| engine', x.best ? x.best.original + ' #' + x.best.ref + ' ' + x.best.score + ' [' + (x.best.evidence || []).join(',') + ']' : x.reason); }
   console.log(JSON.stringify(c)); process.exit(0);
+}
+// node scripts/poster-pick.mjs --testset  ← يعيد حل مجموعة الاختبار الدائمة (data/identity-testset.json) من الصفر بلا كتابة، ويفشل إن اختلف المعرّف المتوقع
+if (isMain && has('--testset')) {
+  const sharp = (await import('sharp')).default; const set = J('data/identity-testset.json', { shows: [] }), data = J('data/shows.json', { shows: [] }), ovr = J(OVR, {}), http = makeHttp(), catalog = await getCatalog({ http }); const ctx = { ...http, key: process.env.TMDB_API_KEY, sharp }; let bad = 0;
+  for (const e of set.shows) { const s = data.shows.find((x) => x.id === e.id); if (!s) { console.log('MISSING', e.id); bad++; continue; } const x = await resolveIdentity(withHints(s, ovr[e.id]), ctx, { catalog }); const ok = x.status === 'confirmed' && String(x.best.ref) === String(e.tmdb); if (!ok) bad++; console.log(ok ? 'PASS' : 'FAIL', e.id, '| expected', e.original, '#' + e.tmdb, '| got', x.best ? x.best.original + ' #' + x.best.ref + ' ' + x.status + ' ' + x.best.score + ' [' + (x.best.evidence || []).join(',') + ']' : x.reason); }
+  console.log('testset', set.shows.length - bad + '/' + set.shows.length, 'passed'); process.exit(bad ? 1 : 0);
 }

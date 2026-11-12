@@ -14,7 +14,7 @@ jobs:
       - name: engine audit on already-approved TMDB matches (calibration, no writes)
         continue-on-error: true
         env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
-        run: node scripts/poster-pick.mjs --audit --limit 45 2>&1 | tail -n 60
+        run: node scripts/poster-pick.mjs --audit --limit 20 2>&1 | tail -n 60
       - name: resolve the unapproved shows
         env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
         run: node scripts/poster-pick.mjs --resolve 2>&1 | tail -n 80
@@ -29,4 +29,11 @@ jobs:
             for (const k of ['بطولة','تمثيل','سنة','القناة','عام الانتاج','قصة','النوع']) { const i=t.indexOf(k); console.log('K',k,i<0?'-':t.slice(Math.max(0,i-30),i+110)); }
           }).catch(e=>console.log('fetch failed', e.message));"
       - uses: actions/upload-artifact@v4
-        with: { name: posters, path: "data/poster-map.json\ndata/identity-index.json\ndata/posters" }
+        with:
+          name: posters
+          path: |
+            data/poster-map.json
+            data/identity-index.json
+            data/tr-catalog.json
+            data/posters
+

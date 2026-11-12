@@ -46,10 +46,10 @@ export function fileHint(show) {   // Sen-anla-large.jpg → "sen anla"
   const t = tokensOf(q); return t.length && t.join('').length >= 4 ? { q, key: t.join(''), tokens: t, from: 'file' } : null;
 }
 export function latinHints(show) {
-  const out = []; for (const v of slugVariants(show.id)) out.push({ q: v.q, key: v.key, tokens: tokensOf(v.q), from: 'slug' });
+  const out = []; for (const o of show.hints?.names || []) { const t = tokensOf(o); if (t.length) out.push({ q: o, key: t.join(''), tokens: t, from: 'hint' }); }   // تلميحات بشرية: تُجرَّب أولًا، ويتحقق المحرك منها بالأدلة كأي اسم آخر
+  for (const v of slugVariants(show.id)) out.push({ q: v.q, key: v.key, tokens: tokensOf(v.q), from: 'slug' });
   const f = fileHint(show); if (f && !out.some((h) => h.key === f.key)) out.push(f);
-  for (const o of show.hints?.names || []) { const t = tokensOf(o); if (t.length) out.push({ q: o, key: t.join(''), tokens: t, from: 'hint' }); }
-  return out.slice(0, 4);
+  return out.slice(0, 6);
 }
 function latinMatch(h, names) {
   const ht = h.tokens.filter((t) => t.length >= 3); let best = null;
@@ -185,7 +185,7 @@ export async function resolveIdentity(show, ctx, extra = {}) {
     try { wd = await wikidata(ctx, [...arV.map((q) => ({ q, lang: 'ar' })), ...hints.slice(0, 2).map((h) => ({ q: h.q, lang: 'en' }))]); } catch { wd = []; }
     if (ctx.key) {
       for (const q of arV) for (const r of await tmdbSearch(ctx, q, 'ar')) hit(String(r.id), 'tmdb-ar');
-      for (const h of hints.slice(0, 3)) for (const q of [h.q, ...(h.tokens.length > 1 && h.key.length >= 5 ? [h.key] : [])]) for (const r of await tmdbSearch(ctx, q, 'tr-TR')) hit(String(r.id), 'tmdb-hint');
+      for (const h of hints.slice(0, 5)) for (const q of [h.q, ...(h.tokens.length > 1 && h.key.length >= 5 ? [h.key] : [])]) for (const r of await tmdbSearch(ctx, q, 'tr-TR')) hit(String(r.id), 'tmdb-hint');
       if (extra.catalog) for (const h of hints) for (const id of extra.catalog.get(h.key) || []) hit(String(id), 'catalog');
       if (extra.learned) hit(String(extra.learned), 'learned');
       for (const e of wd) { if (e.tmdb) hit(e.tmdb, 'wikidata'); else if (e.imdb) { const f = await ctx.json(`${T}/find/${e.imdb}?api_key=${ctx.key}&external_source=imdb_id`); for (const r of f?.tv_results || []) hit(String(r.id), 'wikidata-imdb'); } }
