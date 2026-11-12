@@ -84,22 +84,24 @@
   }
  },
  "kucuk-gelin-prvsm": {
-  "at": 1794456129847,
+  "at": 1794482209503,
   "tries": 1,
   "q": "kucuk gelin",
   "conf": "high",
-  "src": "tvmaze",
-  "ref": "18789",
+  "src": "tmdb",
+  "ref": "107214",
   "name": "Küçük Gelin",
   "premiered": "2013",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/64/162420.jpg",
-  "w": 1532,
-  "h": 1000,
-  "sharp": 49.4,
-  "ent": 7.52,
-  "score": 0.9,
-  "status": "review",
-  "note": "candidate rejected: aspect"
+  "url": "https://image.tmdb.org/t/p/w780/q6IPDANGuPbL6YpFS9cI50SVXI1.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 79.84,
+  "ent": 7.85,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/05a8657dba68.webp",
+  "prev": "data/posters/v2/05a8657dba68.webp",
+  "bg": null
  },
  "20-dakika-fsrmt": {
   "at": 1794444347987,
@@ -167,16 +169,30 @@
   }
  },
  "fi-kqtmv": {
-  "at": 1794456132323,
+  "at": 1794482210806,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for fi-kqtmv"
  },
  "46-bvqms": {
-  "at": 1794456134464,
+  "at": 1794482213720,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for 46-bvqms"
+  "note": "fuzzy name sim 1.00, episodes 13≈13",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "66047",
+  "name": "46: Yok Olan",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/nED2H9414r4u2ecRkW7VcmgbgL0.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 73.38,
+  "ent": 7.8,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/84f230fc5dcc.webp",
+  "prev": "data/posters/v2/84f230fc5dcc.webp",
+  "bg": null
  },
  "ah-nerede-kvtrs": {
   "at": 1794444850547,
@@ -248,28 +264,24 @@
   }
  },
  "ebnat-alsafir-hzqmt": {
-  "at": 1794456136638,
+  "at": 1794482215478,
   "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Safir (2023) | Misafir (2021)",
-  "cands": [
-   {
-    "src": "tvmaze",
-    "ref": "70812",
-    "name": "Safir",
-    "premiered": "2023",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/474/1185427.jpg",
-    "sim": 0.53
-   },
-   {
-    "src": "tvmaze",
-    "ref": "58663",
-    "name": "Misafir",
-    "premiered": "2021",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/374/935871.jpg",
-    "sim": 0.47
-   }
-  ]
+  "note": "fuzzy name sim 1.00, episodes 52≈52",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "96305",
+  "name": "Sefirin Kızı",
+  "premiered": "2019",
+  "url": "https://image.tmdb.org/t/p/w780/dqtpveeOD1dt6KPEvYqNnTIp46H.jpg",
+  "w": 780,
+  "h": 1172,
+  "sharp": 87.69,
+  "ent": 7.66,
+  "score": 0.9,
+  "status": "matched",
+  "path": "data/posters/v3/66f92c257c64.webp",
+  "prev": "data/posters/v2/66f92c257c64.webp",
+  "bg": null
  },
  "kizim-kqvnt": {
   "at": 1794444857120,
@@ -356,16 +368,44 @@
   "bg": null
  },
  "mudeer-aamali-kvmts": {
-  "at": 1794456142003,
+  "at": 1794482218038,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for mudeer-aamali-kvmts"
+  "note": "fuzzy name sim 1.00, episodes 45≈45",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "108179",
+  "name": "Menajerimi Ara",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/cIIguNYOnnDYbDlRHeglzoMoJGN.jpg",
+  "w": 780,
+  "h": 1156,
+  "sharp": 73.98,
+  "ent": 7.31,
+  "score": 0.892,
+  "status": "matched",
+  "path": "data/posters/v3/eb594da499e9.webp",
+  "prev": "data/posters/v2/eb594da499e9.webp",
+  "bg": null
  },
  "mbtyu-rqsvn": {
-  "at": 1794456145868,
+  "at": 1794482220623,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for mbtyu-rqsvn"
+  "note": "fuzzy name sim 1.00, episodes 14≈14",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "203572",
+  "name": "Senden Daha Güzel",
+  "premiered": "2022",
+  "url": "https://image.tmdb.org/t/p/w780/dnb1O8b1OVAXneoS6XAbkA78Edy.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 42.09,
+  "ent": 7.04,
+  "score": 0.892,
+  "status": "matched",
+  "path": "data/posters/v3/4ff85da10583.webp",
+  "prev": "data/posters/v2/4ff85da10583.webp",
+  "bg": null
  },
  "seni-kalbime-hqvmt": {
   "at": 1794445800569,
@@ -455,39 +495,28 @@
   }
  },
  "guzel-ask-hqvmt": {
-  "at": 1794456148188,
+  "at": 1794482223202,
   "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Yedi güzel adam (2014) | Güzel Köylü (2014) | Benim Güzel Ailem (2023)",
-  "cands": [
-   {
-    "src": "tvmaze",
-    "ref": "56521",
-    "name": "Yedi güzel adam",
-    "premiered": "2014",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/342/856760.jpg",
-    "sim": 0.53
-   },
-   {
-    "src": "tvmaze",
-    "ref": "19000",
-    "name": "Güzel Köylü",
-    "premiered": "2014",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/65/164628.jpg",
-    "sim": 0.5
-   },
-   {
-    "src": "tvmaze",
-    "ref": "69235",
-    "name": "Benim Güzel Ailem",
-    "premiered": "2023",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/465/1163910.jpg",
-    "sim": 0.48
-   }
-  ]
+  "q": "guzel ask",
+  "note": "partial name, episodes 6≈6",
+  "conf": "medium",
+  "src": "tmdb",
+  "ref": "270538",
+  "name": "Güzel Aşklar Diyarı",
+  "premiered": "2024",
+  "url": "https://image.tmdb.org/t/p/w780/igRJyt842ceKg1pM0J7C9XiDDNb.jpg",
+  "w": 780,
+  "h": 1147,
+  "sharp": 72.5,
+  "ent": 7.45,
+  "score": 0.891,
+  "status": "matched",
+  "path": "data/posters/v3/ddc10ba4f373.webp",
+  "prev": "data/posters/v2/ddc10ba4f373.webp",
+  "bg": null
  },
  "azhar-thalj-vqstm": {
-  "at": 1794456153536,
+  "at": 1794482224666,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for azhar-thalj-vqstm"
@@ -512,10 +541,24 @@
   "bg": null
  },
  "alzalimah-wqnts": {
-  "at": 1794456157103,
+  "at": 1794482229465,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alzalimah-wqnts"
+  "note": "fuzzy name sim 1.00, episodes 39≈39",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "88024",
+  "name": "Zalim İstanbul",
+  "premiered": "2019",
+  "url": "https://image.tmdb.org/t/p/w780/11vDIfbzW9Yauuymz8QYYlpMDQv.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 73.76,
+  "ent": 7.77,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/a4967d4a9514.webp",
+  "prev": "data/posters/v2/a4967d4a9514.webp",
+  "bg": null
  },
  "eyvah-kqvhs": {
   "at": 1794445807913,
@@ -562,13 +605,27 @@
   }
  },
  "ismaani-kvnts": {
-  "at": 1794456159315,
+  "at": 1794482232008,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ismaani-kvnts"
+  "note": "fuzzy name sim 1.00, episodes 20≈20",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "205588",
+  "name": "Duy Beni",
+  "premiered": "2022",
+  "url": "https://image.tmdb.org/t/p/w780/eS91UPeKfZVETbfaq7XvZJbDlVo.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 60.64,
+  "ent": 6.88,
+  "score": 0.888,
+  "status": "matched",
+  "path": "data/posters/v3/9bc858fff02c.webp",
+  "prev": "data/posters/v2/9bc858fff02c.webp",
+  "bg": null
  },
  "adisevgi-ltqmp": {
-  "at": 1794456161659,
+  "at": 1794482234587,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for adisevgi-ltqmp"
@@ -640,7 +697,7 @@
   }
  },
  "fariha-lqvts": {
-  "at": 1794456164020,
+  "at": 1794482237467,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for fariha-lqvts"
@@ -694,22 +751,24 @@
   }
  },
  "hayat-sarkisi-mnbqt": {
-  "at": 1794456166277,
+  "at": 1794482240387,
   "tries": 1,
   "q": "hayat sarkisi",
   "conf": "high",
-  "src": "tvmaze",
-  "ref": "15471",
+  "src": "tmdb",
+  "ref": "66088",
   "name": "Hayat Şarkısı",
   "premiered": "2016",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/52/131231.jpg",
-  "w": 604,
-  "h": 377,
-  "sharp": 66.22,
-  "ent": 7.82,
-  "score": 0.722,
-  "status": "review",
-  "note": "candidate rejected: aspect"
+  "url": "https://image.tmdb.org/t/p/w780/tKnTX6OLF5NTtlz5OcA8Qzsu472.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 75.5,
+  "ent": 7.69,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/435af5ca79ab.webp",
+  "prev": "data/posters/v2/435af5ca79ab.webp",
+  "bg": null
  },
  "yaz-sarkisi-mqvpt": {
   "at": 1794445820983,
@@ -821,17 +880,31 @@
   }
  },
  "efsane-wqjtm": {
-  "at": 1794456168734,
+  "at": 1794482241533,
   "tries": 1,
   "q": "efsane",
   "status": "review",
-  "note": "partial ambiguous: Adı Efsane | Efsane T"
+  "note": "partial ambiguous: Adı Efsane | Efsane T | Tarihin Efsaneleri | Savaşın Efsaneleri | Savaşın Efsaneleri | Şehir Efsanesi | Adı Efsane | Efsane T"
  },
  "icimdekifirtina-pzvrl": {
-  "at": 1794456169723,
+  "at": 1794482242444,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for icimdekifirtina-pzvrl"
+  "note": "fuzzy name sim 1.00, episodes 6≈6",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "71562",
+  "name": "İçimdeki Fırtına",
+  "premiered": "2017",
+  "url": "https://image.tmdb.org/t/p/w780/me8077yoYoBp860yXSORd10hTdy.jpg",
+  "w": 780,
+  "h": 1147,
+  "sharp": 67.76,
+  "ent": 7.61,
+  "score": 0.892,
+  "status": "matched",
+  "path": "data/posters/v3/cf23b29572ae.webp",
+  "prev": "data/posters/v2/cf23b29572ae.webp",
+  "bg": null
  },
  "emanet-hqvrs": {
   "at": 1794445824901,
@@ -941,7 +1014,7 @@
   }
  },
  "alp-arslan-kqvdr": {
-  "at": 1794456171866,
+  "at": 1794482245477,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alp-arslan-kqvdr"
@@ -970,48 +1043,91 @@
   }
  },
  "baraa-kvnms": {
-  "at": 1794456174883,
+  "at": 1794482249545,
   "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Baraj (2020)",
-  "cands": [
-   {
-    "src": "tvmaze",
-    "ref": "46629",
-    "name": "Baraj",
-    "premiered": "2020",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/245/613625.jpg",
-    "sim": 0.75
-   }
-  ]
+  "note": "fuzzy name sim 1.00, episodes 13≈13",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "117829",
+  "name": "Masumiyet",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/wPCWNkvneniaMkn9Z1u8jc6ValX.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 79.39,
+  "ent": 7.55,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/adb0bdd1e115.webp",
+  "prev": "data/posters/v2/adb0bdd1e115.webp",
+  "bg": null
  },
  "baraem-hamra-tqvns": {
-  "at": 1794456178219,
+  "at": 1794482252720,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for baraem-hamra-tqvns"
+  "note": "fuzzy name sim 1.00, episodes 46≈46",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "241020",
+  "name": "Kızıl Goncalar",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/eDIRq0m7DVI7ZWf0bnS3DgeNwqw.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 103.3,
+  "ent": 6.82,
+  "score": 0.887,
+  "status": "matched",
+  "path": "data/posters/v3/eef2353bf5b4.webp",
+  "prev": "data/posters/v2/eef2353bf5b4.webp",
+  "bg": null
  },
  "barbaros-kqvmp": {
-  "at": 1794456182871,
+  "at": 1794482255283,
   "tries": 1,
   "q": "barbaros",
   "status": "review",
-  "note": "partial ambiguous: Barbaroslar: Akdeniz'in Kılıcı | Barbaros Hayreddin: Sultanın Fermanı"
+  "note": "partial ambiguous: Barbaros Hayreddin: Sultanın Fermanı | Barbaros Tapan'la Hayallerin İzinde | Barbaroslar: Akdeniz'in Kılıcı | Barbaroslar: Akdeniz'in Kılıcı | Barbaros Hayreddin: Sultanın Fermanı"
  },
  "kizilelma-vsrqm": {
-  "at": 1794456183592,
+  "at": 1794482256198,
   "tries": 1,
   "q": "kizilelma",
-  "status": "review",
-  "note": "partial name \"Kızılelma: Bir Fetih Öyküsü\" but episodes 8 vs 19",
-  "name": "Kızılelma: Bir Fetih Öyküsü",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/470/1177021.jpg"
+  "conf": "high",
+  "src": "tmdb",
+  "ref": "216964",
+  "name": "Kızılelma",
+  "premiered": "2014",
+  "url": "https://image.tmdb.org/t/p/w780/uoMjYLfeKfLxa8E5DCt3GAAeaT7.jpg",
+  "w": 780,
+  "h": 1040,
+  "sharp": 77.47,
+  "ent": 7.17,
+  "score": 0.839,
+  "status": "matched",
+  "path": "data/posters/v3/1f9053d7dcdb.webp",
+  "prev": "data/posters/v2/1f9053d7dcdb.webp",
+  "bg": null
  },
  "kara-dut-vqrsm": {
-  "at": 1794456185013,
+  "at": 1794482257463,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for kara-dut-vqrsm"
+  "note": "fuzzy name sim 1.00, episodes 6≈6",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "270775",
+  "name": "Karadut",
+  "premiered": "2024",
+  "url": "https://image.tmdb.org/t/p/w780/AijcLjhfUtDN3nC5Wiv2cReEe4A.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 78.31,
+  "ent": 7.52,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/4e068cddd0d1.webp",
+  "prev": "data/posters/v2/4e068cddd0d1.webp",
+  "bg": null
  },
  "servet-lqtmv": {
   "at": 1794444916874,
@@ -1153,10 +1269,24 @@
   }
  },
  "hofra-kqmvt": {
-  "at": 1794456188662,
+  "at": 1794482261313,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for hofra-kqmvt"
+  "note": "fuzzy name sim 1.00, episodes 131≈132",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "74823",
+  "name": "Çukur",
+  "premiered": "2017",
+  "url": "https://image.tmdb.org/t/p/w780/dyFmwlAQCEUNQ1JuFothxO1G0zz.jpg",
+  "w": 780,
+  "h": 1172,
+  "sharp": 70.24,
+  "ent": 7.49,
+  "score": 0.9,
+  "status": "matched",
+  "path": "data/posters/v3/46242f1d7a94.webp",
+  "prev": "data/posters/v2/46242f1d7a94.webp",
+  "bg": null
  },
  "ruya-qmbrt": {
   "at": 1794444929327,
@@ -1182,14 +1312,14 @@
   }
  },
  "hayat-vqrnt": {
-  "at": 1794456191241,
+  "at": 1794482263894,
   "tries": 1,
   "q": "hayat",
   "status": "review",
-  "note": "partial ambiguous: Hayat Şarkısı | Hayat Sırları | Yeni Hayat | Tatlı Hayat | Hayat Yolunda | Hayat Bilgisi | Acı Hayat | O Hayat Benim | Hayat Sevince Güzel | Hayat Bazen Tatlıdır"
+  "note": "partial ambiguous: Hayat Bilgisi | Tatlı Hayat | Leyla: Hayat... Aşk... Adalet... | Aci hayat | O Hayat Benim | Hayat Şarkısı | Yeni Hayat | Elde Var Hayat | Hayat Devam Ediyor | Merhaba Hayat | Yeni Hayat | Hayat Türküsü | Hayat Yolunda | Gelsin Hayat Bildiği Gibi | Hayat Ağacı | Hayat Sırları | Hayat Şarkısı | Hayat Sırları | Yeni Hayat | Tatlı Hayat | Hayat Yolunda | Acı Hayat | Hayat Bilgisi | O Hayat Benim | Hayat Sevince Güzel | Hayat Bazen Tatlıdır"
  },
  "lissw-hqvnt": {
-  "at": 1794456192088,
+  "at": 1794482264805,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lissw-hqvnt"
@@ -1300,13 +1430,11 @@
   }
  },
  "sancak-vqmrs": {
-  "at": 1794456194427,
+  "at": 1794482267689,
   "tries": 1,
   "q": "sancak",
   "status": "review",
-  "note": "partial name \"Al Sancak\" but episodes 19 vs 7",
-  "name": "Al Sancak",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/450/1126064.jpg"
+  "note": "partial ambiguous: Al Sancak | Al Sancak"
  },
  "merhamet-jqvns": {
   "at": 1794444942124,
@@ -1397,10 +1525,24 @@
   }
  },
  "sadd-kpvqs": {
-  "at": 1794456196068,
+  "at": 1794482268603,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for sadd-kpvqs"
+  "note": "fuzzy name sim 1.00, episodes 39≈39",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "100628",
+  "name": "Baraj",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/uNGRBy4USxymH2XBp8szjPLZEBw.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 74.74,
+  "ent": 7.62,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/0ba4be7009c6.webp",
+  "prev": "data/posters/v2/0ba4be7009c6.webp",
+  "bg": null
  },
  "aile-saadeti-puren": {
   "at": 1794453326016,
@@ -1423,10 +1565,24 @@
   "bg": null
  },
  "alsallah-vqmts": {
-  "at": 1794456198421,
+  "at": 1794482271232,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alsallah-vqmts"
+  "note": "fuzzy name sim 1.00, episodes 40≈40",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "233492",
+  "name": "Kirli Sepeti",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/o4MLJkl02LUMC5cLPjSjYpUKlBI.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 83.72,
+  "ent": 5.71,
+  "score": 0.865,
+  "status": "matched",
+  "path": "data/posters/v3/6486edc492c3.webp",
+  "prev": "data/posters/v2/6486edc492c3.webp",
+  "bg": null
  },
  "kosem-sldqf": {
   "at": 1794445852740,
@@ -1557,10 +1713,24 @@
   "bg": null
  },
  "sayf-akhir-fqvms": {
-  "at": 1794456200680,
+  "at": 1794482274600,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for sayf-akhir-fqvms"
+  "note": "fuzzy name sim 1.00, episodes 26≈26",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "115464",
+  "name": "Son Yaz",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/DpAVYQzqCJVwwlwf2PdFZR3FC2.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 58.83,
+  "ent": 7.54,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/db701a1da144.webp",
+  "prev": "data/posters/v2/db701a1da144.webp",
+  "bg": null
  },
  "misafir-hqvts": {
   "at": 1794444960140,
@@ -1586,29 +1756,43 @@
   }
  },
  "altayer-alrafraf-mqvts": {
-  "at": 1794456203848,
+  "at": 1794482277191,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for altayer-alrafraf-mqvts"
  },
  "sosyete-jrqmv": {
-  "at": 1794456207854,
+  "at": 1794482281907,
   "tries": 1,
   "q": "sosyete",
   "status": "review",
-  "note": "partial ambiguous: Yüksek Sosyete | Jet Sosyete"
+  "note": "partial ambiguous: Jet Sosyete | Yüksek Sosyete | Yüksek Sosyete | Jet Sosyete"
  },
  "tabeeb-zplon": {
-  "at": 1794456208591,
+  "at": 1794482282826,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tabeeb-zplon"
  },
  "tabeeb-moejiza-kvmqs": {
-  "at": 1794456210918,
+  "at": 1794482285926,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tabeeb-moejiza-kvmqs"
+  "note": "fuzzy name sim 1.00, episodes 64≈64",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "92967",
+  "name": "Mucize Doktor",
+  "premiered": "2019",
+  "url": "https://image.tmdb.org/t/p/w780/zpXb8OihnIfSIVJIdds7APfLzZR.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 55.33,
+  "ent": 7.11,
+  "score": 0.893,
+  "status": "matched",
+  "path": "data/posters/v3/7ed59f5e4ba8.webp",
+  "prev": "data/posters/v2/7ed59f5e4ba8.webp",
+  "bg": null
  },
  "cocuk-jrftb": {
   "at": 1794444967545,
@@ -1678,10 +1862,24 @@
   }
  },
  "alaila-aqvnt": {
-  "at": 1794456214615,
+  "at": 1794482288851,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alaila-aqvnt"
+  "note": "fuzzy name sim 1.00, episodes 30≈30",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "219446",
+  "name": "Aile",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/cjsZQOWCTeOiqwtuTqm9bFZ9lIM.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 61.73,
+  "ent": 7.23,
+  "score": 0.895,
+  "status": "matched",
+  "path": "data/posters/v3/9f4b82484488.webp",
+  "prev": "data/posters/v2/9f4b82484488.webp",
+  "bg": null
  },
  "ne-yapmaz-kvprs": {
   "at": 1794445867350,
@@ -1705,7 +1903,7 @@
   "bg": null
  },
  "abqari-kntvs": {
-  "at": 1794456216862,
+  "at": 1794482291477,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for abqari-kntvs"
@@ -1774,10 +1972,24 @@
   "bg": null
  },
  "forbd-lqxem": {
-  "at": 1794456219022,
+  "at": 1794482294829,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for forbd-lqxem"
+  "note": "fuzzy name sim 1.00, episodes 79≈79",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "17635",
+  "name": "Aşk-ı Memnu",
+  "premiered": "2008",
+  "url": "https://image.tmdb.org/t/p/w780/qaa811KGlxqeYqbgS5vK0cXKG9L.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 88.69,
+  "ent": 5.45,
+  "score": 0.86,
+  "status": "matched",
+  "path": "data/posters/v3/2d87dc0d1c58.webp",
+  "prev": "data/posters/v2/2d87dc0d1c58.webp",
+  "bg": null
  },
  "inadina-ask-vpqsm": {
   "at": 1794444982414,
@@ -1880,10 +2092,24 @@
   "bg": null
  },
  "alanqaa-lqvms": {
-  "at": 1794456221241,
+  "at": 1794482297411,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alanqaa-lqvms"
+  "note": "fuzzy name sim 1.00, episodes 26≈26",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "98633",
+  "name": "Zümrüdüanka",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/9OA4JcQWmA5wtYxGJXAHgRgb9WL.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 82.4,
+  "ent": 7.77,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/19943bed3d71.webp",
+  "prev": "data/posters/v2/19943bed3d71.webp",
+  "bg": null
  },
  "soz-kqvms": {
   "at": 1794444993679,
@@ -1952,10 +2178,24 @@
   "bg": null
  },
  "alghurfah-kvstm": {
-  "at": 1794456223687,
+  "at": 1794482299996,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alghurfah-kvstm"
+  "note": "fuzzy name sim 1.00, episodes 65≈65",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "69306",
+  "name": "No: 309",
+  "premiered": "2016",
+  "url": "https://image.tmdb.org/t/p/w780/jYOcAeNQgSj7gff73Lmc2Pdd1QU.jpg",
+  "w": 780,
+  "h": 1137,
+  "sharp": 57.78,
+  "ent": 7.08,
+  "score": 0.88,
+  "status": "matched",
+  "path": "data/posters/v3/d1fd7db4fb2c.webp",
+  "prev": "data/posters/v2/d1fd7db4fb2c.webp",
+  "bg": null
  },
  "kirmizi-oda-sqvnt": {
   "at": 1794444998695,
@@ -2045,11 +2285,11 @@
   "bg": null
  },
  "zengin-kqvmt": {
-  "at": 1794456226175,
+  "at": 1794482302423,
   "tries": 1,
   "q": "zengin",
   "status": "review",
-  "note": "partial ambiguous: Zengin ve Yoksul | Zengin Kiz Fakir Oglan"
+  "note": "partial ambiguous: Zengin Kız Fakir Oğlan | Zengin ve Yoksul | Zengin ve Yoksul | Zengin Kiz Fakir Oglan"
  },
  "avlu-kqvms": {
   "at": 1794445007251,
@@ -2156,7 +2396,7 @@
   "bg": null
  },
  "karayazi-pwlqs": {
-  "at": 1794456226916,
+  "at": 1794482303333,
   "tries": 1,
   "status": "review",
   "note": "fuzzy candidates (episodes mismatch/ambiguous): Karadayı (2012)",
@@ -2214,10 +2454,24 @@
   "bg": null
  },
  "alqada-aqvtn": {
-  "at": 1794456229804,
+  "at": 1794482306935,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alqada-aqvtn"
+  "note": "fuzzy name sim 1.00, episodes 95≈95",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "133490",
+  "name": "Yargı",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/mJQtuR7KkgnyW7sUszRf3Kc2cdJ.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 81.63,
+  "ent": 6.75,
+  "score": 0.886,
+  "status": "matched",
+  "path": "data/posters/v3/d837d43e00a3.webp",
+  "prev": "data/posters/v2/d837d43e00a3.webp",
+  "bg": null
  },
  "altin-kafes-wqvns": {
   "at": 1794445018308,
@@ -2287,22 +2541,24 @@
   }
  },
  "yalanci-vqrms": {
-  "at": 1794456232148,
+  "at": 1794482309545,
   "tries": 1,
   "q": "yalanci",
   "conf": "high",
-  "src": "tvmaze",
-  "ref": "56917",
+  "src": "tmdb",
+  "ref": "133020",
   "name": "Yalancı",
   "premiered": "2021",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/355/888833.jpg",
-  "w": 640,
-  "h": 640,
-  "sharp": 54.24,
-  "ent": 6.61,
-  "score": 0.72,
-  "status": "review",
-  "note": "candidate rejected: aspect"
+  "url": "https://image.tmdb.org/t/p/w780/A8aXFvNIEO9I4AJe8ToVeF2pLSW.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 56.36,
+  "ent": 7.25,
+  "score": 0.896,
+  "status": "matched",
+  "path": "data/posters/v3/fe4f10207123.webp",
+  "prev": "data/posters/v2/fe4f10207123.webp",
+  "bg": null
  },
  "iki-yalanci-vrdem": {
   "at": 1794445024748,
@@ -2347,10 +2603,24 @@
   }
  },
  "kathba-kqvsm": {
-  "at": 1794456234919,
+  "at": 1794482310808,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for kathba-kqvsm"
+  "note": "fuzzy name sim 1.00, episodes 30≈30",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "252791",
+  "name": "Yalan",
+  "premiered": "2024",
+  "url": "https://image.tmdb.org/t/p/w780/rj0XWFDtyoBBL7afMiWu7Kupfzp.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 54.58,
+  "ent": 7.24,
+  "score": 0.896,
+  "status": "matched",
+  "path": "data/posters/v3/6621793954f7.webp",
+  "prev": "data/posters/v2/6621793954f7.webp",
+  "bg": null
  },
  "haysiyet": {
   "at": 1794445028823,
@@ -2441,10 +2711,24 @@
   }
  },
  "lahib-kqvms": {
-  "at": 1794456237143,
+  "at": 1794482313376,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for lahib-kqvms"
+  "note": "fuzzy name sim 1.00, episodes 28≈28",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "111414",
+  "name": "Alev Alev",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/3cAF6cNR8VhhEgZirjLBk4q6xpj.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 53.77,
+  "ent": 6.22,
+  "score": 0.875,
+  "status": "matched",
+  "path": "data/posters/v3/f77c041be41b.webp",
+  "prev": "data/posters/v2/f77c041be41b.webp",
+  "bg": null
  },
  "sevgili-gecmis-kqvms": {
   "at": 1794445035169,
@@ -2489,10 +2773,24 @@
   "bg": null
  },
  "motawahesh-fqnst": {
-  "at": 1794456239276,
+  "at": 1794482316006,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for motawahesh-fqnst"
+  "note": "fuzzy name sim 1.00, episodes 51≈51",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "231503",
+  "name": "Yabani",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/apZbUvF9YKowfH1p62ICIu9SqUT.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 82.64,
+  "ent": 7.33,
+  "score": 0.897,
+  "status": "matched",
+  "path": "data/posters/v3/0ed167c3f13a.webp",
+  "prev": "data/posters/v2/0ed167c3f13a.webp",
+  "bg": null
  },
  "isimsizler-hqsmv": {
   "at": 1794445040738,
@@ -2623,7 +2921,7 @@
   }
  },
  "tlcty-fmsqr": {
-  "at": 1794456241532,
+  "at": 1794482318561,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tlcty-fmsqr"
@@ -2671,10 +2969,24 @@
   }
  },
  "mashbooh-kqvns": {
-  "at": 1794456243910,
+  "at": 1794482321492,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for mashbooh-kqvns"
+  "note": "fuzzy name sim 1.00, episodes 5≈5",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "302928",
+  "name": "Sakıncalı",
+  "premiered": "2025",
+  "url": "https://image.tmdb.org/t/p/w780/azacGGRNAp3tRO197rEznDTdg7s.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 73.69,
+  "ent": 7.8,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/093c3991f377.webp",
+  "prev": "data/posters/v2/093c3991f377.webp",
+  "bg": null
  },
  "sahipsizler-qerul": {
   "at": 1794453372073,
@@ -2701,22 +3013,24 @@
   }
  },
  "ogretmen-vqstm": {
-  "at": 1794456246242,
+  "at": 1794482324190,
   "tries": 1,
   "q": "ogretmen",
   "conf": "high",
-  "src": "tvmaze",
-  "ref": "46363",
+  "src": "tmdb",
+  "ref": "99616",
   "name": "Öğretmen",
   "premiered": "2020",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/244/610827.jpg",
-  "w": 1079,
-  "h": 1079,
-  "sharp": 89.04,
-  "ent": 7.05,
-  "score": 0.891,
-  "status": "review",
-  "note": "candidate rejected: aspect"
+  "url": "https://image.tmdb.org/t/p/w780/6xv1ne0LwgG1j6cVh4pNMNe0791.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 88.51,
+  "ent": 5.75,
+  "score": 0.866,
+  "status": "matched",
+  "path": "data/posters/v3/e1eb1f498b22.webp",
+  "prev": "data/posters/v2/e1eb1f498b22.webp",
+  "bg": null
  },
  "omur-usta": {
   "at": 1794445055626,
@@ -2786,13 +3100,24 @@
   }
  },
  "yasak-mqvst": {
-  "at": 1794456249414,
+  "at": 1794482325435,
   "tries": 1,
   "q": "yasak",
-  "status": "review",
-  "note": "partial name \"Yasak Elma\" but episodes 177 vs 9",
-  "name": "Yasak Elma",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/366/916950.jpg"
+  "conf": "high",
+  "src": "tmdb",
+  "ref": "112369",
+  "name": "Yasak",
+  "premiered": "2014",
+  "url": "https://image.tmdb.org/t/p/w780/9LEofhcLOOnwHANaE6qctGxgBoC.jpg",
+  "w": 780,
+  "h": 1040,
+  "sharp": 89.62,
+  "ent": 7.37,
+  "score": 0.843,
+  "status": "matched",
+  "path": "data/posters/v3/c34a160eb9a9.webp",
+  "prev": "data/posters/v2/c34a160eb9a9.webp",
+  "bg": null
  },
  "teskilat-hqvms": {
   "at": 1794445060555,
@@ -2906,7 +3231,7 @@
   }
  },
  "yildizlarsahidim-bqtsv": {
-  "at": 1794456250848,
+  "at": 1794482326503,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yildizlarsahidim-bqtsv"
@@ -2973,34 +3298,64 @@
   "bg": null
  },
  "rengarenk-hvstm": {
-  "at": 1794456252996,
+  "at": 1794482329392,
   "tries": 1,
   "q": "rengarenk",
   "conf": "high",
-  "src": "tvmaze",
-  "ref": "19265",
+  "src": "tmdb",
+  "ref": "112665",
   "name": "Rengarenk",
   "premiered": "2016",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/70/175781.jpg",
-  "w": 960,
-  "h": 960,
-  "sharp": 48.8,
-  "ent": 5.23,
-  "score": 0.837,
-  "status": "review",
-  "note": "candidate rejected: aspect"
+  "url": "https://image.tmdb.org/t/p/w780/kRQbNrcOyRT3DAY7KNsLZar5Mzu.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 59.16,
+  "ent": 6.77,
+  "score": 0.886,
+  "status": "matched",
+  "path": "data/posters/v3/8d71306e5f94.webp",
+  "prev": "data/posters/v2/8d71306e5f94.webp",
+  "bg": null
  },
  "alyaka-wqfnt": {
-  "at": 1794456256861,
+  "at": 1794482330623,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alyaka-wqfnt"
+  "note": "fuzzy name sim 1.00, episodes 26≈26",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "204925",
+  "name": "Tozluyaka",
+  "premiered": "2022",
+  "url": "https://image.tmdb.org/t/p/w780/eanNfgHPl7en5DQWyK2zKyLoCJf.jpg",
+  "w": 780,
+  "h": 1156,
+  "sharp": 76.25,
+  "ent": 7.6,
+  "score": 0.896,
+  "status": "matched",
+  "path": "data/posters/v3/d353fce16dd3.webp",
+  "prev": "data/posters/v2/d353fce16dd3.webp",
+  "bg": null
  },
  "yakoot-fqmts": {
-  "at": 1794456259027,
+  "at": 1794482333239,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yakoot-fqmts"
+  "note": "fuzzy name sim 1.00, episodes 26≈26",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "231092",
+  "name": "Safir",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/q4DSaLBt3ioAWGyRPaKfW9Ei6NY.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 63.18,
+  "ent": 7.52,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/5f8d42eb610e.webp",
+  "prev": "data/posters/v2/5f8d42eb610e.webp",
+  "bg": null
  },
  "8-gun-plqsm": {
   "at": 1794445077123,
@@ -3154,7 +3509,7 @@
   }
  },
  "atroq-babi-fqvms": {
-  "at": 1794456261578,
+  "at": 1794482336115,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for atroq-babi-fqvms"
@@ -3315,16 +3670,45 @@
   "bg": null
  },
  "babel-nqfds": {
-  "at": 1794456264453,
+  "at": 1794482339911,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for babel-nqfds"
+  "note": "fuzzy name sim 1.00, episodes 20≈20",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "97293",
+  "name": "Babil",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/brOAmVFqatYXEctz4nKJjY9jaQn.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 82.13,
+  "ent": 7.39,
+  "score": 0.899,
+  "status": "matched",
+  "path": "data/posters/v3/7c1ef9790277.webp",
+  "prev": "data/posters/v2/7c1ef9790277.webp",
+  "bg": null
  },
  "yeni-baslangiclar-kqvms": {
-  "at": 1794456266932,
+  "at": 1794482342544,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yeni-baslangiclar-kqvms"
+  "q": "yeni baslangiclar",
+  "note": "partial name, episodes 13≈13",
+  "conf": "medium",
+  "src": "tmdb",
+  "ref": "204076",
+  "name": "4N1K Yeni Başlangıçlar",
+  "premiered": "2019",
+  "url": "https://image.tmdb.org/t/p/w780/5CrrJF03aGr1Vrp6gL46SBqwCeB.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 90.15,
+  "ent": 6.8,
+  "score": 0.887,
+  "status": "matched",
+  "path": "data/posters/v3/d2b5d0498a73.webp",
+  "prev": "data/posters/v2/d2b5d0498a73.webp",
+  "bg": null
  },
  "hukumsuz-pqvrn": {
   "at": 1794445098227,
@@ -3633,7 +4017,7 @@
   }
  },
  "uckizkardes-mplfv": {
-  "at": 1794456269903,
+  "at": 1794482344000,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for uckizkardes-mplfv"
@@ -3706,28 +4090,44 @@
   }
  },
  "cesur-ve-guzel-tmqvs": {
-  "at": 1794456272154,
+  "at": 1794482347122,
   "tries": 1,
   "q": "cesur ve guzel",
   "conf": "high",
-  "src": "tvmaze",
-  "ref": "22679",
+  "src": "tmdb",
+  "ref": "68848",
   "name": "Cesur ve Güzel",
   "premiered": "2016",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/83/209868.jpg",
-  "w": 710,
-  "h": 716,
-  "sharp": 71.74,
-  "ent": 6.64,
-  "score": 0.752,
-  "status": "review",
-  "note": "candidate rejected: aspect"
+  "url": "https://image.tmdb.org/t/p/w780/fm62PMeJDGsyciBd24UXXms7kjg.jpg",
+  "w": 780,
+  "h": 1086,
+  "sharp": 81.91,
+  "ent": 7.81,
+  "score": 0.867,
+  "status": "matched",
+  "path": "data/posters/v3/5f3b69fb18fc.webp",
+  "prev": "data/posters/v2/5f3b69fb18fc.webp",
+  "bg": null
  },
  "gul-jamal-fqnts": {
-  "at": 1794456275328,
+  "at": 1794482348410,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for gul-jamal-fqnts"
+  "note": "fuzzy name sim 0.57, episodes 13≈13",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "224054",
+  "name": "Gülcemal",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/lo4FW4fiXfdjfR64Ucd841EIulR.jpg",
+  "w": 780,
+  "h": 1091,
+  "sharp": 86.75,
+  "ent": 6.86,
+  "score": 0.856,
+  "status": "matched",
+  "path": "data/posters/v3/8984df1e643f.webp",
+  "prev": "data/posters/v2/8984df1e643f.webp",
+  "bg": null
  },
  "gulperi-kqvtn": {
   "at": 1794445934837,
@@ -3839,10 +4239,24 @@
   }
  },
  "hob-bila-hodood-sqvjm": {
-  "at": 1794456283211,
+  "at": 1794482352776,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for hob-bila-hodood-sqvjm"
+  "note": "fuzzy name sim 1.00, episodes 63≈63",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "231100",
+  "name": "Hudutsuz Sevda",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/n371aYjgVsm0CfYC3poK3jHpmml.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 81.89,
+  "ent": 7.75,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/c5b356519328.webp",
+  "prev": "data/posters/v2/c5b356519328.webp",
+  "bg": null
  },
  "hayatimin-aski-lrqts": {
   "at": 1794445136112,
@@ -3891,10 +4305,24 @@
   }
  },
  "hob-fi-alaliyah-jqvms": {
-  "at": 1794456287479,
+  "at": 1794482355370,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for hob-fi-alaliyah-jqvms"
+  "note": "fuzzy name sim 1.00, episodes 16≈16",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "105749",
+  "name": "Çatı Katı Aşk",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/or2RzR7lyatdYfP4UaKmTAJQECO.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 72.18,
+  "ent": 7.82,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/58f44c5a3610.webp",
+  "prev": "data/posters/v2/58f44c5a3610.webp",
+  "bg": null
  },
  "kiralik-ask-vqstm": {
   "at": 1794445140375,
@@ -3939,10 +4367,24 @@
   "bg": null
  },
  "hob-mantiq-fqvns": {
-  "at": 1794456291409,
+  "at": 1794482358461,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for hob-mantiq-fqvns"
+  "note": "fuzzy name sim 1.00, episodes 42≈42",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "127588",
+  "name": "Aşk Mantık İntikam",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/c2grdommBcs6a0SsSYqMBY0q5p2.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 72.11,
+  "ent": 7.49,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/18c7fe1764fa.webp",
+  "prev": "data/posters/v2/18c7fe1764fa.webp",
+  "bg": null
  },
  "ask-ve-gozyasi-qorim": {
   "at": 1794453420500,
@@ -4031,7 +4473,7 @@
   }
  },
  "olenekadar-rmpts": {
-  "at": 1794456294478,
+  "at": 1794482361049,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for olenekadar-rmpts"
@@ -4079,10 +4521,24 @@
   "bg": null
  },
  "hijrah-waraqa-kvmqs": {
-  "at": 1794456296613,
+  "at": 1794482364133,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for hijrah-waraqa-kvmqs"
+  "note": "fuzzy name sim 1.00, episodes 19≈19",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "246701",
+  "name": "Taş Kağıt Makas",
+  "premiered": "2024",
+  "url": "https://image.tmdb.org/t/p/w780/rgnosp903TJAknWYWCLIVd79Bdr.jpg",
+  "w": 780,
+  "h": 1156,
+  "sharp": 73.39,
+  "ent": 7.34,
+  "score": 0.893,
+  "status": "matched",
+  "path": "data/posters/v3/4e5201908687.webp",
+  "prev": "data/posters/v2/4e5201908687.webp",
+  "bg": null
  },
  "gullerin-savasi-hxtpm": {
   "at": 1794445154736,
@@ -4146,16 +4602,30 @@
   "bg": null
  },
  "bodrummasali-rgxne": {
-  "at": 1794456300416,
+  "at": 1794482368353,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for bodrummasali-rgxne"
  },
  "jazeera-kvmts": {
-  "at": 1794456302661,
+  "at": 1794482371234,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for jazeera-kvmts"
+  "note": "fuzzy name sim 1.00, episodes 25≈25",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "126255",
+  "name": "Ada Masalı",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/yUXAd1ANatRp8NkYzqsQsK5Q6Qo.jpg",
+  "w": 780,
+  "h": 1114,
+  "sharp": 60.04,
+  "ent": 7.58,
+  "score": 0.879,
+  "status": "matched",
+  "path": "data/posters/v3/4b32cad91d06.webp",
+  "prev": "data/posters/v2/4b32cad91d06.webp",
+  "bg": null
  },
  "bir-peri-masali-vqtns": {
   "at": 1794445161238,
@@ -4181,11 +4651,19 @@
   }
  },
  "yazin-hikayesi-vqstm": {
-  "at": 1794456304868,
+  "at": 1794482373839,
   "tries": 1,
   "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Yılan Hikayesi () | Eski Hikâye (2013) | Bir Aşk Hikayesi (2013)",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Yılan Hikayesi (1999) | Yılan Hikayesi () | Eski Hikâye (2013)",
   "cands": [
+   {
+    "src": "tmdb",
+    "ref": "48311",
+    "name": "Yılan Hikayesi",
+    "premiered": "1999",
+    "url": "https://image.tmdb.org/t/p/w780/nY4OuufXxDTeU8tvvXIU66oxc1R.jpg",
+    "sim": 0.67
+   },
    {
     "src": "tvmaze",
     "ref": "54429",
@@ -4201,14 +4679,6 @@
     "premiered": "2013",
     "url": "https://static.tvmaze.com/uploads/images/original_untouched/342/856761.jpg",
     "sim": 0.57
-   },
-   {
-    "src": "tvmaze",
-    "ref": "18772",
-    "name": "Bir Aşk Hikayesi",
-    "premiered": "2013",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/64/162147.jpg",
-    "sim": 0.56
    }
   ]
  },
@@ -4427,10 +4897,24 @@
   "bg": null
  },
  "hayati-alraeaah-dvmqt": {
-  "at": 1794456311013,
+  "at": 1794482380166,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for hayati-alraeaah-dvmqt"
+  "note": "fuzzy name sim 1.00, episodes 30≈30",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "236215",
+  "name": "Şahane Hayatım",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/drOijryqI9aRl9tH3ZDxUI2lQCS.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 66.23,
+  "ent": 7.64,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/6390cab1a391.webp",
+  "prev": "data/posters/v2/6390cab1a391.webp",
+  "bg": null
  },
  "benim-hayatim-vqmts": {
   "at": 1794445178044,
@@ -4513,10 +4997,24 @@
   "bg": null
  },
  "khabbini-vqsmr": {
-  "at": 1794456315681,
+  "at": 1794482383099,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for khabbini-vqsmr"
+  "note": "fuzzy name sim 1.00, episodes 26≈26",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "238711",
+  "name": "Sakla Beni",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/sGOnWHEhyKdjJsjDeBTmXlyKkzC.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 41.46,
+  "ent": 6.64,
+  "score": 0.884,
+  "status": "matched",
+  "path": "data/posters/v3/754024b26be4.webp",
+  "prev": "data/posters/v2/754024b26be4.webp",
+  "bg": null
  },
  "babamin-gunahlari-sqvmr": {
   "at": 1794445190783,
@@ -4562,16 +5060,30 @@
   }
  },
  "don-an-tashoor-kvmts": {
-  "at": 1794456318129,
+  "at": 1794482385639,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for don-an-tashoor-kvmts"
  },
  "deen-rooh-fqvts": {
-  "at": 1794456321926,
+  "at": 1794482390354,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for deen-rooh-fqvts"
+  "note": "fuzzy name sim 1.00, episodes 28≈28",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "278693",
+  "name": "Can Borcu",
+  "premiered": "2024",
+  "url": "https://image.tmdb.org/t/p/w780/5hy803SVfX3Wbig6xwnADJl50lU.jpg",
+  "w": 780,
+  "h": 1084,
+  "sharp": 64.68,
+  "ent": 7.47,
+  "score": 0.865,
+  "status": "matched",
+  "path": "data/posters/v3/67a162c49560.webp",
+  "prev": "data/posters/v2/67a162c49560.webp",
+  "bg": null
  },
  "insanlik-sucu-hvqmp": {
   "at": 1794445195850,
@@ -4593,13 +5105,13 @@
   "bg": null
  },
  "ogulkokusu-fzqtm": {
-  "at": 1794456324174,
+  "at": 1794482392851,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ogulkokusu-fzqtm"
  },
  "alsunduq-fqmts": {
-  "at": 1794456326311,
+  "at": 1794482395734,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alsunduq-fqmts"
@@ -4666,10 +5178,24 @@
   "bg": null
  },
  "risalat-wadae-lmqst": {
-  "at": 1794456328628,
+  "at": 1794482398610,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for risalat-wadae-lmqst"
+  "note": "fuzzy name sim 1.00, episodes 24≈24",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "221244",
+  "name": "Veda Mektubu",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/uf8OXLo0Q1qmtRUoWyXscAK29Ix.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 59.83,
+  "ent": 6.79,
+  "score": 0.887,
+  "status": "matched",
+  "path": "data/posters/v3/4da332f55755.webp",
+  "prev": "data/posters/v2/4da332f55755.webp",
+  "bg": null
  },
  "kader-baglari-vqmrs": {
   "at": 1794445967323,
@@ -4744,10 +5270,24 @@
   }
  },
  "zahret-althalouth-kqvmt": {
-  "at": 1794456332764,
+  "at": 1794482401278,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for zahret-althalouth-kqvmt"
+  "note": "fuzzy name sim 1.00, episodes 69≈69",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "87623",
+  "name": "Hercai",
+  "premiered": "2019",
+  "url": "https://image.tmdb.org/t/p/w780/1S7mwCA8sCDuEK5QQCNmsx2GtmO.jpg",
+  "w": 780,
+  "h": 1172,
+  "sharp": 76.5,
+  "ent": 7.89,
+  "score": 0.9,
+  "status": "matched",
+  "path": "data/posters/v3/2b5ce691373d.webp",
+  "prev": "data/posters/v2/2b5ce691373d.webp",
+  "bg": null
  },
  "uvey-anne-vqrts": {
   "at": 1794445212438,
@@ -4929,16 +5469,30 @@
   "bg": null
  },
  "sayaejebak-lqmnt": {
-  "at": 1794456336674,
+  "at": 1794482403879,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for sayaejebak-lqmnt"
  },
  "shakhs-akhar-vqnts": {
-  "at": 1794456338919,
+  "at": 1794482406748,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for shakhs-akhar-vqnts"
+  "note": "fuzzy name sim 1.00, episodes 16≈16",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "233314",
+  "name": "Bambaşka Biri",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/3SdENhKLj9yYuSbPAakCVzrt1PE.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 80.52,
+  "ent": 7.24,
+  "score": 0.896,
+  "status": "matched",
+  "path": "data/posters/v3/cf8da84b8d9a.webp",
+  "prev": "data/posters/v2/cf8da84b8d9a.webp",
+  "bg": null
  },
  "kizilcik-serbeti-satel": {
   "at": 1794453457928,
@@ -5068,10 +5622,24 @@
   }
  },
  "tuyoor-annar-kqvsm": {
-  "at": 1794456342928,
+  "at": 1794482409428,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tuyoor-annar-kqvsm"
+  "note": "fuzzy name sim 1.00, episodes 54≈54",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "218265",
+  "name": "Ateş Kuşları",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/njfi2WVxbE4eTMjNYqRdEuIC5Dc.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 60.29,
+  "ent": 7.66,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/ed1645c57b6b.webp",
+  "prev": "data/posters/v2/ed1645c57b6b.webp",
+  "bg": null
  },
  "kanatsiz-kuslar-sqtmv": {
   "at": 1794445236074,
@@ -5317,7 +5885,7 @@
   }
  },
  "evli-cgowr": {
-  "at": 1794456352644,
+  "at": 1794482412292,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for evli-cgowr"
@@ -5344,19 +5912,33 @@
   "bg": null
  },
  "banasevmeyi-kmfrs": {
-  "at": 1794456355007,
+  "at": 1794482415188,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for banasevmeyi-kmfrs"
  },
  "ali-riza-hqmnt": {
-  "at": 1794456357351,
+  "at": 1794482418063,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ali-riza-hqmnt"
+  "note": "fuzzy name sim 1.00, episodes 30≈30",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "108382",
+  "name": "Arıza",
+  "premiered": "2020",
+  "url": "https://image.tmdb.org/t/p/w780/dyEdcBHpbVGFUWvfBmcZ6q5DXgd.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 61.48,
+  "ent": 7.02,
+  "score": 0.891,
+  "status": "matched",
+  "path": "data/posters/v3/aa2ab5220544.webp",
+  "prev": "data/posters/v2/aa2ab5220544.webp",
+  "bg": null
  },
  "masharef-allayl-fqmts": {
-  "at": 1794456359701,
+  "at": 1794482420676,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for masharef-allayl-fqmts"
@@ -5427,10 +6009,24 @@
   }
  },
  "kalbahar-aleswad-mqvts": {
-  "at": 1794456363985,
+  "at": 1794482425427,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for kalbahar-aleswad-mqvts"
+  "note": "fuzzy name sim 1.00, episodes 16≈16",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "297058",
+  "name": "Gözleri Karadeniz",
+  "premiered": "2025",
+  "url": "https://image.tmdb.org/t/p/w780/ifPAbnQepQy2dWSjIyDFNpb7I8h.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 78.58,
+  "ent": 7.6,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/e055be8d3703.webp",
+  "prev": "data/posters/v2/e055be8d3703.webp",
+  "bg": null
  },
  "cift-kisilik-oda-fatum": {
   "at": 1794453479636,
@@ -5453,10 +6049,24 @@
   "bg": null
  },
  "ghareeb-kvmtp": {
-  "at": 1794456367891,
+  "at": 1794482428197,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ghareeb-kvmtp"
+  "note": "fuzzy name sim 1.00, episodes 7≈7",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "301373",
+  "name": "Aynadaki Yabancı",
+  "premiered": "2025",
+  "url": "https://image.tmdb.org/t/p/w780/fzF7uDncGNsb5siPRIFACfANXBp.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 78.76,
+  "ent": 7.91,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/434b7dcd38e1.webp",
+  "prev": "data/posters/v2/434b7dcd38e1.webp",
+  "bg": null
  },
  "fatih-harbiye-kmvst": {
   "at": 1794445268074,
@@ -5630,7 +6240,7 @@
   "bg": null
  },
  "seer-wa-khafa-nqvts": {
-  "at": 1794456370255,
+  "at": 1794482430777,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for seer-wa-khafa-nqvts"
@@ -5697,7 +6307,7 @@
   "bg": null
  },
  "lvstr-bqmzn": {
-  "at": 1794456374151,
+  "at": 1794482435496,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lvstr-bqmzn"
@@ -5745,13 +6355,11 @@
   }
  },
  "eskiya-kqvmt": {
-  "at": 1794456376513,
+  "at": 1794482438384,
   "tries": 1,
   "q": "eskiya",
   "status": "review",
-  "note": "partial name \"Eşkıya Dünyaya Hükümdar Olmaz\" but episodes 199 vs 139",
-  "name": "Eşkıya Dünyaya Hükümdar Olmaz",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/40/101001.jpg"
+  "note": "partial ambiguous: Eşkıya Dünyaya Hükümdar Olmaz | Eşkıya Dünyaya Hükümdar Olmaz"
  },
  "ruzgarin-kalbi-fqsmv": {
   "at": 1794446011447,
@@ -5844,36 +6452,24 @@
   }
  },
  "adini-kalbime-yazdim-kvrts": {
-  "at": 1794456378138,
+  "at": 1794482439301,
   "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Seni Kalbime Sakladım (2022) | Mazi Kalbimde Yaradır (2011) | Kalbimin Rotası Karadeniz ()",
-  "cands": [
-   {
-    "src": "tvmaze",
-    "ref": "62386",
-    "name": "Seni Kalbime Sakladım",
-    "premiered": "2022",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034718.jpg",
-    "sim": 0.63
-   },
-   {
-    "src": "tvmaze",
-    "ref": "81888",
-    "name": "Mazi Kalbimde Yaradır",
-    "premiered": "2011",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/550/1376701.jpg",
-    "sim": 0.63
-   },
-   {
-    "src": "tvmaze",
-    "ref": "94002",
-    "name": "Kalbimin Rotası Karadeniz",
-    "premiered": "",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/639/1599933.jpg",
-    "sim": 0.46
-   }
-  ]
+  "q": "adini kalbime yazdim",
+  "conf": "high",
+  "src": "tmdb",
+  "ref": "111940",
+  "name": "Adını Kalbime Yazdım",
+  "premiered": "2013",
+  "url": "https://image.tmdb.org/t/p/w780/7vaaEQ4rOx01WOswxrfMJlgHy2i.jpg",
+  "w": 780,
+  "h": 1171,
+  "sharp": 69.72,
+  "ent": 7.65,
+  "score": 0.9,
+  "status": "matched",
+  "path": "data/posters/v3/e2e52204b52d.webp",
+  "prev": "data/posters/v2/e2e52204b52d.webp",
+  "bg": null
  },
  "benim-tatli-yalanim-sqvmp": {
   "at": 1794446014280,
@@ -5896,10 +6492,24 @@
   "bg": null
  },
  "aabmr-kdzvf": {
-  "at": 1794456385417,
+  "at": 1794482440602,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for aabmr-kdzvf"
+  "note": "fuzzy name sim 1.00, episodes 33≈33",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "134155",
+  "name": "Evlilik Hakkında Her Şey",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/2HFV4ZpQUNkEGFgPZ8h4fOlgTxb.jpg",
+  "w": 780,
+  "h": 1156,
+  "sharp": 93.15,
+  "ent": 6.4,
+  "score": 0.874,
+  "status": "matched",
+  "path": "data/posters/v3/ebd82dc679bd.webp",
+  "prev": "data/posters/v2/ebd82dc679bd.webp",
+  "bg": null
  },
  "ne-gemiler-yaktim-vqmrs": {
   "at": 1794445297796,
@@ -5944,21 +6554,24 @@
   "bg": null
  },
  "aglma-istanbul-kqvnt": {
-  "at": 1794456387662,
+  "at": 1794482443184,
   "tries": 1,
-  "note": "candidate rejected: flat",
+  "note": "fuzzy name sim 1.00, episodes 8≈8",
   "conf": "low",
-  "src": "tvmaze",
-  "ref": "81426",
+  "src": "tmdb",
+  "ref": "277856",
   "name": "Sen Ağlama İstanbul",
   "premiered": "2024",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/547/1368670.jpg",
-  "w": 680,
-  "h": 1000,
-  "sharp": 48.22,
-  "ent": 0.82,
-  "score": 0.714,
-  "status": "review"
+  "url": "https://image.tmdb.org/t/p/w780/avNbltvxEbHvauxZ7AoP9hABC25.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 66.37,
+  "ent": 7.82,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/92f537b04adc.webp",
+  "prev": "data/posters/v2/92f537b04adc.webp",
+  "bg": null
  },
  "aglama-anne-vstqr": {
   "at": 1794445301566,
@@ -6067,22 +6680,24 @@
   }
  },
  "bir-litre-gozyasi-kqvmt": {
-  "at": 1794456394200,
+  "at": 1794482446084,
   "tries": 1,
   "q": "bir litre gozyasi",
   "conf": "high",
-  "src": "tvmaze",
-  "ref": "38877",
+  "src": "tmdb",
+  "ref": "82621",
   "name": "Bir Litre Gözyaşı",
   "premiered": "2018",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/169/422561.jpg",
-  "w": 1000,
-  "h": 1000,
-  "sharp": 62.52,
-  "ent": 7.84,
-  "score": 0.9,
-  "status": "review",
-  "note": "candidate rejected: aspect"
+  "url": "https://image.tmdb.org/t/p/w780/ahK6bglLCME6bJemXf0WNXlC7pF.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 71.56,
+  "ent": 7.92,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/161b74fb974f.webp",
+  "prev": "data/posters/v2/161b74fb974f.webp",
+  "bg": null
  },
  "bir-derdim-var-kvtrs": {
   "at": 1794445310548,
@@ -6104,16 +6719,44 @@
   "bg": null
  },
  "alhath-vqmns": {
-  "at": 1794456397316,
+  "at": 1794482447310,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alhath-vqmns"
+  "note": "fuzzy name sim 1.00, episodes 17≈17",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "125527",
+  "name": "Baht Oyunu",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/3BWvLAvDNQ3eYaQePVpKEYmzMak.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 79.22,
+  "ent": 7.85,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/bae9a432668b.webp",
+  "prev": "data/posters/v2/bae9a432668b.webp",
+  "bg": null
  },
  "tgomd-sxpvh": {
-  "at": 1794456399492,
+  "at": 1794482450280,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tgomd-sxpvh"
+  "note": "fuzzy name sim 1.00, episodes 26≈26",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "152326",
+  "name": "Kaderimin Oyunu",
+  "premiered": "2021",
+  "url": "https://image.tmdb.org/t/p/w780/iRCyKGKaIsD2dZcZj8yJTD1n3sN.jpg",
+  "w": 780,
+  "h": 1169,
+  "sharp": 82.09,
+  "ent": 7.08,
+  "score": 0.892,
+  "status": "matched",
+  "path": "data/posters/v3/f574f627b025.webp",
+  "prev": "data/posters/v2/f574f627b025.webp",
+  "bg": null
  },
  "vermem-seni-ellere-kqvrs": {
   "at": 1794445314401,
@@ -6183,7 +6826,7 @@
   "bg": null
  },
  "matha-law-vqstm": {
-  "at": 1794456402090,
+  "at": 1794482453200,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for matha-law-vqstm"
@@ -6315,11 +6958,11 @@
   "bg": null
  },
  "mehmed-vqsmr": {
-  "at": 1794456409267,
+  "at": 1794482457029,
   "tries": 1,
   "q": "mehmed",
   "status": "review",
-  "note": "partial ambiguous: Mehmed: Fetihler Sultanı | Mehmed Bir Cihan Fatihi"
+  "note": "partial ambiguous: Mehmed: Fetihler Sultanı | Mehmed: Bir Cihan Fatihi | Mehmed: Fetihler Sultanı | Mehmed Bir Cihan Fatihi"
  },
  "marashli-hqfns": {
   "at": 1794456045660,
@@ -6411,7 +7054,7 @@
   }
  },
  "emirin-yolu-kqvts": {
-  "at": 1794456410046,
+  "at": 1794482457948,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for emirin-yolu-kqvts"
@@ -6483,17 +7126,33 @@
   "bg": null
  },
  "oyunu-bozan-nqvst": {
-  "at": 1794456413062,
+  "at": 1794482461793,
   "tries": 1,
   "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Baht Oyunu (2021)",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Aşk Oyunu (2005) | Tatar Ramazan: Ben Bu Oyunu Bozarım (2013) | Baht Oyunu (2021)",
   "cands": [
    {
-    "src": "tvmaze",
-    "ref": "55559",
+    "src": "tmdb",
+    "ref": "42781",
+    "name": "Aşk Oyunu",
+    "premiered": "2005",
+    "url": "https://image.tmdb.org/t/p/w780/si1m1vUSz6DI6D4IljrOZ8bJgST.jpg",
+    "sim": 0.5
+   },
+   {
+    "src": "tmdb",
+    "ref": "110068",
+    "name": "Tatar Ramazan: Ben Bu Oyunu Bozarım",
+    "premiered": "2013",
+    "url": "https://image.tmdb.org/t/p/w780/bp8VpKzch1L1qX98lucrFCiBNIo.jpg",
+    "sim": 0.49
+   },
+   {
+    "src": "tmdb",
+    "ref": "125527",
     "name": "Baht Oyunu",
     "premiered": "2021",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/647/1619701.jpg",
+    "url": "https://image.tmdb.org/t/p/w780/3qBdshcYgdgLZmO3AVbNtMKqbSf.jpg",
     "sim": 0.47
    }
   ]
@@ -6565,16 +7224,44 @@
   }
  },
  "hwhfc-mzqtn": {
-  "at": 1794456417658,
+  "at": 1794482467174,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for hwhfc-mzqtn"
+  "note": "fuzzy name sim 1.00, episodes 27≈27",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "228980",
+  "name": "Kendi Düşen Ağlamaz",
+  "premiered": "2023",
+  "url": "https://image.tmdb.org/t/p/w780/2dPrjPvIQl4kcm17z3if4OHLBHi.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 77.8,
+  "ent": 7.81,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/00af5d747e94.webp",
+  "prev": "data/posters/v2/00af5d747e94.webp",
+  "bg": null
  },
  "manzili-kqvts": {
-  "at": 1794456419911,
+  "at": 1794482470266,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for manzili-kqvts"
+  "note": "fuzzy name sim 1.00, episodes 43≈43",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "96775",
+  "name": "Doğduğun Ev Kaderindir",
+  "premiered": "2019",
+  "url": "https://image.tmdb.org/t/p/w780/hHN68PryjI6twLaOPgvVgIzjkQ2.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 74.66,
+  "ent": 7.29,
+  "score": 0.897,
+  "status": "matched",
+  "path": "data/posters/v3/d5080f0fc936.webp",
+  "prev": "data/posters/v2/d5080f0fc936.webp",
+  "bg": null
  },
  "kiraz-mevsimi-kqvmt": {
   "at": 1794445352542,
@@ -6623,16 +7310,30 @@
   }
  },
  "cobanyildizi-mfrqe": {
-  "at": 1794456422179,
+  "at": 1794482473608,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for cobanyildizi-mfrqe"
  },
  "najmat-alshamal-bqvnt": {
-  "at": 1794456424419,
+  "at": 1794482476503,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for najmat-alshamal-bqvnt"
+  "note": "fuzzy name sim 1.00, episodes 64≈64",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "93216",
+  "name": "Kuzey Yıldızı: İlk Aşk",
+  "premiered": "2019",
+  "url": "https://image.tmdb.org/t/p/w780/tm36QXjmyxY1I0PyqC31fJQ6Pae.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 71.13,
+  "ent": 7.81,
+  "score": 0.901,
+  "status": "matched",
+  "path": "data/posters/v3/fa7fc30c2997.webp",
+  "prev": "data/posters/v2/fa7fc30c2997.webp",
+  "bg": null
  },
  "anne-yarisi": {
   "at": 1794445359317,
@@ -6716,7 +7417,7 @@
   "bg": null
  },
  "benbucihana-vtspq": {
-  "at": 1794456428248,
+  "at": 1794482479208,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for benbucihana-vtspq"
@@ -6768,10 +7469,24 @@
   }
  },
  "tutar-mi-tutar-lqvrs": {
-  "at": 1794456430467,
+  "at": 1794482482298,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tutar-mi-tutar-lqvrs"
+  "q": "tutar mi tutar",
+  "conf": "high",
+  "src": "tmdb",
+  "ref": "109928",
+  "name": "Tutar mı Tutar",
+  "premiered": "2015",
+  "url": "https://image.tmdb.org/t/p/w780/4yt66446E0nia9bBTdMe4KwtgUQ.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 85.42,
+  "ent": 7.41,
+  "score": 0.899,
+  "status": "matched",
+  "path": "data/posters/v3/6b567ba43787.webp",
+  "prev": "data/posters/v2/6b567ba43787.webp",
+  "bg": null
  },
  "seviyor-sevmiyor-kdrpm": {
   "at": 1794445371213,
@@ -6812,36 +7527,24 @@
   "bg": null
  },
  "yurek-yarasi-kqvhn": {
-  "at": 1794456434040,
+  "at": 1794482483580,
   "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Aşk Yarası (2026) | Tek Yürek (2019) | Kalp Yarası (2021)",
-  "cands": [
-   {
-    "src": "tvmaze",
-    "ref": "89770",
-    "name": "Aşk Yarası",
-    "premiered": "2026",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/608/1520135.jpg",
-    "sim": 0.67
-   },
-   {
-    "src": "tvmaze",
-    "ref": "49816",
-    "name": "Tek Yürek",
-    "premiered": "2019",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/269/672546.jpg",
-    "sim": 0.59
-   },
-   {
-    "src": "tvmaze",
-    "ref": "55741",
-    "name": "Kalp Yarası",
-    "premiered": "2021",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/327/818526.jpg",
-    "sim": 0.53
-   }
-  ]
+  "note": "fuzzy name sim 1.00, episodes 28≈28",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "213624",
+  "name": "Yürek Çıkmazı",
+  "premiered": "2022",
+  "url": "https://image.tmdb.org/t/p/w780/AkoT6b4d1m0TAHxIllnDEhOtVi2.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 66.5,
+  "ent": 7.26,
+  "score": 0.896,
+  "status": "matched",
+  "path": "data/posters/v3/6cfe441483fb.webp",
+  "prev": "data/posters/v2/6cfe441483fb.webp",
+  "bg": null
  },
  "yuz-yuze-ltmqv": {
   "at": 1794446062101,
@@ -7046,16 +7749,30 @@
   }
  },
  "gulumseyeter-vcpam": {
-  "at": 1794456440293,
+  "at": 1794482486174,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for gulumseyeter-vcpam"
  },
  "yawm-akhar-kvqsm": {
-  "at": 1794456442642,
+  "at": 1794482489063,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yawm-akhar-kvqsm"
+  "note": "fuzzy name sim 1.00, episodes 10≈10",
+  "conf": "low",
+  "src": "tmdb",
+  "ref": "282224",
+  "name": "Başka Bir Gün",
+  "premiered": "2025",
+  "url": "https://image.tmdb.org/t/p/w780/1LZCddM6Fzt2gQtUnaPXYRkoR5F.jpg",
+  "w": 780,
+  "h": 1170,
+  "sharp": 75.55,
+  "ent": 7.31,
+  "score": 0.897,
+  "status": "matched",
+  "path": "data/posters/v3/733686b00eef.webp",
+  "prev": "data/posters/v2/733686b00eef.webp",
+  "bg": null
  },
  "sifirinci-gun-kvrms": {
   "at": 1794445389826,
@@ -7081,41 +7798,30 @@
   }
  },
  "qadari-hqmts": {
-  "at": 1794456445727,
+  "at": 1794482492240,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for qadari-hqmts"
  },
  "karadeniz-hqvms": {
-  "at": 1794456121626,
+  "at": 1794482204322,
   "tries": 1,
   "q": "karadeniz",
   "status": "review",
-  "note": "partial ambiguous: Gözleri Karadeniz | Sevdam Karadeniz | Sen Anlat Karadeniz | Kalbimin Rotası Karadeniz"
+  "note": "partial ambiguous: Sevdam Karadeniz | Sen Anlat Karadeniz | Gözleri Karadeniz | İstikamet Karadeniz | Dalga Karadeniz'in Gizli Gücü | Gözleri Karadeniz | Sevdam Karadeniz | Sen Anlat Karadeniz | Kalbimin Rotası Karadeniz"
  },
  "tlsth-vqgmn": {
-  "at": 1794456123086,
+  "at": 1794482205690,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tlsth-vqgmn"
  },
  "kimsin-sen-qvtrs": {
-  "at": 1794456125237,
+  "at": 1794482208579,
   "tries": 1,
   "q": "kimsin sen",
-  "note": "candidate rejected: aspect",
-  "conf": "medium",
-  "src": "tvmaze",
-  "ref": "59769",
-  "name": "Maske: Kimsin Sen?",
-  "premiered": "2022",
-  "url": "https://static.tvmaze.com/uploads/images/original_untouched/388/971973.jpg",
-  "w": 818,
-  "h": 899,
-  "sharp": 58.92,
-  "ent": 7.09,
-  "score": 0.81,
-  "status": "review"
+  "status": "review",
+  "note": "partial ambiguous: Maske - Kimsin Sen? | Maske: Kimsin Sen?"
  },
  "kalbim-egede-kaldi-vsmrq": {
   "at": 1794445419387,
