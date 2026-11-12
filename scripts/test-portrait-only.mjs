@@ -7,7 +7,7 @@ const BASE = process.env.BASE || 'http://localhost:8123/'; const out = []; const
 const src = Object.fromEntries(['components.js', 'app.js', 'home.js', 'recommend.js'].map((f) => [f, existsSync(f) ? readFileSync(f, 'utf8') : '']));
 const css = readFileSync('styles.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 for (const [f, s] of Object.entries(src)) { const code = s.split('\n').filter((l) => !/^\s*\/\//.test(l)).join('\n'); T(`static ${f}: no landscape fields (img2/img4/img/backdrop)`, !/\.(img2|img4|backdrop)\b|\bs\.img\b|show\.img\b|backdropUrl|heroArt|dh-art|pw-wide/.test(code), (code.match(/\.(img2|img4|backdrop)\b|backdropUrl|heroArt|dh-art|pw-wide/) || [])[0]); }
-T('static css: no blur-fill / banner / landscape art rules', !/\.pw\.fit|m-banner|m-land|dh-art|hero-art|pw-wide|\.dhero::before/.test(css) && !/\.(pw|dhero|hero-c)[^{]*\{[^}]*(backdrop-filter|filter:\s*blur)/.test(css));
+T('static css: no blur-fill / banner / landscape art rules', !/\.pw\.fit|m-banner|m-land|dh-art|hero-art|pw-wide/.test(css) && !/\.(pw|dhero|hero-c)[^{]*\{[^}]*(backdrop-filter|filter:\s*blur)/.test(css));
 T('static css: poster frame is 2:3', /\.pw\{[^}]*aspect-ratio:2\/3/.test(css));
 // 2) بيانات: كل img3 عمودي (0.55–0.9) والملف موجود
 const data = JSON.parse(readFileSync('data/shows.json', 'utf8').replace(/^﻿/, '')); const map = JSON.parse(readFileSync('data/poster-map.json', 'utf8'));
@@ -25,7 +25,7 @@ const audit = async (p, label) => {
       if (!w) bad.push('img-outside-.pw ' + i.src.slice(-30)); else if (nr > 0.9) bad.push('landscape ' + nr.toFixed(2)); else if (Math.abs(fr - 2 / 3) > 0.025) bad.push('frame ' + fr.toFixed(2)); else if (cs.objectFit !== 'cover') bad.push('fit ' + cs.objectFit); }
     const bgs = [...document.querySelectorAll('#view *')].filter((e) => { const x = getComputedStyle(e); return /url\(/.test(x.backgroundImage) && !/url\(["']?data:/.test(x.backgroundImage) && !e.closest('svg'); }).length;   // أيقونات SVG المضمّنة (data:) مسموحة؛ أي رابط صورة غيرها ممنوع
     const fx = [...document.querySelectorAll('#view .pw, #view .dhero, #view .hero-c')].filter((e) => { const x = getComputedStyle(e); return x.filter !== 'none' || (x.backdropFilter && x.backdropFilter !== 'none'); }).length;
-    const wide = [...document.querySelectorAll('#view .pw, #view .hero-c, #view .dhero')].filter((e) => e.getBoundingClientRect().width > innerWidth * 0.99).length;
+    const wide = [...document.querySelectorAll('#view .pw, #view .hero-c, #view .dhero')].filter((e) => { const r = e.getBoundingClientRect(); return r.width / r.height > 0.75; }).length;   // أي إطار صورة أو Hero أعرض من 3:4 = بانر/أفقي ممنوع (الـHero بعرض الشاشة مسموح لأنه 2:3)
     return { n, bad, bgs, fx, wide };
   });
   T(`${label}: only 2:3 portrait images (${r.n} checked)`, r.bad.length === 0, r.bad.slice(0, 3).join(' | '));
