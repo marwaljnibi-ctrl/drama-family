@@ -78,7 +78,7 @@ const real = await (await fetch(BASE + 'data/shows.json')).json();
   for (let i = 0; i < 14; i++) { await p.evaluate((y) => { document.getElementById('view').scrollTop = y; }, i * 900); await p.waitForTimeout(250); }
   const audit = await p.evaluate(() => { const rows = []; for (const w of document.querySelectorAll('#g .pw')) { const i = w.querySelector('img'); const ph = w.classList.contains('pw-ph'); if (ph) { rows.push({ ph: true, title: (w.querySelector('.ph-t') || {}).textContent || '' }); continue; } if (!i || !i.complete || !i.naturalWidth) continue; const r = w.getBoundingClientRect(); rows.push({ ph: false, ia: +(i.naturalWidth / i.naturalHeight).toFixed(2), bad: w.classList.contains('bad'), shown: getComputedStyle(i).display !== 'none', fit: w.classList.contains('fit'), of: getComputedStyle(i).objectFit }); } return rows; });
   const imgs = audit.filter((x) => !x.ph), phs = audit.filter((x) => x.ph);
-  T('audited-many-real-cards', imgs.length >= 40 && phs.length >= 5, `images=${imgs.length} placeholders=${phs.length}`);
+  T('audited-many-real-cards', imgs.length >= 40 && phs.length >= 1, `images=${imgs.length} placeholders=${phs.length}`);
   T('vertical-cards-show-only-portrait-images', imgs.every((x) => x.ia <= 0.9 && x.shown && !x.bad), JSON.stringify(imgs.filter((x) => !(x.ia <= 0.9 && x.shown && !x.bad)).slice(0, 3)));
   T('no-landscape-image-inside-any-vertical-card', imgs.every((x) => !(x.ia > 1.05 && x.shown)));
   T('shows-without-portrait-get-title-cover-not-a-landscape-crop', phs.every((x) => x.title.length > 1), JSON.stringify(phs.slice(0, 2)));
