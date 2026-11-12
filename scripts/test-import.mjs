@@ -111,6 +111,7 @@ if (existsSync('test/big.mp4') && process.platform === 'linux') {
   const size = statSync('test/big.mp4').size, MB = 1048576;
   const dir = mkdtempSync(tmpdir() + '/pw-prof-'), log = dir + '-rss.log';
   const bctx = await chromium.launchPersistentContext(dir, { viewport: { width: 390, height: 844 } });
+  await bctx.addInitScript(() => localStorage.setItem('df-deferred', '1'));
   const bp = await bctx.newPage(); await bp.goto(EP(4)); await bp.waitForSelector('#imp', { state: 'attached' });
   const du = () => +execSync('du -sb ' + dir).toString().trim().split(/\s+/)[0];
   const sampler = spawn('sh', ['-c', "while true; do ps -eo rss=,args= | grep -i '[c]hrom' | awk '{s+=$1} END {print s*1024}' >> " + log + "; sleep 0.2; done"], { detached: true, stdio: 'ignore' });
