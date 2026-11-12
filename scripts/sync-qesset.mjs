@@ -145,6 +145,7 @@ async function main() {
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
   await localizePosters(shows);
+  try { await (await import('./poster-pick.mjs')).upgradePosters(shows, { max: 8 }); } catch (e) { console.log('poster upgrade skipped:', String(e).slice(0, 80)); }   // بوستر عمودي أفضل: مرة واحدة لكل مسلسل جديد فقط (سجل في data/poster-map.json)
   await resolveServers(shows);
   const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
   const before = JSON.stringify({ s: prev.shows, l: prev.latest });

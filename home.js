@@ -17,7 +17,10 @@ export async function renderHome(D, view, { demoBanner = '', quiet = false } = {
   const firstRun = !cont.length && !mine.length;
 
   // 1) متابعة المشاهدة — دائمًا في الأعلى عند وجودها؛ عند أول استخدام تُستبدل بدعوة «اكتشف مسلسلك الأول»
-  if (cont.length) parts.push(section({ title: 'متابعة المشاهدة' }, cont.map(continueCard).join(''), 'cont'));
+  if (cont.length) {   // أول عنصر = بطل كبير بعرض الشاشة (نفس البيانات والرابط)، والبقية صف «تابع أيضًا»
+    parts.push(`<section class="sec has-hero"><div class="sec-h"><h2>متابعة المشاهدة</h2></div>${continueCard(cont[0], true)}</section>`);
+    if (cont.length > 1) parts.push(section({ title: 'تابع أيضًا' }, cont.slice(1).map((x) => continueCard(x)).join(''), 'cont'));
+  }
   else parts.push(`<section class="sec first">${emptyState('اكتشف مسلسلك الأول', 'اختر مسلسلًا وابدأ المشاهدة. سيظهر هنا فورًا لتستكمله بضغطة واحدة.', { href: '#/shows', label: 'تصفّح المسلسلات' })}</section>`);
 
   // 2) مسلسلاتي (المفضلة)
