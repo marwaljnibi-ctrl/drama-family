@@ -5,7 +5,7 @@ import { mkdtempSync, readFileSync, mkdirSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const sharp = (await import('sharp')).default;
-const { upgradePosters, xrefIdentityOk, IS_ACCEPTABLE } = await import('./poster-pick.mjs');
+const { upgradePosters, xrefIdentityOk, IS_ACCEPTABLE, demoteNonStrict } = await import('./poster-pick.mjs');
 const noisy = (w, h) => { const b = Buffer.alloc(w * h * 3); for (let i = 0; i < b.length; i++) b[i] = (i * 7919 + ((i / 3) | 0) * 31) % 256; return sharp(b, { raw: { width: w, height: h, channels: 3 } }).jpeg({ quality: 90 }).toBuffer(); };
 
 test('xref identity: the right show passes; wrong country, wrong year, or a different name found by search are rejected', () => {
@@ -44,4 +44,10 @@ test('automation: a confirmed show whose only poster is a vertical non-2:3 image
     assert.notEqual(map['c-yok'].status, 'matched'); assert.equal(s[2].img3, undefined);
     assert.ok(rv.items['b-dort'] && rv.items['c-yok'] && !rv.items['a-iki'], 'incomplete ones are listed for review'); assert.match(rv.items['b-dort'].note, /2:3/);
   } finally { globalThis.fetch = realFetch; process.chdir(prev); }
+});
+test('enforce: after all sources were tried, a matched non-2:3 poster becomes placeholder + review; 2:3 and manual matches are untouched', () => {
+  const map = { ok: { status: 'matched', w: 680, h: 1000, xref: 1 }, bad: { status: 'matched', w: 680, h: 850, xref: 1, name: 'X' }, untried: { status: 'matched', w: 680, h: 850 }, man: { status: 'matched', conf: 'manual', w: 680, h: 850, xref: 1 } };
+  const d = demoteNonStrict(map, 1000);
+  assert.deepEqual(d, ['bad']); assert.equal(map.bad.status, 'review'); assert.match(map.bad.note, /no real 2:3/); assert.ok(map.bad.next > 1000 && map.bad.was.w === 680);
+  assert.equal(map.ok.status, 'matched'); assert.equal(map.untried.status, 'matched', 'not demoted before all sources were tried'); assert.equal(map.man.status, 'matched');
 });

@@ -1,14 +1,64 @@
 {
- "updated": "2026-11-12T17:46:48.350Z",
- "count": 3,
+ "updated": "2026-11-12T22:07:01.719Z",
+ "count": 10,
  "items": {
+  "kizilelma-vsrqm": {
+   "id": "kizilelma-vsrqm",
+   "status": "review",
+   "note": "identity confirmed (Kızılelma) but no real 2:3 poster found in TVmaze/TMDB (best ratio 0.75) — placeholder until one exists",
+   "tries": 2,
+   "since": 1794482256198,
+   "next": 1795730821716,
+   "tr": null,
+   "candidates": []
+  },
   "yazin-hikayesi-vqstm": {
    "id": "yazin-hikayesi-vqstm",
    "status": "unmatched",
    "note": "no candidates",
-   "tries": 4,
+   "tries": 5,
    "since": 1794500149647,
-   "next": 1795709753765,
+   "next": 1797112465922,
+   "tr": null,
+   "candidates": []
+  },
+  "bir-gece-masali-qared": {
+   "id": "bir-gece-masali-qared",
+   "status": "review",
+   "note": "identity confirmed (Bir Gece Masalı) but no real 2:3 poster found in TVmaze/TMDB (best ratio 0.78) — placeholder until one exists",
+   "tries": 2,
+   "since": 1794453430683,
+   "next": 1795730821716,
+   "tr": null,
+   "candidates": []
+  },
+  "yeni-hayat-vqsmn": {
+   "id": "yeni-hayat-vqsmn",
+   "status": "review",
+   "note": "identity confirmed (Yeni Hayat) but no real 2:3 poster found in TVmaze/TMDB (best ratio 0.72) — placeholder until one exists",
+   "tries": 2,
+   "since": 1794445173348,
+   "next": 1795730821716,
+   "tr": null,
+   "candidates": []
+  },
+  "benim-hayatim-vqmts": {
+   "id": "benim-hayatim-vqmts",
+   "status": "review",
+   "note": "identity confirmed (Benim Hayatım) but no real 2:3 poster found in TVmaze/TMDB (best ratio 0.8) — placeholder until one exists",
+   "tries": 2,
+   "since": 1794445178044,
+   "next": 1795730821716,
+   "tr": null,
+   "candidates": []
+  },
+  "ask-ve-gurur-kqvms": {
+   "id": "ask-ve-gurur-kqvms",
+   "status": "review",
+   "note": "identity confirmed (Aşk ve Gurur) but no real 2:3 poster found in TVmaze/TMDB (best ratio 0.89) — placeholder until one exists",
+   "tries": 2,
+   "since": 1794445987973,
+   "next": 1795730821716,
    "tr": null,
    "candidates": []
   },
@@ -16,9 +66,9 @@
    "id": "evli-cgowr",
    "status": "review",
    "note": "score 0.5 < 4",
-   "tries": 4,
+   "tries": 5,
    "since": 1794500153767,
-   "next": 1795709758936,
+   "next": 1797112471151,
    "tr": null,
    "candidates": [
     {
@@ -41,13 +91,33 @@
     }
    ]
   },
+  "aglama-anne-vstqr": {
+   "id": "aglama-anne-vstqr",
+   "status": "review",
+   "note": "identity confirmed (Ağlama Anne) but no real 2:3 poster found in TVmaze/TMDB (best ratio 0.59) — placeholder until one exists",
+   "tries": 2,
+   "since": 1794445301566,
+   "next": 1795730821716,
+   "tr": null,
+   "candidates": []
+  },
   "emirin-yolu-kqvts": {
    "id": "emirin-yolu-kqvts",
    "status": "unmatched",
    "note": "no candidates",
-   "tries": 4,
+   "tries": 5,
    "since": 1794500158938,
-   "next": 1795709763156,
+   "next": 1797112503564,
+   "tr": null,
+   "candidates": []
+  },
+  "kizlarim-icin-hqtmv": {
+   "id": "kizlarim-icin-hqtmv",
+   "status": "review",
+   "note": "identity confirmed (Kızlarım İçin) but no real 2:3 poster found in TVmaze/TMDB (best ratio 0.83) — placeholder until one exists",
+   "tries": 2,
+   "since": 1794446045335,
+   "next": 1795730821716,
    "tr": null,
    "candidates": []
   }

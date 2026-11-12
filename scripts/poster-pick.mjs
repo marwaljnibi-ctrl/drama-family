@@ -153,6 +153,16 @@ export function xrefIdentityOk(cur, hit, { viaId = true } = {}) {
   if (!viaId) { const a = norm(cur.name || ''), ok = [hit.name, hit.original_name].some((n) => n && (norm(n) === a || dice(norm(n), a) >= 0.92)); if (!ok) return { ok: false, reason: 'name mismatch' }; }
   return { ok: true };
 }
+// يُنزِل إلى «مراجعة + غلاف مؤقت» كل بوستر معتمد ليس 2:3 حقيقيًا بعد أن جُرّبت كل المصادر (xref). المطابقات اليدوية لا تُمس. الهوية تبقى محفوظة وتُعاد المحاولة لاحقًا بتباعد.
+export function demoteNonStrict(map, now = Date.now()) {
+  const out = [];
+  for (const [id, r] of Object.entries(map)) { if (!r || r.status !== 'matched' || r.conf === 'manual' || strictOk(r.w, r.h) || !r.xref) continue;
+    const ratio = +(r.w / r.h).toFixed(2); out.push(id);
+    map[id] = { ...r, status: 'review', note: 'identity confirmed (' + (r.name || id) + ') but no real 2:3 poster found in TVmaze/TMDB (best ratio ' + ratio + ') — placeholder until one exists', tries: (r.tries || 0) + 1, at: r.at || now, next: now + 14 * 864e5, was: { src: r.src, ref: r.ref, url: r.url, w: r.w, h: r.h, path: r.path } }; }
+  return out;
+}
+// node scripts/poster-pick.mjs --enforce  ← يطبّق القاعدة الدائمة على ما جُرِّب كله (بلا شبكة)
+if (isMain && has('--enforce')) { const map = J(MAP, {}); const d = demoteNonStrict(map); save(MAP, map); try { const pr = J(REV, { items: {} }); save(REV, { updated: new Date().toISOString(), ...buildReview(map, loadIndex(), pr.items || {}) }); } catch {} console.log('enforce: demoted to placeholder', d.length, d.join(', ')); process.exit(0); }
 // node scripts/poster-pick.mjs --xref [--limit N]  ← لما بقي غير 2:3: يبحث عن بوستر 2:3 لنفس المسلسل عبر TMDB (بمعرّف IMDb/TVDB الذي يعطيه TVmaze). يحتاج TMDB_API_KEY (سرّ GitHub فقط).
 if (isMain && has('--xref')) {
   const key = process.env.TMDB_API_KEY || ''; if (!key) { console.log('xref: TMDB_API_KEY missing (runs in CI only)'); process.exit(0); }
@@ -174,7 +184,8 @@ if (isMain && has('--xref')) {
       map[s.id] = { ...r, src: 'tmdb', ref: String(hit.id), url: c.url, lang: c.lang, w: a.w, h: a.h, sharp: a.sharp, ent: a.ent, score: a.score, path, xref: Date.now(), prevRatio: +(r.w / r.h).toFixed(3), prevSrc: r.src + ':' + r.ref, rerated: Date.now() }; up++; console.log('xref 2:3', s.id, (r.w / r.h).toFixed(3), '->', a.ar, 'via', viaId ? 'id' : 'search');
     } catch (e) { console.log('xref error', s.id, String(e).slice(0, 80)); }
     if (n % 10 === 0) save(MAP, map); }
-  save(MAP, map); try { const pr = J(REV, { items: {} }); const rv = buildReview(map, loadIndex(), pr.items || {}); save(REV, { updated: new Date().toISOString(), ...rv }); } catch {}
+  const dem = demoteNonStrict(map); save(MAP, map); try { const pr = J(REV, { items: {} }); const rv = buildReview(map, loadIndex(), pr.items || {}); save(REV, { updated: new Date().toISOString(), ...rv }); } catch {}
+  console.log('xref demoted to placeholder:', dem.length, dem.join(','));
   console.log('xref: upgraded', up, 'kept', no, 'of', n); process.exit(0);
 }
 // node scripts/poster-pick.mjs --review  ← يعيد بناء data/poster-review.json ويطبع الحالات التي تنتظر مراجعة

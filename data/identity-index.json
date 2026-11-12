@@ -296,9 +296,9 @@
   },
   "yazin-hikayesi-vqstm": {
    "status": "unresolved",
-   "tries": 3,
-   "checked": 1794492416292,
-   "next": 1795097216292,
+   "tries": 5,
+   "checked": 1794520465922,
+   "next": 1797112465922,
    "reason": "no candidates",
    "cast": [
     "تانسيل أونغل",
@@ -450,9 +450,9 @@
   },
   "evli-cgowr": {
    "status": "unresolved",
-   "tries": 3,
-   "checked": 1794492426698,
-   "next": 1795097226698,
+   "tries": 5,
+   "checked": 1794520471151,
+   "next": 1797112471151,
    "reason": "score 0.5 < 4",
    "cast": [
     "إيدا إيجي",
@@ -666,9 +666,9 @@
   },
   "emirin-yolu-kqvts": {
    "status": "unresolved",
-   "tries": 3,
-   "checked": 1794492504717,
-   "next": 1795097304717,
+   "tries": 5,
+   "checked": 1794520503564,
+   "next": 1797112503564,
    "reason": "no candidates",
    "cast": [
     "جيداء آتش",
