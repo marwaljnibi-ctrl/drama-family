@@ -97,7 +97,7 @@ const isMain = A[1] && A[1].endsWith('poster-pick.mjs');
 if (isMain && has('--apply')) {
   const f = arg('--apply')?.endsWith('.json') ? arg('--apply') : 'data/shows.json'; const data = J(f, {}), map = J(MAP, {}); let n = 0;
   const idx0 = loadIndex();
-  for (const s of data.shows) { const r = map[s.id]; if (portraitOk(r) && existsSync(r.path)) { s.img3 = r.path; n++; } delete s.img4; const i0 = idx0.shows[s.id]; const tn = (i0 && i0.status === 'confirmed' && i0.original) || (r && r.status === 'matched' && r.name); if (tn) s.tr = tn; }   // s.tr = الاسم التركي المؤكَّد (للبحث المحلي فقط)
+  for (const s of data.shows) { const r = map[s.id]; if (portraitOk(r) && existsSync(r.path)) { s.img3 = r.path; n++; } else if (r && r.status && r.status !== 'matched') delete s.img3;   /* قرار «غلاف مؤقت»: لا يبقى بوستر قديم غير 2:3 */ delete s.img4; const i0 = idx0.shows[s.id]; const tn = (i0 && i0.status === 'confirmed' && i0.original) || (r && r.status === 'matched' && r.name); if (tn) s.tr = tn; }   // s.tr = الاسم التركي المؤكَّد (للبحث المحلي فقط)
   writeFileSync(f, JSON.stringify(data)); console.log('applied img3 to', n, 'shows'); process.exit(0);
 }
 // node scripts/poster-pick.mjs --catalog  ← يعيد بناء فهرس المسلسلات التركية

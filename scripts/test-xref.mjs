@@ -51,3 +51,13 @@ test('enforce: after all sources were tried, a matched non-2:3 poster becomes pl
   assert.deepEqual(d, ['bad']); assert.equal(map.bad.status, 'review'); assert.match(map.bad.note, /no real 2:3/); assert.ok(map.bad.next > 1000 && map.bad.was.w === 680);
   assert.equal(map.ok.status, 'matched'); assert.equal(map.untried.status, 'matched', 'not demoted before all sources were tried'); assert.equal(map.man.status, 'matched');
 });
+test('apply: a show demoted to placeholder loses its old img3 (no stale non-2:3 poster is shown); a matched one keeps/gets img3', async () => {
+  const { writeFileSync } = await import('node:fs'); const { execFileSync } = await import('node:child_process'); const { resolve } = await import('node:path');
+  const script = resolve('scripts/poster-pick.mjs'); const dir = mkdtempSync(join(tmpdir(), 'apply-')); mkdirSync(join(dir, 'data/posters/v3'), { recursive: true });
+  writeFileSync(join(dir, 'data/posters/v3/a.webp'), await noisy(300, 450));
+  writeFileSync(join(dir, 'data/poster-map.json'), JSON.stringify({ good: { status: 'matched', w: 680, h: 1000, path: 'data/posters/v3/a.webp' }, demoted: { status: 'review', w: 680, h: 850 } }));
+  writeFileSync(join(dir, 'data/shows.json'), JSON.stringify({ shows: [{ id: 'good' }, { id: 'demoted', img3: 'data/posters/v3/old.webp' }, { id: 'new-unseen', img3: 'x.webp' }] }));
+  execFileSync(process.execPath, [script, '--apply', 'data/shows.json'], { cwd: dir, stdio: 'pipe' });
+  const out = JSON.parse(readFileSync(join(dir, 'data/shows.json'), 'utf8')).shows;
+  assert.equal(out[0].img3, 'data/posters/v3/a.webp'); assert.equal(out[1].img3, undefined); assert.equal(out[2].img3, 'x.webp', 'shows the engine has not decided on are left alone');
+});
