@@ -1,0 +1,731 @@
+{
+ "v": 1,
+ "shows": {
+  "karadeniz-hqvms": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "77026",
+   "imdb": "tt7932896",
+   "wikidata": null,
+   "original": "Sen Anlat Karadeniz",
+   "year": 2018,
+   "ar": [
+    "اخبرهم ايها البحر الاسود",
+    "البحر الأسود",
+    "اشرح ايها البحر الاسود"
+   ],
+   "lat": [
+    "Sen Anlat Karadeniz",
+    "Fugitiva",
+    "Ты расскажи, Карадениз",
+    "Zachránené životy",
+    "Mano likimas",
+    "Μαύρη Θάλασσα",
+    "告诉我关于黑海的事",
+    "შავი ზღვის ნაამბობი",
+    "Mar Negro",
+    "Истерзанная",
+    "Lifeline",
+    "Tell You the Black Sea"
+   ],
+   "score": 8.5,
+   "evidence": [
+    "ar-tokens",
+    "latin-tokens:slug",
+    "image-match:3",
+    "year-ok",
+    "eps:64~64"
+   ],
+   "at": 1794491732541
+  },
+  "kimsin-sen-qvtrs": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "154567",
+   "imdb": "tt16212836",
+   "wikidata": "Q110688135",
+   "original": "Maske - Kimsin Sen?",
+   "year": 2022,
+   "ar": [
+    "برنامج من أنت أيها المقنع"
+   ],
+   "lat": [
+    "Maske - Kimsin Sen?",
+    "The Masked Singer Turkey",
+    "Mask Singer (Turquie)",
+    "Maske Kimsin Sen?",
+    "Маска Турция",
+    "The Masked Turkey"
+   ],
+   "score": 7,
+   "evidence": [
+    "wikidata-id-agrees",
+    "latin-exact:hint",
+    "year-ok",
+    "eps:9~9"
+   ],
+   "at": 1794491769521
+  },
+  "fi-kqtmv": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "71036",
+   "imdb": "tt6724368",
+   "wikidata": null,
+   "original": "Fi",
+   "year": 2017,
+   "ar": [
+    "مسلسل « في »"
+   ],
+   "lat": [
+    "Fi",
+    "Phi",
+    "Aš matau tave",
+    "Фи, Чи, Пи",
+    "黄金比例",
+    "Фі, Чі, Пі",
+    "ფი"
+   ],
+   "score": 6,
+   "evidence": [
+    "latin-exact:hint",
+    "year-ok",
+    "eps:22~22"
+   ],
+   "at": 1794491777229
+  },
+  "azhar-thalj-vqstm": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "281280",
+   "imdb": "tt35132299",
+   "wikidata": null,
+   "original": "Kardelenler",
+   "year": 2025,
+   "ar": [
+    "مسلسل أزهار الثلج",
+    "قطرات الثلج",
+    "زهور الثلج"
+   ],
+   "lat": [
+    "Kardelenler",
+    "Snowdrops",
+    "Подснежники",
+    "פרחי השלג"
+   ],
+   "score": 6,
+   "evidence": [
+    "latin-exact:hint",
+    "year-ok",
+    "eps:10~10"
+   ],
+   "at": 1794491786409
+  },
+  "sancak-vqmrs": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "218477",
+   "imdb": "tt22806544",
+   "wikidata": null,
+   "original": "Al Sancak",
+   "year": 2023,
+   "ar": [
+    "مسلسل الراية",
+    "الراية"
+   ],
+   "lat": [
+    "Al Sancak",
+    "The Patriots",
+    "Bandera roja",
+    "Красный флаг",
+    "Bandeira Vermelha",
+    "Червено знаме",
+    "הדגל האדום"
+   ],
+   "score": 6.5,
+   "evidence": [
+    "ar-exact",
+    "latin-tokens:slug",
+    "year-ok"
+   ],
+   "at": 1794491819028
+  },
+  "altayer-alrafraf-mqvts": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "210865",
+   "imdb": "tt21105088",
+   "wikidata": "Q114689844",
+   "original": "Yalı Çapkını",
+   "year": 2022,
+   "ar": [
+    "مسلسل الطائر الرفراف",
+    "طائر الرفراف",
+    "چشم عران عمارت (پسر طلایی)",
+    "چشم چران عمارت (پسر طلایی)",
+    "الطائر الرفراف",
+    "فريد"
+   ],
+   "lat": [
+    "Yalı Çapkını",
+    "Зимородок",
+    "O Canto do Pássaro",
+    "Una nueva vida",
+    "El Chico De Oro",
+    "Az Aranyifjú",
+    "Злодій у законі",
+    "Izredzētais",
+    "Láska z donucení",
+    "השלדג",
+    "Golden Boy",
+    "Auksinis berniukas",
+    "翠鸟",
+    "Златно момче"
+   ],
+   "score": 13,
+   "evidence": [
+    "ar-exact",
+    "wikidata-ar-exact",
+    "wikidata-id-agrees",
+    "image-match:2",
+    "year-ok",
+    "eps:101~101"
+   ],
+   "at": 1794491827269
+  },
+  "tabeeb-zplon": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "310430",
+   "imdb": "tt40568799",
+   "wikidata": null,
+   "original": "Doktor: Başka Hayatta",
+   "year": 2026,
+   "ar": [
+    "مسلسل الطبيب",
+    "الطبيب: في حياة أخرى"
+   ],
+   "lat": [
+    "Doktor: Başka Hayatta",
+    "Doctor: In Another Life",
+    "Доктор в другой жизни",
+    "Doctor in Another Life"
+   ],
+   "score": 6,
+   "evidence": [
+    "latin-exact:hint",
+    "year-ok",
+    "eps:6~6"
+   ],
+   "at": 1794491837379
+  },
+  "zengin-kqvmt": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "88255",
+   "imdb": "tt10098792",
+   "wikidata": null,
+   "original": "Zengin ve Yoksul",
+   "year": 2019,
+   "ar": [
+    "مسلسل الغني و الفقير"
+   ],
+   "lat": [
+    "Zengin ve Yoksul",
+    "Rich and Poor",
+    "Rico y Pobre (Rich and Poor)",
+    "Богатые и бедные"
+   ],
+   "score": 6,
+   "evidence": [
+    "latin-exact:hint",
+    "year-ok",
+    "eps:8~8"
+   ],
+   "at": 1794491862361
+  },
+  "karayazi-pwlqs": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "92273",
+   "imdb": "tt6893198",
+   "wikidata": null,
+   "original": "Kara Yazı",
+   "year": 2017,
+   "ar": [
+    "مسلسل القدر الأسود"
+   ],
+   "lat": [
+    "Kara Yazı",
+    "Black Letter",
+    "Чёрный шрифт"
+   ],
+   "score": 6,
+   "evidence": [
+    "latin-exact:slug",
+    "year-ok",
+    "eps:6~6"
+   ],
+   "at": 1794491889750
+  },
+  "tlcty-fmsqr": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "49159",
+   "imdb": "tt2575934",
+   "wikidata": "Q6095978",
+   "original": "Kayıp Şehir",
+   "year": 2012,
+   "ar": [
+    "مسلسل المدينة المفقودة"
+   ],
+   "lat": [
+    "Kayıp Şehir",
+    "დაკარგული ქალაქი",
+    "Потерянный город",
+    "Kayıp Şehir (dizi)"
+   ],
+   "score": 7,
+   "evidence": [
+    "wikidata-id-agrees",
+    "latin-exact:hint",
+    "year-ok",
+    "eps:26~26"
+   ],
+   "at": 1794491895794
+  },
+  "yazin-hikayesi-vqstm": {
+   "status": "unresolved",
+   "tries": 2,
+   "checked": 1794491900832,
+   "next": 1794751100832,
+   "reason": "no candidates",
+   "cast": [
+    "تانسيل أونغل",
+    "تشاداش أونور أوزتورك",
+    "فيلدان أتاسفير"
+   ],
+   "cands": []
+  },
+  "don-an-tashoor-kvmts": {
+   "status": "unresolved",
+   "tries": 2,
+   "checked": 1794491922500,
+   "next": 1794751122500,
+   "reason": "no candidates",
+   "cast": [
+    "بورجو أوزبيرك",
+    "شكرو أوزيلديز"
+   ],
+   "cands": []
+  },
+  "ogulkokusu-fzqtm": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "98102",
+   "imdb": "tt6654118",
+   "wikidata": null,
+   "original": "Evlat Kokusu",
+   "year": 2017,
+   "ar": [
+    "مسلسل رائحة الإبن"
+   ],
+   "lat": [
+    "Evlat Kokusu",
+    "ბავშვის სურნელი",
+    "Запах ребенка"
+   ],
+   "score": 6,
+   "evidence": [
+    "latin-exact:hint",
+    "year-ok",
+    "eps:9~9"
+   ],
+   "at": 1794491945916
+  },
+  "alsunduq-fqmts": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "240335",
+   "imdb": "tt29926954",
+   "wikidata": "Q130257339",
+   "original": "Sandık Kokusu",
+   "year": 2023,
+   "ar": [
+    "مسلسل رائحة الصندوق",
+    "أنا أم",
+    "بوی صندوق",
+    "رائحة الصندوق",
+    "أنا أم (رائحة الصندوق)"
+   ],
+   "lat": [
+    "Sandık Kokusu",
+    "Запах сундука",
+    "I Am Mother",
+    "Είμαι Μητέρα",
+    "Запах скрині",
+    "Motinos širdis",
+    "Amor sin límite",
+    "Coração de Mãe",
+    "Anyai örökség",
+    "Sandik Kokusu",
+    "Ana Omm",
+    "Man Madaram"
+   ],
+   "score": 11.5,
+   "evidence": [
+    "ar-exact",
+    "wikidata-ar-exact",
+    "wikidata-id-agrees",
+    "image-near:11",
+    "year-ok",
+    "eps:50~50"
+   ],
+   "at": 1794491952827
+  },
+  "sayaejebak-lqmnt": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "203205",
+   "imdb": "tt19246566",
+   "wikidata": "Q112841090",
+   "original": "Seversin",
+   "year": 2022,
+   "ar": [
+    "مسلسل سيعجبك",
+    "الفقيرة والأمير",
+    "سيعجبك"
+   ],
+   "lat": [
+    "Seversin",
+    "Ты полюбишь",
+    "Love and Hate",
+    "შეგიყვარდება",
+    "Láska a nenávist",
+    "You Love It"
+   ],
+   "score": 10,
+   "evidence": [
+    "ar-exact",
+    "wikidata-ar-exact",
+    "wikidata-id-agrees",
+    "year-ok",
+    "eps:20~20"
+   ],
+   "at": 1794491961771
+  },
+  "evli-cgowr": {
+   "status": "unresolved",
+   "tries": 2,
+   "checked": 1794491985685,
+   "next": 1794751185685,
+   "reason": "score 0.5 < 4",
+   "cast": [
+    "إيدا إيجي",
+    "برك أوكتاي",
+    "سرن شيرينجه"
+   ],
+   "cands": [
+    {
+     "src": "tmdb",
+     "ref": "228309",
+     "name": "Yeni Evli",
+     "premiered": 2007,
+     "score": 0.5,
+     "evidence": [
+      "year-ok"
+     ]
+    },
+    {
+     "src": "tmdb",
+     "ref": "84838",
+     "name": "Evli ve Öfkeli",
+     "premiered": 2015,
+     "score": 0.5,
+     "evidence": [
+      "year-ok"
+     ]
+    },
+    {
+     "src": "tmdb",
+     "ref": "207944",
+     "name": "Evli ve Çocuklu",
+     "premiered": 2004,
+     "score": 0.5,
+     "evidence": [
+      "year-ok"
+     ]
+    }
+   ]
+  },
+  "masharef-allayl-fqmts": {
+   "status": "unresolved",
+   "tries": 2,
+   "checked": 1794492007352,
+   "next": 1794751207352,
+   "reason": "no candidates",
+   "cast": [
+    "سارب ليفند أوغلو",
+    "قادير دوغلو",
+    "كان تشانير",
+    "نسليهان أتاغول"
+   ],
+   "cands": []
+  },
+  "seer-wa-khafa-nqvts": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "203699",
+   "imdb": "tt19410124",
+   "wikidata": "Q113451950",
+   "original": "Gizli Saklı",
+   "year": 2022,
+   "ar": [
+    "مسلسل في السر و الخفاء",
+    "في السر والخفاء",
+    "محرمانه"
+   ],
+   "lat": [
+    "Gizli Saklı",
+    "Love On Duty",
+    "Confidencial",
+    "Под прикрытием",
+    "Gizli Sakli",
+    "Під прикриттям"
+   ],
+   "score": 7,
+   "evidence": [
+    "wikidata-id-agrees",
+    "latin-exact:hint",
+    "year-ok",
+    "eps:8~8"
+   ],
+   "at": 1794492018603
+  },
+  "lvstr-bqmzn": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "87175",
+   "imdb": "tt2972020",
+   "wikidata": null,
+   "original": "Bir Aşk Hikayesi",
+   "year": 2013,
+   "ar": [
+    "مسلسل قصة عشق"
+   ],
+   "lat": [
+    "Bir Aşk Hikayesi",
+    "Historia de un amor",
+    "A Love Story",
+    "История одной любви",
+    "Uma História de Amor"
+   ],
+   "score": 6,
+   "evidence": [
+    "latin-exact:hint",
+    "year-ok",
+    "eps:36~36"
+   ],
+   "at": 1794492033809
+  },
+  "matha-law-vqstm": {
+   "status": "unresolved",
+   "tries": 2,
+   "checked": 1794492074570,
+   "next": 1794751274570,
+   "reason": "no strong evidence",
+   "cast": [
+    "حفصة نور سانجاكتوتان",
+    "كرم بورسين"
+   ],
+   "cands": [
+    {
+     "src": "tmdb",
+     "ref": "228979",
+     "name": "Ya Çok Seversen",
+     "premiered": 2023,
+     "score": 5.75,
+     "evidence": [
+      "ar-tokens-weak",
+      "cast:1",
+      "image-near:11",
+      "year-ok",
+      "eps:13~13"
+     ]
+    },
+    {
+     "src": "tmdb",
+     "ref": "83087",
+     "name": "Muhteşem İkili",
+     "premiered": 2018,
+     "score": 3.5,
+     "evidence": [
+      "cast:1",
+      "year-ok",
+      "eps:12~13"
+     ]
+    },
+    {
+     "src": "tmdb",
+     "ref": "82007",
+     "name": "Yaşamayanlar",
+     "premiered": 2018,
+     "score": 2.3,
+     "evidence": [
+      "cast:1",
+      "year-ok",
+      "eps:8~13"
+     ]
+    }
+   ]
+  },
+  "mehmed-vqsmr": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "78203",
+   "imdb": "tt7428834",
+   "wikidata": "Q50828579",
+   "original": "Mehmed: Bir Cihan Fatihi",
+   "year": 2018,
+   "ar": [
+    "مسلسل محمد",
+    "محمد الفاتح",
+    "محمد: فاتح العالم",
+    "محمد الفاتح (مسلسل)"
+   ],
+   "lat": [
+    "Mehmed: Bir Cihan Fatihi",
+    "Mehmed: The Conqueror",
+    "Mehmed el conquistador (Mehmed: The Conqueror)",
+    "Мехмед- завоеватель мира",
+    "Mehmed Bir Cihan Fatihi",
+    "The Conqueror",
+    "Fatih"
+   ],
+   "score": 10,
+   "evidence": [
+    "wikidata-ar-tokens",
+    "wikidata-id-agrees",
+    "latin-exact:hint",
+    "image-near:14",
+    "year-ok",
+    "eps:6~6"
+   ],
+   "at": 1794492083168
+  },
+  "emirin-yolu-kqvts": {
+   "status": "unresolved",
+   "tries": 2,
+   "checked": 1794492088811,
+   "next": 1794751288811,
+   "reason": "no candidates",
+   "cast": [
+    "جيداء آتش",
+    "جيزام كاراجا",
+    "شاتاي اولسوي",
+    "فوركان أنديتش"
+   ],
+   "cands": []
+  },
+  "oyunu-bozan-nqvst": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "85459",
+   "imdb": "tt7685892",
+   "wikidata": null,
+   "original": "Oyunbozan",
+   "year": 2016,
+   "ar": [
+    "مسلسل مفسد اللعبة"
+   ],
+   "lat": [
+    "Oyunbozan",
+    "Black Heart",
+    "Портящий игру"
+   ],
+   "score": 5.3,
+   "evidence": [
+    "latin-exact:hint",
+    "year-ok",
+    "eps:5~6"
+   ],
+   "at": 1794492121668
+  },
+  "qadari-hqmts": {
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "70929",
+   "imdb": "tt4075196",
+   "wikidata": "Q19611573",
+   "original": "Kaderimin Yazıldığı Gün",
+   "year": 2014,
+   "ar": [
+    "مسلسل يوم كتابة قدري",
+    "لعبة القدر",
+    "قلوب الرمان"
+   ],
+   "lat": [
+    "Kaderimin Yazıldığı Gün",
+    "Una parte de mí",
+    "A Part of Me",
+    "Una Parte de Mi",
+    "Sorsfordító szerelem",
+    "Στα Δίχτυα του Πεπρωμένου",
+    "Mano lemties diena",
+    "Кохання проти долі",
+    "Le jour où mon destin est écrit",
+    "Logbat Al Kadar",
+    "Chast ot men",
+    "No te enamores",
+    "A Part Of Me",
+    "Belahan Jiwa Kahraman"
+   ],
+   "score": 9,
+   "evidence": [
+    "latin-exact:hint",
+    "image-match:9",
+    "year-ok",
+    "eps:50~50"
+   ],
+   "at": 1794492129133
+  }
+ },
+ "aliases": {
+  "اخبرهمايهابحراسود": "77026",
+  "بحراسود": "77026",
+  "اشرحايهابحراسود": "77026",
+  "منانتايهامقنع": "154567",
+  "ازهارثلج": "281280",
+  "قطراتثلج": "281280",
+  "زهورثلج": "281280",
+  "رايه": "218477",
+  "طايررفراف": "210865",
+  "شمعرانعمارتسرطلا": "210865",
+  "شمرانعمارتسرطلا": "210865",
+  "فريد": "210865",
+  "طبيب": "310430",
+  "طبيبفيحياهاخري": "310430",
+  "غنيوفقير": "88255",
+  "قدراسود": "92273",
+  "مدينهمفقوده": "49159",
+  "رايحهابن": "98102",
+  "رايحهصندوق": "240335",
+  "اناام": "240335",
+  "بوصندوق": "240335",
+  "اناامرايحهصندوق": "240335",
+  "سيعجبك": "203205",
+  "فقيرهوالامير": "203205",
+  "فيسروخفاء": "203699",
+  "فيسروالخفاء": "203699",
+  "محرمانه": "203699",
+  "قصهعشق": "87175",
+  "محمد": "78203",
+  "محمدفاتح": "78203",
+  "محمدفاتحعالم": "78203",
+  "محمدفاتحمسلسل": "78203",
+  "مفسدلعبه": "85459",
+  "يومكتابهقدري": "70929",
+  "لعبهقدر": "70929",
+  "قلوبرمان": "70929"
+ }
+}

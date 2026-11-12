@@ -229,7 +229,7 @@ export async function resolveIdentity(show, ctx, extra = {}) {
 }
 
 // ---------- اختيار أفضل بوستر عمودي لهوية مؤكدة ----------
-const LANGW = { ar: 1, tr: 0.9, null: 0.75, en: 0.6 };
+const LANGW = { null: 1, tr: 0.95, ar: 0.8, en: 0.6 };   // بوستر عربي قد يحمل عنوانًا مدبلجًا يخالف عنوان الموقع، فيُفضَّل عليه الخالي من النص ثم التركي الأصلي
 export async function choosePoster(c, ctx) {
   if (c.src === 'tvmaze') {
     const urls = []; if (c.image) urls.push(c.image); const imgs = await ctx.json('https://api.tvmaze.com/shows/' + c.ref + '/images'); for (const im of (imgs || []).filter((i) => i.type === 'poster').sort((p, q) => (q.resolutions?.original?.width || 0) - (p.resolutions?.original?.width || 0)).slice(0, 3)) if (im.resolutions?.original?.url) urls.push(im.resolutions.original.url);

@@ -169,10 +169,35 @@
   }
  },
  "fi-kqtmv": {
-  "at": 1794482210806,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for fi-kqtmv"
+  "at": 1794491769523,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "71036",
+  "name": "Fi",
+  "premiered": 2017,
+  "idscore": 6,
+  "evidence": [
+   "latin-exact:hint",
+   "year-ok",
+   "eps:22~22"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/zor5X8aqT77E8FEQy4RCEeDOCGv.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 70.5,
+  "ent": 7.01,
+  "score": 0.891,
+  "path": "data/posters/v3/400c23d3b9a9.webp",
+  "bg": {
+   "path": "data/posters/v4/400c23d3b9a9.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/FOfZFc6tciIpQTafHfuWwr6A3m.jpg"
+  },
+  "bgAt": 1794491777229,
+  "prev": "data/posters/v2/400c23d3b9a9.webp"
  },
  "46-bvqms": {
   "at": 1794482213720,
@@ -516,10 +541,35 @@
   "bg": null
  },
  "azhar-thalj-vqstm": {
-  "at": 1794482224666,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for azhar-thalj-vqstm"
+  "at": 1794491777231,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "281280",
+  "name": "Kardelenler",
+  "premiered": 2025,
+  "idscore": 6,
+  "evidence": [
+   "latin-exact:hint",
+   "year-ok",
+   "eps:10~10"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/spGJO20LaQ9i6scLlwrqmAW35Yx.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 58.34,
+  "ent": 6.9,
+  "score": 0.889,
+  "path": "data/posters/v3/b209d5b7dfe1.webp",
+  "bg": {
+   "path": "data/posters/v4/b209d5b7dfe1.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/ekeFVrDKad06OwJoBKOXiRYrTb8.jpg"
+  },
+  "bgAt": 1794491786409,
+  "prev": "data/posters/v2/b209d5b7dfe1.webp"
  },
  "hayat-sirlari-kmvqs": {
   "at": 1794444872327,
@@ -1560,11 +1610,35 @@
   }
  },
  "sancak-vqmrs": {
-  "at": 1794482267689,
-  "tries": 1,
-  "q": "sancak",
-  "status": "review",
-  "note": "partial ambiguous: Al Sancak | Al Sancak"
+  "at": 1794491786412,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "218477",
+  "name": "Al Sancak",
+  "premiered": 2023,
+  "idscore": 6.5,
+  "evidence": [
+   "ar-exact",
+   "latin-tokens:slug",
+   "year-ok"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/8DFDnOAIREpgqQW0VZm50U8jfNM.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 75.46,
+  "ent": 7.88,
+  "score": 0.901,
+  "path": "data/posters/v3/ddf56794ceca.webp",
+  "bg": {
+   "path": "data/posters/v4/ddf56794ceca.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/n8pJ9dGjAezlqFnBYoW6LUwPmwG.jpg"
+  },
+  "bgAt": 1794491819028,
+  "prev": "data/posters/v2/ddf56794ceca.webp"
  },
  "merhamet-jqvns": {
   "at": 1794444942124,
@@ -1886,10 +1960,38 @@
   }
  },
  "altayer-alrafraf-mqvts": {
-  "at": 1794482277191,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for altayer-alrafraf-mqvts"
+  "at": 1794491819030,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "210865",
+  "name": "Yalı Çapkını",
+  "premiered": 2022,
+  "idscore": 13,
+  "evidence": [
+   "ar-exact",
+   "wikidata-ar-exact",
+   "wikidata-id-agrees",
+   "image-match:2",
+   "year-ok",
+   "eps:101~101"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/pzDHrbX7780TcNrV4P7j5xrgE6u.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 85.82,
+  "ent": 7.5,
+  "score": 0.901,
+  "path": "data/posters/v3/415da7b68486.webp",
+  "bg": {
+   "path": "data/posters/v4/415da7b68486.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/vDqCoaMU5FUAuUs0EvL4OAUCxJk.jpg"
+  },
+  "bgAt": 1794491827269,
+  "prev": "data/posters/v2/415da7b68486.webp"
  },
  "sosyete-jrqmv": {
   "at": 1794483432884,
@@ -1915,10 +2017,35 @@
   }
  },
  "tabeeb-zplon": {
-  "at": 1794482282826,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tabeeb-zplon"
+  "at": 1794491827271,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "310430",
+  "name": "Doktor: Başka Hayatta",
+  "premiered": 2026,
+  "idscore": 6,
+  "evidence": [
+   "latin-exact:hint",
+   "year-ok",
+   "eps:6~6"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/l0upbqBdvweAch5jW2dj6RVYu0s.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 58.52,
+  "ent": 7.53,
+  "score": 0.901,
+  "path": "data/posters/v3/6d5b1e8b31b5.webp",
+  "bg": {
+   "path": "data/posters/v4/6d5b1e8b31b5.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/p5qru3uYCqMgRSLCOmAZXnE5qBs.jpg"
+  },
+  "bgAt": 1794491837379,
+  "prev": "data/posters/v2/6d5b1e8b31b5.webp"
  },
  "tabeeb-moejiza-kvmqs": {
   "at": 1794482285926,
@@ -2448,11 +2575,35 @@
   "bg": null
  },
  "zengin-kqvmt": {
-  "at": 1794482302423,
-  "tries": 1,
-  "q": "zengin",
-  "status": "review",
-  "note": "partial ambiguous: Zengin Kız Fakir Oğlan | Zengin ve Yoksul | Zengin ve Yoksul | Zengin Kiz Fakir Oglan"
+  "at": 1794491837381,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "88255",
+  "name": "Zengin ve Yoksul",
+  "premiered": 2019,
+  "idscore": 6,
+  "evidence": [
+   "latin-exact:hint",
+   "year-ok",
+   "eps:8~8"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/46SjNee7t4v2FBnzLOcMCl7iM0N.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 68.88,
+  "ent": 7.68,
+  "score": 0.901,
+  "path": "data/posters/v3/afa026b5b788.webp",
+  "bg": {
+   "path": "data/posters/v4/afa026b5b788.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/d0NqtNCm1KCYbrIgtXgfKUuNKk8.jpg"
+  },
+  "bgAt": 1794491862360,
+  "prev": "data/posters/v2/afa026b5b788.webp"
  },
  "avlu-kqvms": {
   "at": 1794445007251,
@@ -2559,20 +2710,35 @@
   "bg": null
  },
  "karayazi-pwlqs": {
-  "at": 1794482303333,
-  "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Karadayı (2012)",
-  "cands": [
-   {
-    "src": "tvmaze",
-    "ref": "17719",
-    "name": "Karadayı",
-    "premiered": "2012",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/59/149051.jpg",
-    "sim": 0.57
-   }
-  ]
+  "at": 1794491862363,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "92273",
+  "name": "Kara Yazı",
+  "premiered": 2017,
+  "idscore": 6,
+  "evidence": [
+   "latin-exact:slug",
+   "year-ok",
+   "eps:6~6"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/zsPBIxWYIpu1s757XJEQls3gXjd.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 79.74,
+  "ent": 7.83,
+  "score": 0.901,
+  "path": "data/posters/v3/3ccb99be19b8.webp",
+  "bg": {
+   "path": "data/posters/v4/3ccb99be19b8.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/4vgY27ys4TuxDriKiVOPlGoTx4I.jpg"
+  },
+  "bgAt": 1794491889750,
+  "prev": "data/posters/v2/3ccb99be19b8.webp"
  },
  "beyaz-karanfil-vqsmr": {
   "at": 1794445014430,
@@ -3082,12 +3248,6 @@
    "w": 1000,
    "url": "https://static.tvmaze.com/uploads/images/original_untouched/558/1396274.jpg"
   }
- },
- "tlcty-fmsqr": {
-  "at": 1794482318561,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for tlcty-fmsqr"
  },
  "gunahkar-lqvms": {
   "at": 1794445048952,
@@ -4899,36 +5059,12 @@
   }
  },
  "yazin-hikayesi-vqstm": {
-  "at": 1794482373839,
-  "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Yılan Hikayesi (1999) | Yılan Hikayesi () | Eski Hikâye (2013)",
-  "cands": [
-   {
-    "src": "tmdb",
-    "ref": "48311",
-    "name": "Yılan Hikayesi",
-    "premiered": "1999",
-    "url": "https://image.tmdb.org/t/p/w780/nY4OuufXxDTeU8tvvXIU66oxc1R.jpg",
-    "sim": 0.67
-   },
-   {
-    "src": "tvmaze",
-    "ref": "54429",
-    "name": "Yılan Hikayesi",
-    "premiered": "",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/301/754400.jpg",
-    "sim": 0.67
-   },
-   {
-    "src": "tvmaze",
-    "ref": "56523",
-    "name": "Eski Hikâye",
-    "premiered": "2013",
-    "url": "https://static.tvmaze.com/uploads/images/original_untouched/342/856761.jpg",
-    "sim": 0.57
-   }
-  ]
+  "at": 1794491895796,
+  "tries": 2,
+  "status": "unmatched",
+  "note": "no candidates",
+  "cands": [],
+  "next": 1794751100832
  },
  "bir-aile-hikayesi-vqstm": {
   "at": 1794445163811,
@@ -5308,10 +5444,12 @@
   }
  },
  "don-an-tashoor-kvmts": {
-  "at": 1794482385639,
-  "tries": 1,
+  "at": 1794491900834,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for don-an-tashoor-kvmts"
+  "note": "no candidates",
+  "cands": [],
+  "next": 1794751122500
  },
  "deen-rooh-fqvts": {
   "at": 1794482390354,
@@ -5353,16 +5491,35 @@
   "bg": null
  },
  "ogulkokusu-fzqtm": {
-  "at": 1794482392851,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ogulkokusu-fzqtm"
- },
- "alsunduq-fqmts": {
-  "at": 1794482395734,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for alsunduq-fqmts"
+  "at": 1794491922502,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "98102",
+  "name": "Evlat Kokusu",
+  "premiered": 2017,
+  "idscore": 6,
+  "evidence": [
+   "latin-exact:hint",
+   "year-ok",
+   "eps:9~9"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/1TWlH9nQPGd1L5pVFdk8ANUEY3D.jpg",
+  "lang": null,
+  "w": 780,
+  "h": 1170,
+  "sharp": 75.33,
+  "ent": 7.71,
+  "score": 0.901,
+  "path": "data/posters/v3/f5f42bc1a9be.webp",
+  "bg": {
+   "path": "data/posters/v4/f5f42bc1a9be.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/5NKdo8IigUJcR90GmhdZOfS7E5J.jpg"
+  },
+  "bgAt": 1794491945916,
+  "prev": "data/posters/v2/f5f42bc1a9be.webp"
  },
  "cilek-kokusu-vqstm": {
   "at": 1794445200945,
@@ -5715,12 +5872,6 @@
   "path": "data/posters/v3/0720607a16cd.webp",
   "prev": "data/posters/v2/0720607a16cd.webp",
   "bg": null
- },
- "sayaejebak-lqmnt": {
-  "at": 1794482403879,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for sayaejebak-lqmnt"
  },
  "shakhs-akhar-vqnts": {
   "at": 1794482406748,
@@ -6133,10 +6284,43 @@
   }
  },
  "evli-cgowr": {
-  "at": 1794482412292,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for evli-cgowr"
+  "at": 1794491961773,
+  "tries": 2,
+  "status": "review",
+  "note": "score 0.5 < 4",
+  "cands": [
+   {
+    "src": "tmdb",
+    "ref": "228309",
+    "name": "Yeni Evli",
+    "premiered": 2007,
+    "score": 0.5,
+    "evidence": [
+     "year-ok"
+    ]
+   },
+   {
+    "src": "tmdb",
+    "ref": "84838",
+    "name": "Evli ve Öfkeli",
+    "premiered": 2015,
+    "score": 0.5,
+    "evidence": [
+     "year-ok"
+    ]
+   },
+   {
+    "src": "tmdb",
+    "ref": "207944",
+    "name": "Evli ve Çocuklu",
+    "premiered": 2004,
+    "score": 0.5,
+    "evidence": [
+     "year-ok"
+    ]
+   }
+  ],
+  "next": 1794751185685
  },
  "karisik-hgqnt": {
   "at": 1794445991861,
@@ -6203,10 +6387,12 @@
   "bg": null
  },
  "masharef-allayl-fqmts": {
-  "at": 1794482420676,
-  "tries": 1,
+  "at": 1794491985687,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for masharef-allayl-fqmts"
+  "note": "no candidates",
+  "cands": [],
+  "next": 1794751207352
  },
  "omer-kvrsm": {
   "at": 1794445258698,
@@ -6505,10 +6691,36 @@
   "bg": null
  },
  "seer-wa-khafa-nqvts": {
-  "at": 1794482430777,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for seer-wa-khafa-nqvts"
+  "at": 1794492007354,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "203699",
+  "name": "Gizli Saklı",
+  "premiered": 2022,
+  "idscore": 7,
+  "evidence": [
+   "wikidata-id-agrees",
+   "latin-exact:hint",
+   "year-ok",
+   "eps:8~8"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/d2dNVKuXQoeuMeE2K7fOItQxJJI.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 70.03,
+  "ent": 7.31,
+  "score": 0.897,
+  "path": "data/posters/v3/69eeff75228a.webp",
+  "bg": {
+   "path": "data/posters/v4/69eeff75228a.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/w8EugkBjU1IKR81QsjX6HQjwGf4.jpg"
+  },
+  "bgAt": 1794492018603,
+  "prev": "data/posters/v2/69eeff75228a.webp"
  },
  "iyi-gunde-kotu-gunde-vqtrs": {
   "at": 1794445280778,
@@ -6570,12 +6782,6 @@
   "path": "data/posters/v3/8e1f70e659e5.webp",
   "prev": "data/posters/v2/8e1f70e659e5.webp",
   "bg": null
- },
- "lvstr-bqmzn": {
-  "at": 1794482435496,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for lvstr-bqmzn"
  },
  "eski-hikaye-vqmrs": {
   "at": 1794445285378,
@@ -7107,10 +7313,51 @@
   "bg": null
  },
  "matha-law-vqstm": {
-  "at": 1794482453200,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for matha-law-vqstm"
+  "at": 1794492033811,
+  "tries": 2,
+  "status": "review",
+  "note": "no strong evidence",
+  "cands": [
+   {
+    "src": "tmdb",
+    "ref": "228979",
+    "name": "Ya Çok Seversen",
+    "premiered": 2023,
+    "score": 5.75,
+    "evidence": [
+     "ar-tokens-weak",
+     "cast:1",
+     "image-near:11",
+     "year-ok",
+     "eps:13~13"
+    ]
+   },
+   {
+    "src": "tmdb",
+    "ref": "83087",
+    "name": "Muhteşem İkili",
+    "premiered": 2018,
+    "score": 3.5,
+    "evidence": [
+     "cast:1",
+     "year-ok",
+     "eps:12~13"
+    ]
+   },
+   {
+    "src": "tmdb",
+    "ref": "82007",
+    "name": "Yaşamayanlar",
+    "premiered": 2018,
+    "score": 2.3,
+    "evidence": [
+     "cast:1",
+     "year-ok",
+     "eps:8~13"
+    ]
+   }
+  ],
+  "next": 1794751274570
  },
  "maral-kqvsm": {
   "at": 1794446033355,
@@ -7239,11 +7486,38 @@
   "bg": null
  },
  "mehmed-vqsmr": {
-  "at": 1794482457029,
-  "tries": 1,
-  "q": "mehmed",
-  "status": "review",
-  "note": "partial ambiguous: Mehmed: Fetihler Sultanı | Mehmed: Bir Cihan Fatihi | Mehmed: Fetihler Sultanı | Mehmed Bir Cihan Fatihi"
+  "at": 1794492074572,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "78203",
+  "name": "Mehmed: Bir Cihan Fatihi",
+  "premiered": 2018,
+  "idscore": 10,
+  "evidence": [
+   "wikidata-ar-tokens",
+   "wikidata-id-agrees",
+   "latin-exact:hint",
+   "image-near:14",
+   "year-ok",
+   "eps:6~6"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/hEQK1gBirZSgQsNgCBvQcK9ehhh.jpg",
+  "lang": null,
+  "w": 780,
+  "h": 1170,
+  "sharp": 77.09,
+  "ent": 7.24,
+  "score": 0.896,
+  "path": "data/posters/v3/701eae69685c.webp",
+  "bg": {
+   "path": "data/posters/v4/701eae69685c.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/hrNwIavZZaDd5UkieG8cuqHZyxr.jpg"
+  },
+  "bgAt": 1794492083168,
+  "prev": "data/posters/v2/701eae69685c.webp"
  },
  "marashli-hqfns": {
   "at": 1794456045660,
@@ -7335,10 +7609,12 @@
   }
  },
  "emirin-yolu-kqvts": {
-  "at": 1794482457948,
-  "tries": 1,
+  "at": 1794492083171,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for emirin-yolu-kqvts"
+  "note": "no candidates",
+  "cands": [],
+  "next": 1794751288811
  },
  "bas-belasi-hqtmv": {
   "at": 1794445337569,
@@ -7407,36 +7683,35 @@
   "bg": null
  },
  "oyunu-bozan-nqvst": {
-  "at": 1794482461793,
-  "tries": 1,
-  "status": "review",
-  "note": "fuzzy candidates (episodes mismatch/ambiguous): Aşk Oyunu (2005) | Tatar Ramazan: Ben Bu Oyunu Bozarım (2013) | Baht Oyunu (2021)",
-  "cands": [
-   {
-    "src": "tmdb",
-    "ref": "42781",
-    "name": "Aşk Oyunu",
-    "premiered": "2005",
-    "url": "https://image.tmdb.org/t/p/w780/si1m1vUSz6DI6D4IljrOZ8bJgST.jpg",
-    "sim": 0.5
-   },
-   {
-    "src": "tmdb",
-    "ref": "110068",
-    "name": "Tatar Ramazan: Ben Bu Oyunu Bozarım",
-    "premiered": "2013",
-    "url": "https://image.tmdb.org/t/p/w780/bp8VpKzch1L1qX98lucrFCiBNIo.jpg",
-    "sim": 0.49
-   },
-   {
-    "src": "tmdb",
-    "ref": "125527",
-    "name": "Baht Oyunu",
-    "premiered": "2021",
-    "url": "https://image.tmdb.org/t/p/w780/3qBdshcYgdgLZmO3AVbNtMKqbSf.jpg",
-    "sim": 0.47
-   }
-  ]
+  "at": 1794492088813,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "85459",
+  "name": "Oyunbozan",
+  "premiered": 2016,
+  "idscore": 5.3,
+  "evidence": [
+   "latin-exact:hint",
+   "year-ok",
+   "eps:5~6"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/u88Zl4XkDklgshVMCISgERfsQvu.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 66.28,
+  "ent": 7,
+  "score": 0.891,
+  "path": "data/posters/v3/90a16d2427fb.webp",
+  "bg": {
+   "path": "data/posters/v4/90a16d2427fb.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/hkLre6EpRtMOVFhgi3R4xFJ4PkZ.jpg"
+  },
+  "bgAt": 1794492121668,
+  "prev": "data/posters/v2/90a16d2427fb.webp"
  },
  "sehrin-melekleri-kqvts": {
   "at": 1794445343968,
@@ -8130,17 +8405,69 @@
   }
  },
  "qadari-hqmts": {
-  "at": 1794482492240,
-  "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for qadari-hqmts"
+  "at": 1794492121670,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "70929",
+  "name": "Kaderimin Yazıldığı Gün",
+  "premiered": 2014,
+  "idscore": 9,
+  "evidence": [
+   "latin-exact:hint",
+   "image-match:9",
+   "year-ok",
+   "eps:50~50"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/h1jTaOynSslSPrXHV35FFBsQWks.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 65.24,
+  "ent": 7.85,
+  "score": 0.901,
+  "path": "data/posters/v3/1fbc7c01f46b.webp",
+  "bg": {
+   "path": "data/posters/v4/1fbc7c01f46b.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/pNaUMxuHIfgEgLmLlDqk877WQ68.jpg"
+  },
+  "bgAt": 1794492129133,
+  "prev": "data/posters/v2/1fbc7c01f46b.webp"
  },
  "karadeniz-hqvms": {
-  "at": 1794482204322,
-  "tries": 1,
-  "q": "karadeniz",
-  "status": "review",
-  "note": "partial ambiguous: Sevdam Karadeniz | Sen Anlat Karadeniz | Gözleri Karadeniz | İstikamet Karadeniz | Dalga Karadeniz'in Gizli Gücü | Gözleri Karadeniz | Sevdam Karadeniz | Sen Anlat Karadeniz | Kalbimin Rotası Karadeniz"
+  "at": 1794491712760,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "77026",
+  "name": "Sen Anlat Karadeniz",
+  "premiered": 2018,
+  "idscore": 8.5,
+  "evidence": [
+   "ar-tokens",
+   "latin-tokens:slug",
+   "image-match:3",
+   "year-ok",
+   "eps:64~64"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/1KBw6dPRxS7fIl68YspojjATtWO.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 74.53,
+  "ent": 7.65,
+  "score": 0.901,
+  "path": "data/posters/v3/5b2cefb75c76.webp",
+  "bg": {
+   "path": "data/posters/v4/5b2cefb75c76.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/fUO8slvybhdvJC59hyxchh6M90V.jpg"
+  },
+  "bgAt": 1794491732541,
+  "prev": "data/posters/v2/5b2cefb75c76.webp"
  },
  "tlsth-vqgmn": {
   "at": 1794483445556,
@@ -8166,11 +8493,36 @@
   }
  },
  "kimsin-sen-qvtrs": {
-  "at": 1794482208579,
-  "tries": 1,
-  "q": "kimsin sen",
-  "status": "review",
-  "note": "partial ambiguous: Maske - Kimsin Sen? | Maske: Kimsin Sen?"
+  "at": 1794491732544,
+  "tries": 2,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "154567",
+  "name": "Maske - Kimsin Sen?",
+  "premiered": 2022,
+  "idscore": 7,
+  "evidence": [
+   "wikidata-id-agrees",
+   "latin-exact:hint",
+   "year-ok",
+   "eps:9~9"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/ynzf39cYhmmXVEBTnA6g3eCKFw0.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 61.37,
+  "ent": 7.36,
+  "score": 0.898,
+  "path": "data/posters/v3/5a7e9d4b7b98.webp",
+  "bg": {
+   "path": "data/posters/v4/5a7e9d4b7b98.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/oJ11hOy6XRSIzzKImmAl19W5lpr.jpg"
+  },
+  "bgAt": 1794491769521,
+  "prev": "data/posters/v2/5a7e9d4b7b98.webp"
  },
  "kalbim-egede-kaldi-vsmrq": {
   "at": 1794445419387,

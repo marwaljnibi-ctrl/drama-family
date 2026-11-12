@@ -115,8 +115,11 @@ if (isMain && has('--resolve')) {
   if (arg('--limit')) list = list.slice(0, +arg('--limit')); const c = {};
   for (const s of list) {
     const r = map[s.id]; if (r && r.status === 'matched' && !has('--force') && !(ovr[s.id]?.tmdb)) continue; if (r && r.conf === 'manual' && !(ovr[s.id]?.tmdb)) continue;
-    const tries = (r && r.tries ? r.tries : 0) + 1; const { rec, ident } = await pickPoster(withHints(s, ovr[s.id]), { sharp, http, override: ovr[s.id]?.tmdb ? ovr[s.id] : null, learned: idx.aliases[arKey(s.title)] || null, cast: idx.shows[s.id]?.cast || null, catalog, tries });
-    if (rec.status !== 'matched') rec.next = nextTry(tries); map[s.id] = rec; recordIdentity(idx, s, ident, tries); c[rec.status] = (c[rec.status] || 0) + 1; save(MAP, map); save(IDX, idx);
+    const tries = (r && r.tries ? r.tries : 0) + 1, i0 = idx.shows[s.id]; const ovT = ovr[s.id]?.tmdb ? ovr[s.id] : null;
+    const known = !ovT && i0 && i0.status === 'confirmed' ? { src: i0.src, ref: i0.ref, original: i0.original, year: i0.year, ar: i0.ar, lat: i0.lat, imdb: i0.imdb, evidence: i0.evidence, score: i0.score } : null;
+    let out; for (let a = 0; a < 3; a++) { out = await pickPoster(withHints(s, ovr[s.id]), { sharp, http, override: ovT, known, learned: idx.aliases[arKey(s.title)] || null, cast: i0?.cast || null, catalog, tries }); if (!(out.ident.transient && out.ident.status !== 'confirmed')) break; console.log('transient network failure, retrying', s.id); await new Promise((r) => setTimeout(r, 20000)); }   // فشل شبكة عابر: نعيد حتى 3 مرات
+    const { rec, ident } = out;
+    if (rec.status !== 'matched') rec.next = ident.transient ? Date.now() + 6 * 3600e3 : nextTry(tries); map[s.id] = rec; if (!known && !(ident.transient && ident.status !== 'confirmed')) recordIdentity(idx, s, ident, tries); c[rec.status] = (c[rec.status] || 0) + 1; save(MAP, map); save(IDX, idx);
     const b = ident.best; console.log(rec.status.toUpperCase(), s.id, '|', s.title, '|', b ? `${b.original} (${b.year}) ${b.src}#${b.ref} score=${b.score} [${(b.evidence || []).join(',')}]` : ident.reason, rec.status !== 'matched' ? '| ' + (rec.note || '') + ' | ' + (ident.cands || []).map((x) => `${x.original}(${x.year})#${x.ref}:${x.score}`).join(' ; ') : '');
   }
   console.log(JSON.stringify(c)); process.exit(0);

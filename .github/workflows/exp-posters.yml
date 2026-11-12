@@ -11,13 +11,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm i --no-save --no-audit --no-fund sharp
-      - name: engine audit on already-approved TMDB matches (calibration, no writes)
-        continue-on-error: true
-        env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
-        run: node scripts/poster-pick.mjs --audit --limit 20 2>&1 | tail -n 60
       - name: resolve the unapproved shows
         env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
-        run: node scripts/poster-pick.mjs --resolve 2>&1 | tail -n 80
+        run: |
+          node scripts/poster-pick.mjs --resolve --ids tlcty-fmsqr,alsunduq-fqmts,sayaejebak-lqmnt,lvstr-bqmzn 2>&1 | tail -n 20
+          node scripts/poster-pick.mjs --resolve 2>&1 | tail -n 60
       - name: what does the source page offer (cast/year/channel)?
         continue-on-error: true
         run: |
