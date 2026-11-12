@@ -35,19 +35,23 @@ test('automation: a new show is matched once, recorded, and never re-evaluated; 
       if (q === 'yeni dizi') return new Response(JSON.stringify([show('Yeni Dizi')]));
       if (q === 'ayni isim') return new Response(JSON.stringify([show('Ayni Isim', 'US')]));        // بلد غير تركيا
       if (q === 'baska') return new Response(JSON.stringify([show('Baska Dizi')]));                  // اسم غير مطابق تمامًا
+      if (q === 'remake dizi') return new Response(JSON.stringify([{ show: { ...show('Remake Dizi').show, id: 11, premiered: '2014-01-01' } }, { show: { ...show('Remake Dizi').show, id: 12, premiered: '2020-01-01' } }]));
       return new Response('[]');
     }
+    if (u.endsWith('/shows/11/episodes')) return new Response(JSON.stringify(Array.from({ length: 20 }, () => ({ type: 'regular' }))));
+    if (u.endsWith('/shows/12/episodes')) return new Response(JSON.stringify(Array.from({ length: 60 }, () => ({ type: 'regular' }))));
     if (u === 'https://img.test/p.jpg') return new Response(img);
     return new Response('', { status: 404 });
   };
   try {
-    const shows = [{ id: 'yeni-dizi-bcdfg', img2: 'old.webp' }, { id: 'ayni-isim-qwrty' }, { id: 'baska-xyzqw' }];
+    const shows = [{ id: 'yeni-dizi-bcdfg', img2: 'old.webp' }, { id: 'ayni-isim-qwrty' }, { id: 'baska-xyzqw' }, { id: 'remake-dizi-bcdfg', eps: Array.from({ length: 20 }, () => ({})) }];
     await upgradePosters(shows, { max: 10, tmdbKey: '' });
     const map = JSON.parse(readFileSync('data/poster-map.json', 'utf8'));
     assert.equal(map['yeni-dizi-bcdfg'].status, 'matched'); assert.ok(existsSync(map['yeni-dizi-bcdfg'].path)); assert.equal(shows[0].img3, map['yeni-dizi-bcdfg'].path); assert.equal(map['yeni-dizi-bcdfg'].prev, 'old.webp');
-    assert.equal(map['ayni-isim-qwrty'].status, 'unmatched'); assert.equal(map['baska-xyzqw'].status, 'unmatched');        // التطابق غير المؤكد = تبقى الصورة الأصلية
+    assert.equal(map['ayni-isim-qwrty'].status, 'unmatched'); assert.equal(map['baska-xyzqw'].status, 'review');   // اسم جزئي بلا تأكيد عدد حلقات = مراجعة
+    assert.equal(map['remake-dizi-bcdfg'].status, 'matched'); assert.equal(map['remake-dizi-bcdfg'].ref, '11'); assert.equal(map['remake-dizi-bcdfg'].conf, 'medium');   // أسماء متطابقة: حُسمت بعدد الحلقات        // التطابق غير المؤكد = تبقى الصورة الأصلية
     assert.equal(shows[1].img3, undefined); assert.equal(shows[2].img3, undefined);
-    const n = calls.length; const s2 = [{ id: 'yeni-dizi-bcdfg' }, { id: 'ayni-isim-qwrty' }, { id: 'baska-xyzqw' }];
+    const n = calls.length; const s2 = [{ id: 'yeni-dizi-bcdfg' }, { id: 'ayni-isim-qwrty' }, { id: 'baska-xyzqw' }, { id: 'remake-dizi-bcdfg' }];
     await upgradePosters(s2, { max: 10, tmdbKey: '' });
     assert.equal(calls.length, n, 'no network calls on the second run (matched final, unmatched waits)');
     assert.equal(s2[0].img3, map['yeni-dizi-bcdfg'].path);                                                                  // المعتمد يُطبَّق بلا إعادة فحص

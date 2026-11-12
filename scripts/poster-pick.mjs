@@ -29,17 +29,25 @@ async function jget(url, tries = 4) {
 }
 const isTR = (s) => [s.network?.country?.code, s.webChannel?.country?.code].includes('TR') || s.language === 'Turkish';
 
-// مرشحون من TMDB (يتطلب مفتاحًا مجانيًا) أو TVmaze؛ كلٌّ بتطابق تام للاسم وبلد تركيا
+// مرشحون من TMDB (يتطلب مفتاحًا مجانيًا) أو TVmaze: exact = اسم مطابق تمامًا؛ partial = اسم يحتوي الآخر (يُقبل فقط بتأكيد عدد الحلقات). كلاهما بلد/لغة تركيا وبصورة.
 async function candidates(v, tmdbKey) {
-  const out = [];
+  const exact = [], partial = [];
+  const add = (c, names) => { const ks = names.map(norm).filter(Boolean); if (ks.includes(v.key)) exact.push(c); else if (v.key.length >= 5 && ks.some((k) => k.length >= 5 && (k.includes(v.key) || v.key.includes(k)))) partial.push(c); };
   if (tmdbKey) {
     const j = await jget(`https://api.themoviedb.org/3/search/tv?api_key=${encodeURIComponent(tmdbKey)}&language=tr-TR&query=${encodeURIComponent(v.q)}`); await sleep(120);
-    for (const r of j?.results || []) if (r.poster_path && (r.origin_country || []).includes('TR') && [r.original_name, r.name].some((n) => norm(n) === v.key)) out.push({ src: 'tmdb', ref: String(r.id), name: r.original_name || r.name, premiered: (r.first_air_date || '').slice(0, 4), url: 'https://image.tmdb.org/t/p/w780' + r.poster_path });
+    for (const r of j?.results || []) if (r.poster_path && (r.origin_country || []).includes('TR')) add({ src: 'tmdb', ref: String(r.id), name: r.original_name || r.name, premiered: (r.first_air_date || '').slice(0, 4), url: 'https://image.tmdb.org/t/p/w780' + r.poster_path }, [r.original_name, r.name]);
   }
   const t = await jget('https://api.tvmaze.com/search/shows?q=' + encodeURIComponent(v.q)); await sleep(550);
-  for (const x of t || []) { const s = x.show; if (s.image?.original && isTR(s) && norm(s.name) === v.key) out.push({ src: 'tvmaze', ref: String(s.id), name: s.name, premiered: (s.premiered || '').slice(0, 4), url: s.image.original }); }
-  return out;
+  for (const x of t || []) { const s = x.show; if (s.image?.original && isTR(s)) add({ src: 'tvmaze', ref: String(s.id), name: s.name, premiered: (s.premiered || '').slice(0, 4), url: s.image.original }, [s.name]); }
+  return { exact, partial };
 }
+// عدد حلقات المسلسل الأصلي (لحسم الأسماء المتشابهة وتأكيد المطابقة الجزئية)
+async function epCount(c, tmdbKey) {
+  if (c.src === 'tmdb') { const j = await jget(`https://api.themoviedb.org/3/tv/${c.ref}?api_key=${encodeURIComponent(tmdbKey)}`); await sleep(120); return j?.number_of_episodes ?? null; }
+  const j = await jget('https://api.tvmaze.com/shows/' + c.ref + '/episodes'); await sleep(550);
+  return Array.isArray(j) ? j.filter((x) => x.type === 'regular').length : null;
+}
+const near = (a, b, tol) => a != null && Math.abs(a - b) <= Math.max(tol, Math.round(b * (tol === 2 ? 0.05 : 0.1)));
 
 // جودة الصورة: دقة، نسبة عمودية، حدّة (انحراف معياري لمرشّح لابلاس)، وتعدد الألوان
 export async function assess(buf, sharp) {
@@ -48,20 +56,31 @@ export async function assess(buf, sharp) {
   const full = await sharp(buf).resize({ width: 120 }).stats();
   const sharpV = +st.channels[0].stdev.toFixed(2), ent = +full.entropy.toFixed(2);
   const reasons = [];
-  if (w < 300) reasons.push('low-res'); if (ar < 0.55 || ar > 0.8) reasons.push('aspect'); if (sharpV < 3) reasons.push('soft'); if (ent < 4.5) reasons.push('flat');
+  if (w < 300) reasons.push('low-res'); if (ar < 0.55 || ar > 0.9) reasons.push('aspect'); if (sharpV < 3) reasons.push('soft'); if (ent < 3.2) reasons.push('flat');
   const score = +(Math.min(w, 1000) / 1000 * 0.45 + Math.min(sharpV / 20, 1) * 0.3 + Math.min(ent / 7.5, 1) * 0.15 + (1 - Math.min(Math.abs(ar - 0.667) / 0.15, 1)) * 0.1).toFixed(3);
-  return { w, h, ar: +ar.toFixed(3), sharp: sharpV, ent, score, ok: reasons.length === 0 || (reasons.length === 1 && reasons[0] === 'low-res' && w >= 280), reasons };
+  return { w, h, ar: +ar.toFixed(3), sharp: sharpV, ent, score, ok: reasons.length === 0 || (reasons.length === 1 && reasons[0] === 'low-res' && w >= 200), reasons };   // دقة 200-299 تُقبل وتُسجَّل low-res للمراجعة
 }
 
 // يعالج مسلسلًا واحدًا. يعيد سجل القرار (بلا كتابة ملفات إن dry)
 export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sharp, dry = false } = {}) {
   const rec = { at: Date.now(), tries: 1 };
-  let cands = [];
-  for (const v of slugVariants(show.id)) { cands = await candidates(v, tmdbKey); if (cands.length) { rec.q = v.q; break; } }
-  if (!cands.length) return { ...rec, status: 'unmatched', note: 'no exact Turkish-name match for ' + show.id };
-  const distinct = new Set(cands.map((c) => c.src + ':' + c.ref)); const byRef = [...distinct];
-  const tmdb = cands.filter((c) => c.src === 'tmdb'); const pool = tmdb.length ? tmdb : cands;
-  if (new Set(pool.map((c) => c.ref)).size > 1) return { ...rec, status: 'review', note: 'ambiguous: ' + pool.map((c) => c.src + ':' + c.name + ' (' + c.premiered + ')').join(' | ') };
+  let found = { exact: [], partial: [] };
+  for (const v of slugVariants(show.id)) { found = await candidates(v, tmdbKey); if (found.exact.length || found.partial.length) { rec.q = v.q; break; } }
+  const mine = show.eps?.length || 0;
+  let pool = [], conf = 'high';
+  const uniq = (xs) => [...new Map(xs.map((c) => [c.src + ':' + c.ref, c])).values()];
+  const tm = uniq(found.exact).filter((c) => c.src === 'tmdb'), ex = tm.length ? tm : uniq(found.exact);
+  if (ex.length === 1) pool = ex;
+  else if (ex.length > 1) {   // أسماء متطابقة (إعادة إنتاج): نحسم بعدد الحلقات، وإلا مراجعة
+    const scored = []; for (const c of ex) scored.push({ c, n: await epCount(c, tmdbKey) });
+    const ok = scored.filter((x) => near(x.n, mine, 3));
+    if (ok.length === 1) { pool = [ok[0].c]; conf = 'medium'; rec.note = 'resolved by episode count ' + ok[0].n + '≈' + mine; }
+    else return { ...rec, status: 'review', note: 'ambiguous: ' + ex.map((c) => c.name + ' (' + c.premiered + ')').join(' | ') };
+  } else if (found.partial.length) {   // اسم جزئي: يُقبل فقط إن كان مرشحًا واحدًا وطابق عدد الحلقات بدقة
+    const pc = uniq(found.partial);
+    if (pc.length === 1) { const n = await epCount(pc[0], tmdbKey); if (near(n, mine, 2)) { pool = pc; conf = 'medium'; rec.note = 'partial name, episodes ' + n + '≈' + mine; } else return { ...rec, status: 'review', note: 'partial name "' + pc[0].name + '" but episodes ' + n + ' vs ' + mine, name: pc[0].name, url: pc[0].url }; }
+    else return { ...rec, status: 'review', note: 'partial ambiguous: ' + pc.map((c) => c.name).join(' | ') };
+  } else return { ...rec, status: 'unmatched', note: 'no Turkish-name match for ' + show.id };
   let best = null;
   for (const c of pool) {
     const r = await fetch(c.url, { headers: { 'user-agent': UA } }); if (!r.ok) continue;
@@ -78,11 +97,11 @@ export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sha
   }
   if (!best) return { ...rec, status: 'review', note: 'image download failed' };
   const { c, a, buf } = best;
-  const base = { ...rec, src: c.src, ref: c.ref, name: c.name, premiered: c.premiered, url: c.url, w: a.w, h: a.h, sharp: a.sharp, ent: a.ent, score: a.score };
+  const base = { ...rec, conf, src: c.src, ref: c.ref, name: c.name, premiered: c.premiered, url: c.url, w: a.w, h: a.h, sharp: a.sharp, ent: a.ent, score: a.score };
   if (!a.ok) return { ...base, status: 'review', note: 'candidate rejected: ' + a.reasons.join(',') };
   const h = createHash('sha1').update(show.id).digest('hex').slice(0, 12), path = DIR + '/' + h + '.webp';
   if (!dry) { mkdirSync(DIR, { recursive: true }); writeFileSync(path, await sharp(buf).resize({ width: 640, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer()); }
-  return { ...base, status: 'matched', path, prev: show.img2 || show.img || null };
+  return { ...base, status: 'matched', path, prev: show.img2 || show.img || null, ...(a.reasons.includes('low-res') ? { lowres: true } : {}) };
 }
 
 // يُستدعى من sync-qesset بعد تنزيل الصور: يعالج فقط المسلسلات التي لا سجل لها (أو غير المطابقة المستحقة لإعادة المحاولة)
