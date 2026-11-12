@@ -65,8 +65,6 @@ const real = await (await fetch(BASE + 'data/shows.json')).json();
     await q.reload(); await q.waitForSelector('.ccard.hero-c'); res.push((await q.textContent('.ccard.hero-c b')).trim()); await c2.close();
   }
   T('hero-differs-between-two-accounts', res[0] === demo.shows[0].title && res[1] === demo.shows[1].title && res[0] !== res[1], res.join(' | '));
-  const art = await p.evaluate(async () => { const c = await import('./components.js'); return [c.heroArt({ img4: 'a', img3: 'b', img2: 'c' }).mode, c.heroArt({ img3: 'b', img2: 'c' }).mode, c.heroArt({ img2: 'c' }).mode]; });
-  T('hero-art-priority-landscape-then-poster-then-banner', art.join() === 'land,poster,banner', art.join());
   T('no-page-errors-hero', errs.length === 0, errs.join(' | ')); await ctx.close();
 }
 
@@ -85,19 +83,17 @@ const real = await (await fetch(BASE + 'data/shows.json')).json();
   // حارس وقت التشغيل: لو حُمّلت صورة أفقية داخل بطاقة عمودية تُخفى ويظهر غلاف العنوان
   const guard = await p.evaluate(async () => { const c = await import('./components.js'); const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:0;top:0;width:150px'; host.innerHTML = c.poster({ id: 'x', title: 'اختبار', img3: 'data/posters/v2/' + (document.querySelector('#g img').getAttribute('src').split('/').pop()) }); document.body.append(host); const i = host.querySelector('img'); await new Promise((r) => (i.complete ? r() : i.addEventListener('load', r))); await new Promise((r) => setTimeout(r, 100)); const w = host.querySelector('.pw'); const out = { bad: w.classList.contains('bad'), hidden: getComputedStyle(i).display === 'none', title: getComputedStyle(host.querySelector('.ph-t')).display !== 'none' }; host.remove(); return out; });
   T('runtime-guard-hides-landscape-in-portrait-frame', guard.bad && guard.hidden && guard.title, JSON.stringify(guard));
-  const urls = await p.evaluate(async () => { const c = await import('./components.js'); return [c.posterUrl({ img2: 'a', img: 'b', img4: 'c' }), c.posterUrl({ img3: 'p', img2: 'a' }), c.posterUrl({ img2: 'a', img4: 'c' }, true)]; });
-  T('poster-url-never-falls-back-to-landscape', urls[0] === '' && /p$/.test(urls[1]) && /c$/.test(urls[2]), JSON.stringify(urls));
-  // صفحة التفاصيل: مسلسل بانر فقط (مثال المستخدم) + مسلسل بخلفية سينمائية + بوستر عمودي
+  const urls = await p.evaluate(async () => { const c = await import('./components.js'); return [c.posterUrl({ img2: 'a', img: 'b', img4: 'c', poster: 'd' }), c.posterUrl({ img3: 'p', img2: 'a' })]; });
+  T('poster-url-never-falls-back-to-landscape', urls[0] === '' && /p$/.test(urls[1]), JSON.stringify(urls));
+  // صفحة التفاصيل: بوستر عمودي 2:3 كامل بجانب العنوان والأزرار؛ لا صورة أفقية ولا .dh-art ولا خلفية ضبابية
   const pick = (f) => real.shows.find(f);
-  const banner = pick((s) => /هذا البحر سوف يفيض/.test(s.title)) || pick((s) => !s.img3 && !s.img4), land = pick((s) => s.img4), posterOnly = pick((s) => s.img3 && !s.img4);
-  for (const [name, s] of [['banner-only', banner], ['cinematic-backdrop', land], ['poster-no-backdrop', posterOnly]]) {
-    if (!s) { T('detail ' + name + ' sample exists', false); continue; }
-    await p.goto(BASE + '#/show/' + encodeURIComponent(s.id)); await p.waitForSelector('.dh-art', { timeout: 10000 }); await p.waitForFunction(() => { const i = document.querySelector('.dh-art'); return i && i.complete && i.naturalWidth; }, null, { timeout: 10000 }).catch(() => {}); await p.waitForTimeout(300);
-    const d = await p.evaluate(() => { const i = document.querySelector('.dh-art'), r = i.getBoundingClientRect(), cs = getComputedStyle(i); return { src: i.getAttribute('src'), nw: i.naturalWidth, nh: i.naturalHeight, w: Math.round(r.width), h: Math.round(r.height), of: cs.objectFit, full: Math.round(r.width) === innerWidth, titleVisible: !!document.querySelector('.dh-body h2') && document.querySelector('.dh-body h2').getBoundingClientRect().bottom <= innerHeight && !!document.getElementById('fav') }; });
-    const ratio = d.nw / d.nh;
-    T(`detail ${name}: full-width landscape image, uncropped (contain), not stretched`, d.full && d.of === 'contain' && ratio > 1.5 && ratio < 2.1 && d.nw > 0, JSON.stringify(d));
-    T(`detail ${name}: uses ${s.img4 ? 'cinematic backdrop' : 'source banner'} (not the portrait poster)`, d.src.includes(s.img4 || s.img2), d.src);
-    T(`detail ${name}: title + buttons visible over gradient`, d.titleVisible);
+  const withP = pick((s) => s.img3 && s.eps.length > 8), noP = pick((s) => !s.img3);
+  for (const [name, s] of [['with-poster', withP], ['without-poster', noP]]) {
+    if (!s) { T('detail ' + name + ' sample exists', name === 'without-poster'); continue; }
+    await p.goto(BASE + '#/show/' + encodeURIComponent(s.id)); await p.waitForSelector('.dhero .pw', { timeout: 10000 }); await p.waitForTimeout(700);
+    const d = await p.evaluate(() => { const w = document.querySelector('.dhero .pw'), r = w.getBoundingClientRect(), i = w.querySelector('img'), cs = getComputedStyle(w); return { art: !!document.querySelector('.dh-art'), ratio: +(r.width / r.height).toFixed(3), ph: w.classList.contains('pw-ph'), nr: i ? +(i.naturalWidth / i.naturalHeight).toFixed(3) : 0, filter: cs.filter + '|' + cs.backdropFilter, title: !!document.querySelector('.dh-body h2') && document.querySelector('.dh-body h2').getBoundingClientRect().height > 0, btn: !!document.querySelector('#fav') }; });
+    T(`detail ${name}: 2:3 portrait frame, no landscape art, no blur`, !d.art && Math.abs(d.ratio - 0.667) < 0.02 && (d.ph || d.nr <= 0.9) && d.filter === 'none|none', JSON.stringify(d));
+    T(`detail ${name}: title + buttons visible`, d.title && d.btn);
   }
   T('no-page-errors-images', errs.length === 0, errs.join(' | ')); await ctx.close();
 }

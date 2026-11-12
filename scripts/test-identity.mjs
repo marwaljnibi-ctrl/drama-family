@@ -140,3 +140,12 @@ test('permanent testset: every one of the 24 shows has its expected identity rec
   }
   assert.ok(ovr['azhar-thalj-vqstm'].names.includes('Kardelenler'));   // التلميحات البشرية محفوظة في الملف الدائم
 });
+
+test('2:3 rule: strictOk accepts true posters only; the poster system never carries a landscape image', async () => {
+  const { strictOk, portraitOk } = await import('./lib/images.mjs');
+  assert.ok(strictOk(680, 1000) && strictOk(640, 960) && strictOk(500, 750));   // 2:3 حقيقي
+  assert.ok(!strictOk(640, 800) && !strictOk(1280, 720) && !strictOk(600, 326) && !strictOk(0, 0));   // 4:5 وأفقي وبانر مرفوضة
+  assert.ok(!portraitOk({ status: 'matched', w: 1280, h: 720, path: 'x' }) && !portraitOk({ status: 'matched', w: 600, h: 326, path: 'x' }));   // الأفقي لا يدخل img3 أبدًا
+  const src = (await import('node:fs')).readFileSync(new URL('./poster-pick.mjs', import.meta.url), 'utf8');
+  assert.ok(!/chooseBackdrop|pickBackdropFor|DIR4/.test(src));   // لا نظام خلفيات أفقية في الأتمتة
+});

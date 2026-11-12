@@ -5,7 +5,7 @@
 //   3) نقبل فقط عند دليل قوي + نقاط كافية + هامش واضح عن ثاني مرشح. عدد الحلقات عامل مساعد خفيف وليس شرطًا.
 //   4) نحفظ كل ما اكتُشف (أسماء/معرّفات/أدلة) في data/identity-index.json، ونتعلم أسماءً عربية بديلة لتُستعمل مستقبلًا.
 import { readFileSync, existsSync } from 'node:fs';
-import { dhash, hamming, assess, PORTRAIT_MIN, PORTRAIT_MAX } from './images.mjs';
+import { dhash, hamming, assess, strictOk, PORTRAIT_MIN, PORTRAIT_MAX } from './images.mjs';
 
 export const UA = 'DiziIdentityBot/1.0 (private family, non-commercial)';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -234,17 +234,10 @@ const LANGW = { null: 1, tr: 0.95, ar: 0.8, en: 0.6 };   // بوستر عربي 
 export async function choosePoster(c, ctx) {
   if (c.src === 'tvmaze') {
     const urls = []; if (c.image) urls.push(c.image); const imgs = await ctx.json('https://api.tvmaze.com/shows/' + c.ref + '/images'); for (const im of (imgs || []).filter((i) => i.type === 'poster').sort((p, q) => (q.resolutions?.original?.width || 0) - (p.resolutions?.original?.width || 0)).slice(0, 3)) if (im.resolutions?.original?.url) urls.push(im.resolutions.original.url);
-    let best = null; for (const u of [...new Set(urls)]) { const buf = await ctx.buf(u); if (!buf) continue; const a = await assess(buf, ctx.sharp); if (a.ok && (!best || a.score > best.a.score)) best = { buf, a, url: u, lang: null }; } return best;
+    let best = null; for (const u of [...new Set(urls)]) { const buf = await ctx.buf(u); if (!buf) continue; const a = await assess(buf, ctx.sharp); if (!a.ok) continue; a.fit = strictOk(a.w, a.h) ? 1 : 0; if (!best || a.fit > best.a.fit || (a.fit === best.a.fit && a.score > best.a.score)) best = { buf, a, url: u, lang: null }; } return best;
   }
   const im = c.images || await ctx.json(`${T}/tv/${c.ref}/images?api_key=${ctx.key}&include_image_language=ar,tr,en,null`); if (!im) return null;
   const ps = (im.posters || []).filter((p) => p.width >= 400 && p.aspect_ratio >= PORTRAIT_MIN && p.aspect_ratio <= PORTRAIT_MAX).map((p) => ({ p, pri: (LANGW[p.iso_639_1 ?? 'null'] ?? 0.3) * 0.35 + Math.min(p.width, 2000) / 2000 * 0.25 + (p.vote_average / 10) * Math.min(p.vote_count || 0, 10) / 10 * 0.2 + (1 - Math.min(Math.abs(p.aspect_ratio - 0.667) / 0.15, 1)) * 0.2 })).sort((a, b) => b.pri - a.pri).slice(0, 4);
-  let best = null; for (const { p, pri } of ps) { const buf = await ctx.buf('https://image.tmdb.org/t/p/w780' + p.file_path); if (!buf) continue; const a = await assess(buf, ctx.sharp); if (!a.ok) continue; const f = a.score * 0.5 + pri * 0.5; if (!best || f > best.f) best = { buf, a, f, url: 'https://image.tmdb.org/t/p/w780' + p.file_path, lang: p.iso_639_1 ?? null }; }
+  let best = null; for (const { p, pri } of ps) { const buf = await ctx.buf('https://image.tmdb.org/t/p/w780' + p.file_path); if (!buf) continue; const a = await assess(buf, ctx.sharp); if (!a.ok) continue; a.fit = strictOk(a.w, a.h) ? 1 : 0; const f = a.score * 0.5 + pri * 0.5 + a.fit * 0.4; if (!best || f > best.f) best = { buf, a, f, url: 'https://image.tmdb.org/t/p/w780' + p.file_path, lang: p.iso_639_1 ?? null }; }
   return best;
-}
-export async function chooseBackdrop(c, ctx) {   // خلفية أفقية سينمائية (بلا نص أولًا) للـHero؛ غيابها ليس خطأ
-  let list = [];
-  if (c.src === 'tmdb') { const im = c.images || await ctx.json(`${T}/tv/${c.ref}/images?api_key=${ctx.key}&include_image_language=ar,tr,en,null`); list = (im?.backdrops || []).filter((b) => b.width >= 1000 && b.aspect_ratio > 1.6 && b.aspect_ratio < 2.1).sort((a, b) => (a.iso_639_1 ? 1 : 0) - (b.iso_639_1 ? 1 : 0) || b.vote_average - a.vote_average || b.width - a.width).slice(0, 2).map((b) => ({ url: 'https://image.tmdb.org/t/p/w1280' + b.file_path, w: b.width })); }
-  else { const imgs = await ctx.json('https://api.tvmaze.com/shows/' + c.ref + '/images'); list = (imgs || []).filter((x) => x.type === 'background').map((x) => x.resolutions?.original).filter((o) => o && o.url && o.width >= 1000 && o.width / o.height > 1.5 && o.width / o.height < 2.1).sort((p, q) => q.width - p.width).slice(0, 2).map((o) => ({ url: o.url, w: o.width })); }
-  for (const o of list) { const buf = await ctx.buf(o.url); if (!buf) continue; const a = await assess(buf, ctx.sharp, { landscape: true }); if (a.ok) return { buf, url: o.url, w: Math.min(o.w, 1000) }; }
-  return null;
 }

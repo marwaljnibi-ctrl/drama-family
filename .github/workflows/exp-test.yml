@@ -23,11 +23,11 @@ jobs:
         run: cp test/clip.mp4 test/big.mp4 && head -c 700M /dev/zero >> test/big.mp4 && ls -la test/big.mp4
       - name: import e2e (local server)
         run: |
-          node scripts/poster-pick.mjs --apply data/shows.json   # يطبّق سجل البوسترات (img3/img4) على لقطة الفهرس للاختبار
+          node scripts/poster-pick.mjs --apply data/shows.json   # يطبّق سجل البوسترات (img3) على لقطة الفهرس للاختبار
           node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
           sleep 2
           node scripts/test-import.mjs
-          node scripts/test-home.mjs && node scripts/test-resume.mjs && node scripts/test-design.mjs && node scripts/test-type.mjs && node scripts/test-appfeel.mjs && node scripts/test-resume-real.mjs
+          node scripts/test-home.mjs && node scripts/test-resume.mjs && node scripts/test-design.mjs && node scripts/test-type.mjs && node scripts/test-appfeel.mjs && node scripts/test-portrait-only.mjs && node scripts/test-resume-real.mjs
       - name: import e2e (published preview, only if scripts/preview-url.txt exists)
         run: |
           if [ -f scripts/preview-url.txt ]; then BASE="$(cat scripts/preview-url.txt)" node scripts/test-import.mjs; else echo "no preview url"; fi

@@ -64,19 +64,15 @@ main[data-large]::before{content:attr(data-title);display:block;font:700 34px/1.
 .card{position:relative;display:block;background:none;border:0;border-radius:0;overflow:visible}
 .card>a{display:block;transition:transform .22s var(--ease)}
 .card>a:active{transform:scale(.97)}
-/* إطار الصورة: يملأ الإطار (cover) إن كان القص آمنًا، وإلا .fit تعرضها كاملة فوق خلفية ضبابية منها */
+/* إطار الصورة: بوستر عمودي 2:3 يملأ الإطار (cover) على نسبة قريبة جدًا؛ لا قص عشوائي ولا تمديد ولا خلفية ضبابية */
 .pw{display:block;position:relative;overflow:hidden;isolation:isolate;aspect-ratio:2/3;background:var(--bg-2);border-radius:var(--radius);box-shadow:0 10px 26px rgba(0,0,0,.5),0 0 0 .5px rgba(255,255,255,.08)}
 .pw img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border-radius:0;box-shadow:none;z-index:1}
-.pw.fit img{object-fit:contain}
-.pw.fit::before{content:"";position:absolute;inset:-24px;z-index:0;background:var(--bd) center/cover no-repeat;filter:blur(22px) saturate(1.25) brightness(.75)}
-.pw-wide{aspect-ratio:16/10}
 /* غلاف بالعنوان عند غياب بوستر عمودي (أو إن كانت الصورة المحمّلة أفقية): تدرج هادئ بلون ثابت لكل مسلسل */
 .pw-ph,.pw.bad{background:linear-gradient(160deg,hsl(var(--h,0) 38% 26%),hsl(var(--h,0) 42% 11%))}
 .pw .ph-t{display:none}
 .pw-ph .ph-t,.pw.bad .ph-t{display:flex;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:14px;font:700 17px/1.45 var(--font);font-style:normal;color:rgba(255,255,255,.92);text-shadow:0 2px 12px rgba(0,0,0,.4);overflow:hidden}
 .pw.bad img{display:none}
 .row .pw .ph-t{font-size:10px;padding:5px;line-height:1.3}
-.pw-wide.pw-ph .ph-t{font-size:15px}
 .ph{width:100%;aspect-ratio:2/3;display:block;background:var(--bg-2);border-radius:var(--radius)}
 .card .t{padding:var(--sp-2) 2px 0;font:600 15px/1.4 var(--font);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em}
 .card .s{padding:2px 2px 0;font:400 13px/1.4 var(--font);color:var(--text-2)}
@@ -110,16 +106,14 @@ main[data-large]::before{content:attr(data-title);display:block;font:700 34px/1.
 .bar i{display:block;height:100%;background:var(--accent);border-radius:2px}
 
 /* ===== صفحة المسلسل: غلاف كبير بخلفية ضبابية سينمائية ===== */
-.dhero{position:relative;margin:0 calc(-1 * var(--sp-4)) var(--sp-4);isolation:isolate;overflow:hidden;background:var(--bd,none) center top/cover no-repeat}
-.dhero::before{content:"";position:absolute;inset:0;z-index:-2;background:rgba(8,8,10,.6);-webkit-backdrop-filter:blur(30px) saturate(1.3);backdrop-filter:blur(30px) saturate(1.3)}
-.dh-wrap{position:relative}
-.dh-wrap::after{content:"";position:absolute;inset-inline:0;bottom:0;height:34%;background:linear-gradient(to bottom,rgba(8,8,10,0),var(--bg));pointer-events:none}   /* تدرج على أسفل الصورة فقط؛ العنوان تحتها فلا يغطي الوجوه */
-.dh-art{display:block;width:100%;height:auto;aspect-ratio:auto 16/9;object-fit:contain;background:transparent}   /* الصورة كاملة بنسبتها الطبيعية، لا تُقصّ ولا تُمدَّد */
-.dh-body{position:relative;margin-top:-6px;padding:var(--sp-2) var(--sp-5) var(--sp-3);text-align:start}
-.dh-body h2{margin:0 0 4px;font:700 28px/1.25 var(--font);text-shadow:0 2px 18px rgba(0,0,0,.55)}
+.dhero{display:flex;align-items:flex-end;gap:var(--sp-4);margin:var(--sp-3) 0 var(--sp-4)}
+.dhero .pw{flex:0 0 min(44%,190px);width:min(44%,190px);border-radius:var(--radius-l)}   /* بوستر عمودي 2:3 كامل: لا قص ولا تمديد ولا خلفية */
+.dhero .pw-ph .ph-t{font-size:20px}
+.dh-body{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;padding:0 0 var(--sp-1);text-align:start}
+.dh-body h2{margin:0 0 4px;font:700 26px/1.25 var(--font);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .dh-body small{color:var(--text-2);font-size:15px}
-.dh-body .actions{margin:var(--sp-3) 0 0}
-.dh-body .actions button{flex:0 1 auto;min-width:0;padding:0 var(--sp-4);background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.dh-body .actions{margin:var(--sp-3) 0 0;flex-direction:column;align-items:stretch;align-self:stretch;gap:var(--sp-2)}
+.dh-body .actions button{flex:0 0 auto;min-width:0;width:100%;padding:0 var(--sp-3);background:var(--bg-2)}
 .dh-body .actions button.favbtn.on{background:var(--accent-soft)}
 .eps-h{margin:var(--sp-5) 0 var(--sp-3);font:700 20px/1.35 var(--font)}
 .eps{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:var(--sp-2)}
@@ -164,35 +158,27 @@ main[data-large]::before{content:attr(data-title);display:block;font:700 34px/1.
 .sec.first{margin-top:var(--sp-4)}
 
 /* متابعة المشاهدة: أول عنصر بطل كبير بعرض الشاشة، والبقية بطاقات أفقية */
-.ccard{flex:0 0 min(78%,300px);scroll-snap-align:start;display:flex;flex-direction:column;position:relative;background:var(--bg-2);border-radius:var(--radius-l);overflow:hidden;transition:transform .22s var(--ease)}
+.ccard{flex:0 0 138px;scroll-snap-align:start;display:flex;flex-direction:column;position:relative;transition:transform .22s var(--ease)}
 .ccard:active{transform:scale(.97)}
-.ccard .pw,.ccard .ph{width:100%;aspect-ratio:16/10;border-radius:0;flex:none;box-shadow:none}
-.ccard .cm{display:flex;flex-direction:column;gap:2px;padding:var(--sp-3) var(--sp-4) var(--sp-4)}
-.ccard .cm b{font:600 17px/1.35 var(--font);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.ccard .cm{display:flex;flex-direction:column;gap:2px;padding:var(--sp-2) 2px 0}
+.ccard .cm b{font:600 15px/1.4 var(--font);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .ccard .cm small{font:400 13px/1.4 var(--font);color:var(--text-2)}
 .ccard .bar{margin-top:var(--sp-2)}
 .ccard .go{display:none}
 .sec.has-hero>.sec-h{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:0}
-.sec.has-hero{margin-top:0}
-/* الـHero: صورة أفقية سينمائية (land) إن وُجدت، وإلا بوستر عمودي (poster)، وإلا بانر المصدر بنسبته فوق خلفية ضبابية (banner). لا تمديد أبدًا */
-.hero-c{display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;isolation:isolate;flex:none;width:calc(100% + 2 * var(--sp-4));margin:0 calc(-1 * var(--sp-4));border-radius:0 0 28px 28px;background:var(--bg);min-height:min(62vh,500px);transition:transform .22s var(--ease)}
+.sec.has-hero{margin-top:var(--sp-3)}
+/* الـHero: بوستر عمودي 2:3 كامل بجانب النص والزر. لا صور أفقية ولا قص ولا خلفية ضبابية */
+.hero-c{display:flex;flex-direction:row;align-items:flex-end;gap:var(--sp-4);flex:none;width:auto;margin:0;padding:var(--sp-4);background:var(--bg-2);border-radius:var(--radius-l);transition:transform .22s var(--ease)}
 .hero-c:active{transform:scale(.99)}
-.hero-c .hero-art{position:absolute;z-index:-2;display:block;box-shadow:none;border-radius:0;background:var(--bg-2)}
-.hero-c::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,rgba(8,8,10,.5) 0,rgba(8,8,10,0) 20%,rgba(8,8,10,0) 40%,rgba(8,8,10,.8) 74%,var(--bg) 100%)}
-.hero-c.m-poster .hero-art{inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%}
-.hero-c.m-land .hero-art{top:0;inset-inline:0;width:100%;height:78%;object-fit:cover;object-position:50% 30%}
-.hero-c.m-banner{background:var(--bd,none) center/cover no-repeat}
-.hero-c.m-banner::after{content:"";position:absolute;inset:0;z-index:-2;background:rgba(8,8,10,.55);-webkit-backdrop-filter:blur(26px) saturate(1.3);backdrop-filter:blur(26px) saturate(1.3)}
-.hero-c.m-banner .hero-art{top:10%;inset-inline:0;width:100%;height:auto;aspect-ratio:600/326;object-fit:cover;z-index:-1}
-.hero-c .cm{display:flex;flex-direction:column;gap:var(--sp-2);padding:var(--sp-5) var(--sp-5) var(--sp-6);text-align:start}
+.hero-c .pw{flex:0 0 min(44%,190px);width:min(44%,190px)}
+.hero-c .pw-ph .ph-t{font-size:20px}
+.hero-c .cm{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:var(--sp-2);padding:0;text-align:start}
 .hero-c .cm::before{content:"متابعة المشاهدة";font:700 12px/1 var(--font);color:var(--accent);margin-bottom:2px}
 .hero-new .cm::before{content:"حلقة جديدة"}
-.hero-c .cm b{font:700 30px/1.22 var(--font);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 2px 18px rgba(0,0,0,.5)}
-.hero-c .cm small{font-size:15px;color:rgba(245,245,247,.85)}
-.hero-c .go{display:inline-flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;margin-top:var(--sp-3);min-height:50px;border-radius:var(--radius);background:#fff;color:#0a0a0c;font:600 17px/1 var(--font)}
+.hero-c .cm b{font:700 24px/1.25 var(--font);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero-c .cm small{font-size:14px;color:var(--text-2)}
+.hero-c .go{display:inline-flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;margin-top:var(--sp-3);min-height:46px;border-radius:var(--radius);background:#fff;color:#0a0a0c;font:600 17px/1 var(--font)}
 .hero-c .go::before{content:"";width:11px;height:14px;background:currentColor;clip-path:polygon(0 0,100% 50%,0 100%)}
-.sec.has-hero>.sec-h{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:0}
-.sec.has-hero{margin-top:0}
 
 /* نافذة التأكيد السفلية (تظهر بطلب المستخدم فقط) */
 .sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
@@ -219,8 +205,7 @@ button.danger{background:var(--accent-fill);color:#fff}
 .sk-h,.sk-c{background:linear-gradient(90deg,var(--bg-2) 25%,var(--bg-3) 37%,var(--bg-2) 63%);background-size:300% 100%;animation:shimmer 1.5s infinite linear;border-radius:var(--radius)}
 .sk-h{width:140px;height:20px;margin:var(--sp-6) 0 var(--sp-3)}
 .sk-c{flex:0 0 138px;aspect-ratio:2/3}
-.sk-c.wide{flex:0 0 min(78%,300px);aspect-ratio:auto;height:210px}
-.sk-hero{margin:0 calc(-1 * var(--sp-4));height:min(62vh,500px);border-radius:0 0 28px 28px;aspect-ratio:auto}
+.sk-hero{flex:none;width:auto;height:240px;aspect-ratio:auto;border-radius:var(--radius-l)}
 .sk-c.grid-c{flex:none;width:auto}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}

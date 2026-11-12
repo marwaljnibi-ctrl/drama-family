@@ -1,6 +1,6 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage, onWrite } from './db.js';
-import { $, esc, fmt, mb, toast, confirmSheet, poster, posterUrl, backdropUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
+import { $, esc, fmt, mb, toast, confirmSheet, poster, posterUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
@@ -29,10 +29,9 @@ const DEFERRED = (() => { try { return localStorage.getItem('df-deferred') === '
 let D;
 let cleanup = null, enterT = 0;
 const LARGE = ['shows', 'favs', 'recent', 'latest', 'alerts', 'login'];
-// قاعدة العرض العامة لكل صورة داخل إطار (.pw): نقص (cover) فقط إن كان المفقود أقل من 20% من الصورة؛ وإلا نعرضها كاملة (contain) فوق نسخة ضبابية منها. لا قص عشوائي ولا تمديد.
+// قاعدة العرض: كل صورة داخل إطار (.pw) بوستر عمودي 2:3 (cover على نسبة قريبة جدًا فلا قص يُذكر)
 document.addEventListener('load', (e) => { const i = e.target; if (!(i instanceof HTMLImageElement) || !i.naturalWidth || !i.naturalHeight) return; const w = i.closest('.pw'); if (!w) return;
-  if (!w.classList.contains('pw-wide') && i.naturalWidth / i.naturalHeight > 1.05) { w.classList.add('bad'); w.classList.remove('fit'); return; }   // صورة أفقية في إطار عمودي: لا تُعرض أبدًا (يظهر غلاف العنوان)
-  const r = w.getBoundingClientRect(); if (!r.width || !r.height) return; const ia = i.naturalWidth / i.naturalHeight, ca = r.width / r.height; w.classList.toggle('fit', Math.min(ia, ca) / Math.max(ia, ca) < 0.8); }, true);
+  if (i.naturalWidth / i.naturalHeight > 0.9) w.classList.add('bad'); }, true);   // أي صورة غير عمودية لا تُعرض أبدًا (يظهر غلاف العنوان): لا قص ولا تمديد ولا خلفية ضبابية
 view.addEventListener('scroll', () => document.body.classList.toggle('scrolled', view.scrollTop > 48), { passive: true });
 // ارتفاع التطبيق = الإطار المرئي (يتبع لوحة المفاتيح وشريط Safari) فلا تتحرك الأشرطة ولا تقفز الصفحة
 if (window.visualViewport) { const vv = visualViewport, fit = () => { document.documentElement.style.setProperty('--app-h', Math.round(vv.height) + 'px'); if (scrollY) scrollTo(0, 0); }; vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); fit(); }
@@ -136,8 +135,7 @@ async function vShow(id) {
   const lastEp = last && findEp(show, last.epId);
   const cont = lastEp ? (last.done ? nextEp(show, lastEp) || lastEp : lastEp) : null;
   const dlAble = show.eps.filter((e) => e.v && e.v.type === 'mp4');
-  const bd = backdropUrl(show);
-  view.innerHTML = `${demoBanner()}<div class="dhero" style="--bd:url(${esc(bd)})">${bd ? `<div class="dh-wrap"><img class="dh-art" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer" src="${esc(bd)}" alt=""></div>` : ''}<div class="dh-body"><h2>${esc(show.title)}</h2><small>${show.eps.length} حلقة</small>
+  view.innerHTML = `${demoBanner()}<div class="dhero">${poster(show, 'dh-img')}<div class="dh-body"><h2>${esc(show.title)}</h2><small>${show.eps.length} حلقة</small>
     <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button><button id="wa" class="favbtn">🔔 <span>تنبيه واتساب</span></button></div></div></div>
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'متابعة المشاهدة · حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
     ${DEFERRED && dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>

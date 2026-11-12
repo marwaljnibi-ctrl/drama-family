@@ -20,20 +20,14 @@ export function confirmSheet({ title, text = '', ok = 'تأكيد', danger = fal
 }
 export function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 3200); }
 
-// الصور: النسخة الأوضح (img2، 600px) إن وُجدت، ثم القديمة، ثم رابط المصدر
-// img3 = بوستر عمودي مُختار آليًا (TMDB/TVmaze) إن وُجد؛ وإلا الصورة الأصلية (img2 بانر أفقي، img مصغّرة). wide=true للبطاقات الأفقية (بانر المصدر يناسبها).
-// Poster = عمودي (img3 مُتحقَّق من أبعاده عند الاختيار). Backdrop = أفقي: img4 (16:9 سينمائي) ثم بانر المصدر img2. wide=true يطلب الأفقي (بطاقات المتابعة الأفقية).
-// القاعدة الدائمة: أي صورة داخل بطاقة/صف عمودي يجب أن تكون Poster عموديًا (img3 مُتحقَّق من أبعاده في نظام اختيار الصور).
-// لا تُستعمل الصور الأفقية (img2/img4/img) في الإطارات العمودية أبدًا؛ إن لم يوجد بوستر عمودي يظهر غلاف بعنوان المسلسل.
-// الأفقية (wide=true) للبطاقات الأفقية والـHero وصفحة التفاصيل فقط.
-export const posterUrl = (s, wide = false) => (wide ? asset(s.img4 || s.img2 || s.img) || s.poster || '' : asset(s.img3) || '');
-export const backdropUrl = (s) => asset(s.img4 || s.img2 || s.img) || s.poster || '';
+// قاعدة الصور النهائية: كل صورة مسلسل بوستر عمودي 2:3 (img3، مُتحقَّق من أبعاده في نظام اختيار الصور). لا صور أفقية ولا بانرات ولا خلفيات في أي واجهة.
+// img2/img4/img (الأفقية) لا تُقرأ هنا إطلاقًا؛ إن لم يوجد بوستر عمودي يظهر غلاف بعنوان المسلسل. يمنع scripts/test-portrait-only.mjs عودتها.
+export const posterUrl = (s) => asset(s.img3) || '';
 const hue = (id) => { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
-export const heroArt = (s) => { const a = asset(s.img4); if (a) return { mode: 'land', src: a }; const p = asset(s.img3); if (p) return { mode: 'poster', src: p }; return { mode: 'banner', src: asset(s.img2 || s.img) || s.poster || '' }; };
-export const poster = (s, cls = '', wide = false) => {
-  const src = posterUrl(s, wide), t = `<i class="ph-t">${esc(s.title || '')}</i>`;
-  if (!src) return `<span class="pw pw-ph${wide ? ' pw-wide' : ''}" style="--h:${hue(s.id)}">${t}</span>`;   // لا بوستر عمودي: غلاف بعنوان المسلسل
-  return `<span class="pw${wide ? ' pw-wide' : ''}" style="--bd:url(${esc(src)});--h:${hue(s.id)}"><img class="${cls}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt="">${t}</span>`;
+export const poster = (s, cls = '') => {
+  const src = posterUrl(s), t = `<i class="ph-t">${esc(s.title || '')}</i>`;
+  if (!src) return `<span class="pw pw-ph" style="--h:${hue(s.id)}">${t}</span>`;   // لا بوستر عمودي: غلاف بعنوان المسلسل
+  return `<span class="pw" style="--h:${hue(s.id)}"><img class="${cls}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt="">${t}</span>`;
 };
 
 // قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
@@ -64,15 +58,12 @@ export const showCard = (s, o = {}) => `<div class="card"><a href="${showHref(s)
 // الدقيقة والشريط يظهران فقط حين تكون القيم مثبتة (duration > 0)؛ لا تخمين.
 // بطل «حلقة جديدة» لمن لم يبدأ مشاهدة: it = { show, ep }
 export function newHero(it) {
-  const { mode, src } = heroArt(it.show);
-  return `<a class="hero-c hero-new m-${mode}" href="${watchHref(it.show, it.ep)}" style="--bd:url(${esc(src)})">${src ? `<img class="hero-art" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt="">` : '<div class="hero-art ph"></div>'}<div class="cm"><b>${esc(it.show.title)}</b><small>الحلقة ${esc(it.ep.n)}</small><span class="go">شاهد الآن</span></div></a>`;
+  return `<a class="hero-c hero-new" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>الحلقة ${esc(it.ep.n)}</small><span class="go">شاهد الآن</span></div></a>`;
 }
 export function continueCard(it, hero = false) {
   const pct = it.hasMinute ? Math.min(100, (it.time / it.duration) * 100) : 0;
   const line = it.kind === 'next' ? `الحلقة التالية · ${it.ep.n}` : `حلقة ${it.ep.n}${it.hasMinute ? ' · توقفت عند ' + fmt(it.time) : ''}`;
-  const art = hero ? heroArt(it.show) : null;
-  const pic = hero ? (art.src ? `<img class="hero-art" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer" src="${esc(art.src)}" alt="">` : '<div class="hero-art ph"></div>') : poster(it.show, '', true);
-  return `<a class="ccard${hero ? ' hero-c m-' + art.mode : ''}"${hero ? ` style="--bd:url(${esc(art.src)})"` : ''} href="${watchHref(it.show, it.ep)}">${pic}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
+  return `<a class="ccard${hero ? ' hero-c' : ''}" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
 }
 
 // قسم بصف أفقي: head = { title, sub?, all? (رابط عرض الكل) }
@@ -80,7 +71,7 @@ export function continueCard(it, hero = false) {
 const eager = (html) => { let n = 0; return html.replace(/loading="lazy"/g, (m) => (n++ < 6 ? 'loading="eager"' : m)); };
 export const section = (head, inner, cls = '') => `<section class="sec"><div class="sec-h"><h2>${esc(head.title)}</h2>${head.all ? `<a class="all" href="${head.all}">عرض الكل</a>` : ''}</div>${head.sub ? `<p class="sec-s">${esc(head.sub)}</p>` : ''}<div class="rail ${cls}">${eager(inner)}</div></section>`;
 
-export const skeletonHome = () => `<div class="sk"><div class="sk-c sk-hero"></div><div class="sk-h"></div><div class="rail"><div class="sk-c wide"></div><div class="sk-c wide"></div></div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div></div>`;
+export const skeletonHome = () => `<div class="sk"><div class="sk-c sk-hero"></div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(3)}</div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div></div>`;
 export const skeletonGrid = (n = 9) => `<div class="grid sk">${'<div class="sk-c grid-c"></div>'.repeat(n)}</div>`;
 
 export const emptyState = (title, text, cta) => `<div class="empty-card"><b>${esc(title)}</b>${text ? `<p>${esc(text)}</p>` : ''}${cta ? `<a href="${cta.href}"><button class="pri">${esc(cta.label)}</button></a>` : ''}</div>`;

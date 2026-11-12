@@ -1,6 +1,9 @@
 // أدوات الصور المشتركة (مصدر واحد): قاعدة العمودي الدائمة، تقييم الجودة، وبصمة بصرية (dHash) لمقارنة صورتين.
 // القاعدة الدائمة: img3 (بوستر البطاقات والقوائم) لا يُعتمد إلا إذا كان عموديًا فعلًا؛ الأفقي لا يدخل img3 أبدًا.
 export const PORTRAIT_MIN = 0.55, PORTRAIT_MAX = 0.9;
+// نسبة 2:3 المعتمدة في كل الواجهات: كل ما بين STRICT_MIN و STRICT_MAX يُعرض بإطار 2:3 بلا قص يُذكر (≤ ~4%). ما خرج عنها يُقبل فقط إن لم يوجد بديل ضمنها.
+export const RATIO = 2 / 3, STRICT_MIN = 0.62, STRICT_MAX = 0.72;
+export const strictOk = (w, h) => !!(w && h && w / h >= STRICT_MIN && w / h <= STRICT_MAX);
 export const portraitOk = (r) => !!(r && r.status === 'matched' && r.w && r.h && r.w / r.h >= PORTRAIT_MIN && r.w / r.h <= PORTRAIT_MAX && r.path);
 
 // جودة الصورة: دقة، نسبة عمودية/أفقية، حدّة (انحراف معياري لمرشّح لابلاس)، وتعدد الألوان

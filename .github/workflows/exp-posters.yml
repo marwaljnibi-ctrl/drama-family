@@ -14,7 +14,7 @@ jobs:
       - name: resolve the unapproved shows
         env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
         run: |
-          node scripts/poster-pick.mjs --resolve --ids tlcty-fmsqr,alsunduq-fqmts,sayaejebak-lqmnt,lvstr-bqmzn 2>&1 | tail -n 20
+          node scripts/poster-pick.mjs --reratio 2>&1 | tail -n 90   # يستبدل البوستر العمودي غير 2:3 ببوستر 2:3 حقيقي لنفس المعرّف المؤكَّد عند توفره
           node scripts/poster-pick.mjs --resolve 2>&1 | tail -n 60
       - name: live permanent testset (engine re-resolves the 24 from scratch, no writes)
         continue-on-error: true

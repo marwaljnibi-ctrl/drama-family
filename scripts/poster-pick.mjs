@@ -5,10 +5,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { assess, portraitOk, PORTRAIT_MIN, PORTRAIT_MAX } from './lib/images.mjs';
-import { resolveIdentity, choosePoster, chooseBackdrop, makeHttp, buildCatalog, catalogIndex, arKey, norm, slugVariants, dice } from './lib/identity.mjs';
+import { strictOk } from './lib/images.mjs';
+import { resolveIdentity, choosePoster, makeHttp, buildCatalog, catalogIndex, arKey, norm, slugVariants, dice } from './lib/identity.mjs';
 export { assess, portraitOk, PORTRAIT_MIN, PORTRAIT_MAX, norm, slugVariants, dice };
 
-const CAT = 'data/tr-catalog.json', MAP = 'data/poster-map.json', IDX = 'data/identity-index.json', OVR = 'data/identity-overrides.json', DIR = 'data/posters/v3', DIR4 = 'data/posters/v4';
+const CAT = 'data/tr-catalog.json', MAP = 'data/poster-map.json', IDX = 'data/identity-index.json', OVR = 'data/identity-overrides.json', DIR = 'data/posters/v3';
 const J = (f, d) => (existsSync(f) ? JSON.parse(readFileSync(f, 'utf8').replace(/^﻿/, '')) : d);
 const save = (f, o) => writeFileSync(f, JSON.stringify(o, null, 1));
 const DAY = 864e5, BACKOFF = [1, 3, 7, 14, 30];
@@ -36,11 +37,10 @@ export function recordIdentity(idx, show, ident, tries, now = Date.now()) {
   } else if (!old || old.status !== 'confirmed') idx.shows[show.id] = { status: 'unresolved', tries, checked: now, next: nextTry(tries, now), reason: ident.reason, cast: ident.cast?.length ? ident.cast : old?.cast, cands: (ident.cands || []).map(slim) };
 }
 
-async function saveImages(show, poster, bd, dry) {
-  const h = hashOf(show.id), path = DIR + '/' + h + '.webp'; let bg = null;
+async function saveImages(show, poster, dry) {
+  const h = hashOf(show.id), path = DIR + '/' + h + '.webp';
   if (!dry) { mkdirSync(DIR, { recursive: true }); writeFileSync(path, await poster.sharp(poster.buf).resize({ width: 640, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer()); }
-  if (bd) { const p4 = DIR4 + '/' + h + '.webp'; if (!dry) { mkdirSync(DIR4, { recursive: true }); writeFileSync(p4, await poster.sharp(bd.buf).resize({ width: 1000, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()); } bg = { path: p4, w: bd.w, url: bd.url }; }
-  return { path, bg };
+  return { path };
 }
 
 // يعالج مسلسلًا واحدًا. يعيد { rec (قرار البوستر), ident (الهوية) } بلا كتابة سجلات (الصور تُكتب إلا إن dry)
@@ -51,18 +51,9 @@ export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sha
   const b = ident.best; const poster = await choosePoster(b, ctx);
   const base = { ...rec, conf: (b.evidence || []).includes('manual-override') ? 'manual' : 'identity', src: b.src, ref: b.ref, name: b.original, premiered: b.year, idscore: b.score, evidence: b.evidence };
   if (!poster) return { ident, rec: { ...base, status: 'review', note: 'identity confirmed (' + b.original + ') but no suitable vertical poster yet' } };
-  let bd = null; try { bd = await chooseBackdrop(b, ctx); } catch {}
-  const { path, bg } = await saveImages(show, { sharp, buf: poster.buf }, bd && { ...bd, sharp }, dry); if (bg && bd) bg.w = bd.w;
-  return { ident, rec: { ...base, status: 'matched', url: poster.url, lang: poster.lang, w: poster.a.w, h: poster.a.h, sharp: poster.a.sharp, ent: poster.a.ent, score: poster.a.score, path, bg, bgAt: Date.now(), prev: show.img2 || show.img || null, ...(poster.a.reasons.includes('low-res') ? { lowres: true } : {}) } };
+  const { path } = await saveImages(show, { sharp, buf: poster.buf }, dry);
+  return { ident, rec: { ...base, status: 'matched', url: poster.url, lang: poster.lang, w: poster.a.w, h: poster.a.h, sharp: poster.a.sharp, ent: poster.a.ent, score: poster.a.score, path, prev: show.img2 || show.img || null, ...(poster.a.reasons.includes('low-res') ? { lowres: true } : {}) } };
 }
-// خلفية أفقية لمسلسل معتمد سابقًا (مرة واحدة؛ تُعاد بعد 30 يومًا إن لم توجد)
-export async function pickBackdropFor(show, rec, { sharp, tmdbKey = process.env.TMDB_API_KEY, http = makeHttp(), dry = false } = {}) {
-  const ctx = { ...http, key: tmdbKey || '', sharp }; if (rec.src === 'tmdb' && !ctx.key) return rec;
-  const bd = await chooseBackdrop({ src: rec.src, ref: rec.ref }, ctx); if (!bd) return { ...rec, bg: null, bgAt: Date.now() };
-  const p4 = DIR4 + '/' + hashOf(show.id) + '.webp'; if (!dry) { mkdirSync(DIR4, { recursive: true }); writeFileSync(p4, await sharp(bd.buf).resize({ width: 1000, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()); }
-  return { ...rec, bg: { path: p4, w: bd.w, url: bd.url }, bgAt: Date.now() };
-}
-
 // يُستدعى من sync-qesset: كل مسلسل بلا قرار نهائي يمرّ بالمحرك عند استحقاقه؛ المعتمد لا يُعاد فحصه ولا يُستبدل (إلا بتصحيح يدوي مختلف في identity-overrides.json)
 export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMDB_API_KEY } = {}) {
   let sharp = null; try { sharp = (await import('sharp')).default; } catch { return; }
@@ -71,8 +62,6 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
     const r = map[s.id], ov = ovr[s.id] && ovr[s.id].tmdb ? ovr[s.id] : null; const forced = !!ov && !(r && r.status === 'matched' && String(r.ref) === String(ov.tmdb));
     if (r && r.status === 'matched' && !forced) {
       if (portraitOk(r) && !s.img3 && existsSync(r.path)) s.img3 = r.path;
-      if ((r.bg === undefined || (r.bg === null && r.src === 'tmdb' && !r.bgAt) || (r.bg === null && r.bgAt && now - r.bgAt > 30 * DAY)) && done < max) { done++; try { map[s.id] = await pickBackdropFor(s, r, { sharp, tmdbKey, http }); dirty = true; console.log('backdrop', s.id, map[s.id].bg ? 'ok' : 'none'); } catch (e) { console.log('backdrop error', s.id, String(e).slice(0, 60)); } }
-      const m = map[s.id]; if (m.bg && m.bg.path && !s.img4 && existsSync(m.bg.path)) s.img4 = m.bg.path;
       continue;
     }
     if (!forced && r && now < (r.next || 0)) continue;
@@ -84,7 +73,7 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
       const { rec, ident } = await pickPoster(withHints(s, ovr[s.id]), { sharp, tmdbKey, http, override: ov, known, learned: idx.aliases[arKey(s.title)] || null, cast: i0?.cast || null, catalog, tries });
       if (rec.status !== 'matched') rec.next = ident.transient ? now + 6 * 3600e3 : nextTry(tries, now);   // فشل شبكة عابر ≠ "غير موجود": إعادة بعد 6 ساعات بلا زيادة التباعد
       if (ident.transient && rec.status !== 'matched') rec.tries = tries - 1;
-      map[s.id] = rec; if (!known && !(ident.transient && ident.status !== 'confirmed')) recordIdentity(idx, s, ident, tries, now); dirty = true; if (rec.status === 'matched') { s.img3 = rec.path; if (rec.bg && rec.bg.path) s.img4 = rec.bg.path; }
+      map[s.id] = rec; if (!known && !(ident.transient && ident.status !== 'confirmed')) recordIdentity(idx, s, ident, tries, now); dirty = true; if (rec.status === 'matched') { s.img3 = rec.path; }
       console.log('poster', s.id, rec.status, rec.name || '', rec.w ? rec.w + 'x' + rec.h : '', (rec.evidence || []).join(','));
     } catch (e) { console.log('poster error', s.id, String(e).slice(0, 80)); }
   }
@@ -94,17 +83,11 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
 // ===== CLI =====
 const A = process.argv, has = (k) => A.includes(k), arg = (k) => { const i = A.indexOf(k); return i > 0 ? A[i + 1] : null; };
 const isMain = A[1] && A[1].endsWith('poster-pick.mjs');
-// node scripts/poster-pick.mjs --apply [file]  ← يضيف img3/img4 من السجل إلى shows.json (بلا أي تغيير آخر)
+// node scripts/poster-pick.mjs --apply [file]  ← يضيف img3 (بوستر عمودي 2:3 فقط) من السجل إلى shows.json (بلا أي تغيير آخر)
 if (isMain && has('--apply')) {
   const f = arg('--apply')?.endsWith('.json') ? arg('--apply') : 'data/shows.json'; const data = J(f, {}), map = J(MAP, {}); let n = 0;
-  for (const s of data.shows) { const r = map[s.id]; if (portraitOk(r) && existsSync(r.path)) { s.img3 = r.path; n++; if (r.bg && r.bg.path && existsSync(r.bg.path)) s.img4 = r.bg.path; } }
+  for (const s of data.shows) { const r = map[s.id]; if (portraitOk(r) && existsSync(r.path)) { s.img3 = r.path; n++; } delete s.img4; }
   writeFileSync(f, JSON.stringify(data)); console.log('applied img3 to', n, 'shows'); process.exit(0);
-}
-// node scripts/poster-pick.mjs --backdrops [--limit N]  ← خلفيات أفقية للمعتمد الذي لم تُجرَّب له
-if (isMain && has('--backdrops')) {
-  const sharp = (await import('sharp')).default; const map = J(MAP, {}), data = J('data/shows.json', { shows: [] }); const lim = arg('--limit') ? +arg('--limit') : 1e9; let n = 0, ok = 0;
-  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.bg !== undefined && !(r.bg === null && r.src === 'tmdb' && !r.bgAt)) continue; if (n++ >= lim) break; try { map[s.id] = await pickBackdropFor(s, r, { sharp }); if (map[s.id].bg) ok++; } catch {} if (n % 10 === 0) save(MAP, map); }
-  save(MAP, map); console.log('backdrops:', ok, 'of', n); process.exit(0);
 }
 // node scripts/poster-pick.mjs --catalog  ← يعيد بناء فهرس المسلسلات التركية
 if (isMain && has('--catalog')) { const m = await getCatalog({ force: true }); console.log('catalog keys:', m ? m.size : 0); process.exit(0); }
@@ -135,4 +118,15 @@ if (isMain && has('--testset')) {
   const sharp = (await import('sharp')).default; const set = J('data/identity-testset.json', { shows: [] }), data = J('data/shows.json', { shows: [] }), ovr = J(OVR, {}), http = makeHttp(), catalog = await getCatalog({ http }); const ctx = { ...http, key: process.env.TMDB_API_KEY, sharp }; let bad = 0;
   for (const e of set.shows) { const s = data.shows.find((x) => x.id === e.id); if (!s) { console.log('MISSING', e.id); bad++; continue; } const x = await resolveIdentity(withHints(s, ovr[e.id]), ctx, { catalog }); const ok = e.expect === 'unresolved' ? x.status !== 'confirmed' : x.status === 'confirmed' && String(x.best.ref) === String(e.tmdb); if (!ok) bad++; console.log(ok ? 'PASS' : 'FAIL', e.id, '| expected', e.original, '#' + e.tmdb, '| got', x.best ? x.best.original + ' #' + x.best.ref + ' ' + x.status + ' ' + x.best.score + ' [' + (x.best.evidence || []).join(',') + ']' : x.reason); }
   console.log('testset', set.shows.length - bad + '/' + set.shows.length, 'passed'); process.exit(bad ? 1 : 0);
+}
+// node scripts/poster-pick.mjs --reratio [--limit N]  ← للمعتمد الذي بوستره عمودي لكن ليس 2:3 حقيقيًا: يبحث عن بوستر 2:3 لنفس المعرّف المؤكَّد؛
+// لا يستبدل إلا إذا كان البديل 2:3 وبجودة لا تقل عن الحالي (-0.08)، ولا يمس المطابقات اليدوية. لا يغيّر الهوية أبدًا.
+if (isMain && has('--reratio')) {
+  const sharp = (await import('sharp')).default; const map = J(MAP, {}), data = J('data/shows.json', { shows: [] }), http = makeHttp(); const ctx = { ...http, key: process.env.TMDB_API_KEY || '', sharp }; const lim = arg('--limit') ? +arg('--limit') : 1e9; let n = 0, up = 0, keep = 0;
+  for (const s of data.shows) { const r = map[s.id]; if (!r || r.status !== 'matched' || r.conf === 'manual' || strictOk(r.w, r.h) || r.rerated) continue; if (n++ >= lim) break;
+    try { const c = await choosePoster({ src: r.src, ref: r.ref }, ctx); const a = c && c.a;
+      if (a && strictOk(a.w, a.h) && a.score >= (r.score || 0) - 0.08) { const { path } = await saveImages(s, { sharp, buf: c.buf }, false); map[s.id] = { ...r, url: c.url, lang: c.lang, w: a.w, h: a.h, sharp: a.sharp, ent: a.ent, score: a.score, path, rerated: Date.now(), prevRatio: +(r.w / r.h).toFixed(3) }; up++; console.log('2:3', s.id, (r.w / r.h).toFixed(3), '->', a.ar); }
+      else { map[s.id] = { ...r, rerated: Date.now() }; keep++; } } catch (e) { console.log('reratio error', s.id, String(e).slice(0, 60)); }
+    if (n % 10 === 0) save(MAP, map); }
+  save(MAP, map); console.log('reratio: upgraded', up, 'kept', keep, 'of', n); process.exit(0);
 }
