@@ -66,9 +66,10 @@ function latinMatch(h, names) {
 export function makeHttp({ gap = 150 } = {}) {
   const stats = { fail: 0 };
   async function json(url, tries = 3) {
+    if (/wikidata.org/.test(url)) tries = Math.max(tries, 5);   // ويكي داتا يقيّد المعدّل أحيانًا: صبر أطول
     for (let i = 0; i < tries; i++) {
       let r; try { r = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/json' } }); } catch { await sleep(1500 * (i + 1)); continue; }   // لا نطبع الرابط (قد يحمل مفتاحًا)
-      if (r.status === 429 || r.status >= 500) { await sleep(1500 * (i + 1)); continue; }
+      if (r.status === 429 || r.status >= 500) { const ra = +r.headers.get('retry-after'); await sleep(ra > 0 ? Math.min(ra, 30) * 1000 : 1500 * (i + 1)); continue; }
       if (!r.ok) return null; await sleep(/wikidata\.org/.test(url) ? 450 : gap); let j; try { j = await r.json(); } catch { return null; }
       if (j && j.error && /ratelimit|maxlag|readonly|too-many/i.test(JSON.stringify(j.error)) && i < tries - 1) { await sleep(2500 * (i + 1)); continue; }
       return j;
