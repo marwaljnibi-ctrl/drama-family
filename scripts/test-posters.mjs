@@ -28,14 +28,14 @@ test('assess: portrait sharp image passes; landscape banner and flat/blank image
 test('automation: new shows go through the identity engine once, are recorded forever, never re-searched; unresolved wait and retry; approved/manual are never replaced', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'poster-')); const prev = process.cwd(); process.chdir(dir); mkdirSync('data', { recursive: true });
   const port = await noisy(680, 1000), land = await noisy(1280, 720); let calls = []; const realFetch = globalThis.fetch;
-  const TVW = { 201: { name: 'مسلسل جديد', original: 'Yeni Dizi', first: '2023-01-01', eps: 20, ar: ['مسلسل جديد'] }, 202: { name: 'ثاني', original: 'Ikinci Dizi', first: '2023-01-01', eps: 20, ar: ['ثاني'] } };
+  const TVW = { 201: { name: 'جديد', original: 'Yeni Dizi', first: '2023-01-01', eps: 20, ar: ['جديد'] }, 202: { name: 'ثاني', original: 'Ikinci Dizi', first: '2023-01-01', eps: 20, ar: ['ثاني'] } };
   const world = { tv: { ...TVW }, hidden: 301 };   // 301: مسلسل يظهر في TMDB لاحقًا فقط
   const later = { 301: { name: 'اسم جديد تماما', original: 'Sonradan Gelen', first: '2023-06-01', eps: 5, ar: ['اسم جديد تماما'] } };
   const json = (o) => new Response(JSON.stringify(o));
   globalThis.fetch = async (u) => {
     u = String(u); calls.push(u); const q = decodeURIComponent((/[?&](?:search|query)=([^&]*)/.exec(u) || [])[1] || '');
     if (u.includes('wikidata.org')) return json({ search: [], entities: {} });
-    if (u.includes('/search/tv')) { const lang = (/language=([^&]*)/.exec(u) || [])[1]; return json({ results: Object.entries(world.tv).filter(([, e]) => (lang === 'ar' ? e.ar.some((a) => a === q || a === q.replace(/^مسلسل /, '')) : false)).map(([id]) => ({ id: +id, origin_country: ['TR'], original_language: 'tr' })) }); }
+    if (u.includes('/search/tv')) { const lang = (/language=([^&]*)/.exec(u) || [])[1]; return json({ results: Object.entries(world.tv).filter(([, e]) => (lang === 'ar' ? e.ar.some((a) => a === q) : false)).map(([id]) => ({ id: +id, origin_country: ['TR'], original_language: 'tr' })) }); }
     const m = /\/tv\/(\d+)\/images/.exec(u); if (m) return json({ posters: [{ file_path: '/land.jpg', width: 1280, height: 720, aspect_ratio: 1.78, iso_639_1: 'ar', vote_average: 9, vote_count: 9 }, { file_path: '/port.jpg', width: 680, height: 1000, aspect_ratio: 0.68, iso_639_1: 'ar', vote_average: 5, vote_count: 3 }], backdrops: [] });
     const d = /\/tv\/(\d+)\?/.exec(u); if (d) { const e = world.tv[d[1]]; return e ? json({ id: +d[1], name: e.name, original_name: e.original, first_air_date: e.first, number_of_episodes: e.eps, origin_country: ['TR'], original_language: 'tr', external_ids: {}, translations: { translations: [] }, alternative_titles: { results: [] }, networks: [] }) : new Response('', { status: 404 }); }
     if (u.endsWith('/port.jpg')) return new Response(port); if (u.endsWith('/land.jpg')) return new Response(land);   // w780/port.jpg
