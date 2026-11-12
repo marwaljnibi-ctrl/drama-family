@@ -1,0 +1,29 @@
+{
+ "about": "Permanent regression set for the Dizi identity engine: the 24 shows that the old title/slug logic could not match (loose Arabic translations, alternative/renamed Turkish titles, glued slugs, TV programs). The engine must keep resolving them to these TMDB ids from scratch (node scripts/poster-pick.mjs --testset), and must NEVER pick a wrong one for the unresolved ones.",
+ "shows": [
+  { "id": "karadeniz-hqvms", "original": "Sen Anlat Karadeniz", "tmdb": 77026, "expect": "confirmed", "why": "Arabic = اشرح أيها البحر الأسود; source image file Sen-anla; banner image match" },
+  { "id": "altayer-alrafraf-mqvts", "original": "Yalı Çapkını", "tmdb": 210865, "expect": "confirmed", "why": "الطائر الرفراف = فريد; Wikidata alias + banner image match" },
+  { "id": "azhar-thalj-vqstm", "original": "Kardelenler", "tmdb": 281280, "expect": "confirmed", "why": "formerly Kar Çiçekleri; Turkish name hint, year and episodes" },
+  { "id": "kimsin-sen-qvtrs", "original": "Maske - Kimsin Sen?", "tmdb": 154567, "expect": "confirmed", "why": "TV program (masked show); name hint + Wikidata id + episodes" },
+  { "id": "fi-kqtmv", "original": "Fi", "tmdb": 71036, "expect": "confirmed", "why": "two-letter title: name hint + episodes 22" },
+  { "id": "sancak-vqmrs", "original": "Al Sancak", "tmdb": 218477, "expect": "confirmed", "why": "Arabic exact (الراية)" },
+  { "id": "tabeeb-zplon", "original": "Doktor: Başka Hayatta", "tmdb": 310430, "expect": "confirmed", "why": "name hint + year + episodes" },
+  { "id": "zengin-kqvmt", "original": "Zengin ve Yoksul", "tmdb": 88255, "expect": "confirmed", "why": "الغني و الفقير translated freely; name hint + episodes" },
+  { "id": "karayazi-pwlqs", "original": "Kara Yazı", "tmdb": 92273, "expect": "confirmed", "why": "القدر الأسود; glued/split slug through catalog and joined-key query" },
+  { "id": "tlcty-fmsqr", "original": "Kayıp Şehir", "tmdb": 49159, "expect": "confirmed", "why": "name hint + Wikidata id + poster text matches" },
+  { "id": "don-an-tashoor-kvmts", "original": "Ruhun Duymaz", "tmdb": 49933, "expect": "confirmed", "why": "Arabic alias via Wikidata + banner image match" },
+  { "id": "ogulkokusu-fzqtm", "original": "Evlat Kokusu", "tmdb": 98102, "expect": "confirmed", "why": "رائحة الإبن; slug Oğul Kokusu vs renamed title" },
+  { "id": "alsunduq-fqmts", "original": "Sandık Kokusu", "tmdb": 240335, "expect": "confirmed", "why": "Arabic exact + cast overlap + banner image" },
+  { "id": "sayaejebak-lqmnt", "original": "Seversin", "tmdb": 203205, "expect": "confirmed", "why": "سيعجبك; Wikidata Arabic alias" },
+  { "id": "masharef-allayl-fqmts", "original": "Gecenin Ucunda", "tmdb": 211714, "expect": "confirmed", "why": "Arabic exact + Wikidata + banner image" },
+  { "id": "seer-wa-khafa-nqvts", "original": "Gizli Saklı", "tmdb": 203699, "expect": "confirmed", "why": "في السر و الخفاء; name hint + Wikidata id" },
+  { "id": "lvstr-bqmzn", "original": "Bir Aşk Hikayesi", "tmdb": 87175, "expect": "confirmed", "why": "name hint + cast + episodes 36 (an awards show shares cast but not episodes)" },
+  { "id": "matha-law-vqstm", "original": "Ya Çok Seversen", "tmdb": 228979, "expect": "confirmed", "why": "Arabic exact + Wikidata" },
+  { "id": "mehmed-vqsmr", "original": "Mehmed: Bir Cihan Fatihi", "tmdb": 78203, "expect": "confirmed", "why": "name hint + Wikidata id; the 2024 Fetihler Sultanı is a different production" },
+  { "id": "oyunu-bozan-nqvst", "original": "Oyunbozan", "tmdb": 85459, "expect": "confirmed", "why": "مفسد اللعبة; name hint" },
+  { "id": "qadari-hqmts", "original": "Kaderimin Yazıldığı Gün", "tmdb": 70929, "expect": "confirmed", "why": "literal translation of the Arabic title; name hint + banner image + episodes 50" },
+  { "id": "yazin-hikayesi-vqstm", "expect": "unresolved", "why": "no verifiable TMDB match found yet; the engine must not guess" },
+  { "id": "evli-cgowr", "expect": "unresolved", "why": "no verifiable TMDB match found yet; candidates are all weak" },
+  { "id": "emirin-yolu-kqvts", "expect": "unresolved", "why": "no verifiable TMDB match found yet; the engine must not guess" }
+ ]
+}

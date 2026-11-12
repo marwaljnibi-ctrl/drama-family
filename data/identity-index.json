@@ -296,9 +296,9 @@
   },
   "yazin-hikayesi-vqstm": {
    "status": "unresolved",
-   "tries": 2,
-   "checked": 1794491900832,
-   "next": 1794751100832,
+   "tries": 3,
+   "checked": 1794492416292,
+   "next": 1795097216292,
    "reason": "no candidates",
    "cast": [
     "تانسيل أونغل",
@@ -308,16 +308,50 @@
    "cands": []
   },
   "don-an-tashoor-kvmts": {
-   "status": "unresolved",
-   "tries": 2,
-   "checked": 1794491922500,
-   "next": 1794751122500,
-   "reason": "no candidates",
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "49933",
+   "imdb": "tt28334660",
+   "wikidata": "Q121094265",
+   "original": "Ruhun Duymaz",
+   "year": 2023,
+   "ar": [
+    "مسلسل دون أن تشعر",
+    "عميل الحب",
+    "دون أن تشعر",
+    "دون ان تشعر",
+    "العميل الحب"
+   ],
+   "lat": [
+    "Ruhun Duymaz",
+    "Love Undercover",
+    "Amor Encubierto",
+    "Душа не слышит",
+    "Твоя душа не чує",
+    "Sua Alma Não Escuta",
+    "Za hlasem srdce",
+    "Tvoja duša ne čuje",
+    "Love client",
+    "Ruhun Duymaz (dizi)",
+    "Rohetam Khabardar Nemishe",
+    "Roohet Khabardar Nist",
+    "Your Soul Doesn't Hear",
+    "Ameel Al Hob"
+   ],
+   "score": 13,
+   "evidence": [
+    "ar-exact",
+    "wikidata-ar-exact",
+    "wikidata-id-agrees",
+    "image-match:6",
+    "year-ok",
+    "eps:9~9"
+   ],
    "cast": [
     "بورجو أوزبيرك",
     "شكرو أوزيلديز"
    ],
-   "cands": []
+   "at": 1794492421638
   },
   "ogulkokusu-fzqtm": {
    "status": "confirmed",
@@ -416,9 +450,9 @@
   },
   "evli-cgowr": {
    "status": "unresolved",
-   "tries": 2,
-   "checked": 1794491985685,
-   "next": 1794751185685,
+   "tries": 3,
+   "checked": 1794492426698,
+   "next": 1795097226698,
    "reason": "score 0.5 < 4",
    "cast": [
     "إيدا إيجي",
@@ -459,18 +493,39 @@
    ]
   },
   "masharef-allayl-fqmts": {
-   "status": "unresolved",
-   "tries": 2,
-   "checked": 1794492007352,
-   "next": 1794751207352,
-   "reason": "no candidates",
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "211714",
+   "imdb": "tt19246582",
+   "wikidata": "Q114736727",
+   "original": "Gecenin Ucunda",
+   "year": 2022,
+   "ar": [
+    "مسلسل على مشارف الليل",
+    "على مشارف الليل"
+   ],
+   "lat": [
+    "Gecenin Ucunda",
+    "Poison Ivy",
+    "Doce Veneno",
+    "В конце ночи"
+   ],
+   "score": 13,
+   "evidence": [
+    "ar-exact",
+    "wikidata-ar-exact",
+    "wikidata-id-agrees",
+    "image-match:2",
+    "year-ok",
+    "eps:26~26"
+   ],
    "cast": [
     "سارب ليفند أوغلو",
     "قادير دوغلو",
     "كان تشانير",
     "نسليهان أتاغول"
    ],
-   "cands": []
+   "at": 1794492430977
   },
   "seer-wa-khafa-nqvts": {
    "status": "confirmed",
@@ -529,55 +584,51 @@
    "at": 1794492033809
   },
   "matha-law-vqstm": {
-   "status": "unresolved",
-   "tries": 2,
-   "checked": 1794492074570,
-   "next": 1794751274570,
-   "reason": "no strong evidence",
+   "status": "confirmed",
+   "src": "tmdb",
+   "ref": "228979",
+   "imdb": "tt28228754",
+   "wikidata": "Q121258761",
+   "original": "Ya Çok Seversen",
+   "year": 2023,
+   "ar": [
+    "مسلسل ماذا لو أحببت كثيراً",
+    "ماذا لو!",
+    "ماذا لو",
+    "ماذا لو أحببت كثيرا",
+    "ماذا لو احببت كثيرا",
+    "ماذا لو؟"
+   ],
+   "lat": [
+    "Ya Çok Seversen",
+    "If You Love",
+    "Если сильно полюбишь",
+    "Se o Destino Quiser",
+    "Nauč mě milovat",
+    "Nauč ma milovať",
+    "Quiéreme siempre",
+    "Dacă iubești",
+    "Kiedy ktoś kocha bardziej",
+    "Quiéreme Siempre",
+    "若你爱我",
+    "Se Você Ama",
+    "心醉情迷",
+    "如果爱得太深怎么办"
+   ],
+   "score": 11.5,
+   "evidence": [
+    "ar-exact",
+    "wikidata-ar-exact",
+    "wikidata-id-agrees",
+    "image-near:11",
+    "year-ok",
+    "eps:13~13"
+   ],
    "cast": [
     "حفصة نور سانجاكتوتان",
     "كرم بورسين"
    ],
-   "cands": [
-    {
-     "src": "tmdb",
-     "ref": "228979",
-     "name": "Ya Çok Seversen",
-     "premiered": 2023,
-     "score": 5.75,
-     "evidence": [
-      "ar-tokens-weak",
-      "cast:1",
-      "image-near:11",
-      "year-ok",
-      "eps:13~13"
-     ]
-    },
-    {
-     "src": "tmdb",
-     "ref": "83087",
-     "name": "Muhteşem İkili",
-     "premiered": 2018,
-     "score": 3.5,
-     "evidence": [
-      "cast:1",
-      "year-ok",
-      "eps:12~13"
-     ]
-    },
-    {
-     "src": "tmdb",
-     "ref": "82007",
-     "name": "Yaşamayanlar",
-     "premiered": 2018,
-     "score": 2.3,
-     "evidence": [
-      "cast:1",
-      "year-ok",
-      "eps:8~13"
-     ]
-    }
-   ]
+   "at": 1794492500565
   },
   "mehmed-vqsmr": {
    "status": "confirmed",
@@ -615,9 +666,9 @@
   },
   "emirin-yolu-kqvts": {
    "status": "unresolved",
-   "tries": 2,
-   "checked": 1794492088811,
-   "next": 1794751288811,
+   "tries": 3,
+   "checked": 1794492504717,
+   "next": 1795097304717,
    "reason": "no candidates",
    "cast": [
     "جيداء آتش",
@@ -726,6 +777,11 @@
   "مفسدلعبه": "85459",
   "يومكتابهقدري": "70929",
   "لعبهقدر": "70929",
-  "قلوبرمان": "70929"
+  "قلوبرمان": "70929",
+  "دونانتشعر": "49933",
+  "عميلحب": "49933",
+  "عليمشارفليل": "211714",
+  "ماذالواحببتكثيرا": "228979",
+  "ماذالو": "228979"
  }
 }

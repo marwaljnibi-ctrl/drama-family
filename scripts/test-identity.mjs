@@ -123,3 +123,20 @@ test('engine: glued slug (icimdekifirtina) is found through the Turkish catalog 
   const stats = { fail: 0 }; const down = await resolveIdentity(show, ctxFor({ stats, json: async () => { stats.fail++; return null; } }));
   assert.equal(down.status, 'unresolved'); assert.equal(down.transient, true);
 });
+
+// ---------- مجموعة الاختبار الدائمة (الـ24) ----------
+import { readFileSync, existsSync } from 'node:fs';
+test('permanent testset: every one of the 24 shows has its expected identity recorded; unresolved ones are never matched; manual hints are kept', () => {
+  const set = JSON.parse(readFileSync('data/identity-testset.json', 'utf8')).shows, map = JSON.parse(readFileSync('data/poster-map.json', 'utf8')), idx = JSON.parse(readFileSync('data/identity-index.json', 'utf8'));
+  const shows = JSON.parse(readFileSync('data/shows.json', 'utf8').replace(/^﻿/, '')).shows.map((s) => s.id); const ovr = JSON.parse(readFileSync('data/identity-overrides.json', 'utf8'));
+  assert.equal(set.length, 24);
+  for (const e of set) {
+    assert.ok(shows.includes(e.id), 'show exists in the catalogue: ' + e.id);
+    if (e.expect === 'confirmed') {
+      assert.equal(map[e.id].status, 'matched', e.id); assert.equal(String(map[e.id].ref), String(e.tmdb), e.id); assert.equal(idx.shows[e.id].status, 'confirmed', e.id); assert.equal(String(idx.shows[e.id].ref), String(e.tmdb), e.id);
+      assert.ok(idx.shows[e.id].evidence.length > 0, 'evidence recorded: ' + e.id); assert.ok(idx.shows[e.id].ar.length > 0, 'Arabic names recorded: ' + e.id);
+      assert.ok(existsSync(map[e.id].path), 'poster file: ' + e.id);
+    } else { assert.notEqual(map[e.id]?.status, 'matched', 'never matched by guess: ' + e.id); assert.notEqual(idx.shows[e.id]?.status, 'confirmed', e.id); }
+  }
+  assert.ok(ovr['azhar-thalj-vqstm'].names.includes('Kardelenler'));   // التلميحات البشرية محفوظة في الملف الدائم
+});

@@ -5059,12 +5059,12 @@
   }
  },
  "yazin-hikayesi-vqstm": {
-  "at": 1794491895796,
-  "tries": 2,
+  "at": 1794492412296,
+  "tries": 3,
   "status": "unmatched",
   "note": "no candidates",
   "cands": [],
-  "next": 1794751100832
+  "next": 1795097216292
  },
  "bir-aile-hikayesi-vqstm": {
   "at": 1794445163811,
@@ -5444,12 +5444,38 @@
   }
  },
  "don-an-tashoor-kvmts": {
-  "at": 1794491900834,
-  "tries": 2,
-  "status": "unmatched",
-  "note": "no candidates",
-  "cands": [],
-  "next": 1794751122500
+  "at": 1794492416295,
+  "tries": 3,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "49933",
+  "name": "Ruhun Duymaz",
+  "premiered": 2023,
+  "idscore": 13,
+  "evidence": [
+   "ar-exact",
+   "wikidata-ar-exact",
+   "wikidata-id-agrees",
+   "image-match:6",
+   "year-ok",
+   "eps:9~9"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/2bILKkp5O0u6Sh1HUjZfwpboJjJ.jpg",
+  "lang": null,
+  "w": 780,
+  "h": 1170,
+  "sharp": 53.53,
+  "ent": 5.38,
+  "score": 0.858,
+  "path": "data/posters/v3/749a81750d26.webp",
+  "bg": {
+   "path": "data/posters/v4/749a81750d26.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/1ugIWzpNewqsMws7UZipEcdth6w.jpg"
+  },
+  "bgAt": 1794492421638,
+  "prev": "data/posters/v2/749a81750d26.webp"
  },
  "deen-rooh-fqvts": {
   "at": 1794482390354,
@@ -6284,8 +6310,8 @@
   }
  },
  "evli-cgowr": {
-  "at": 1794491961773,
-  "tries": 2,
+  "at": 1794492421641,
+  "tries": 3,
   "status": "review",
   "note": "score 0.5 < 4",
   "cands": [
@@ -6320,7 +6346,7 @@
     ]
    }
   ],
-  "next": 1794751185685
+  "next": 1795097226698
  },
  "karisik-hgqnt": {
   "at": 1794445991861,
@@ -6387,12 +6413,38 @@
   "bg": null
  },
  "masharef-allayl-fqmts": {
-  "at": 1794491985687,
-  "tries": 2,
-  "status": "unmatched",
-  "note": "no candidates",
-  "cands": [],
-  "next": 1794751207352
+  "at": 1794492426700,
+  "tries": 3,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "211714",
+  "name": "Gecenin Ucunda",
+  "premiered": 2022,
+  "idscore": 13,
+  "evidence": [
+   "ar-exact",
+   "wikidata-ar-exact",
+   "wikidata-id-agrees",
+   "image-match:2",
+   "year-ok",
+   "eps:26~26"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/tXhEy9MLTjGbSC7Yi8CmBTlUZ8F.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 67.75,
+  "ent": 5.73,
+  "score": 0.865,
+  "path": "data/posters/v3/6368e07fcc32.webp",
+  "bg": {
+   "path": "data/posters/v4/6368e07fcc32.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/1S2YLbPQD5kJ3n7a7P7vglkmXXs.jpg"
+  },
+  "bgAt": 1794492430977,
+  "prev": "data/posters/v2/6368e07fcc32.webp"
  },
  "omer-kvrsm": {
   "at": 1794445258698,
@@ -7313,51 +7365,38 @@
   "bg": null
  },
  "matha-law-vqstm": {
-  "at": 1794492033811,
-  "tries": 2,
-  "status": "review",
-  "note": "no strong evidence",
-  "cands": [
-   {
-    "src": "tmdb",
-    "ref": "228979",
-    "name": "Ya Çok Seversen",
-    "premiered": 2023,
-    "score": 5.75,
-    "evidence": [
-     "ar-tokens-weak",
-     "cast:1",
-     "image-near:11",
-     "year-ok",
-     "eps:13~13"
-    ]
-   },
-   {
-    "src": "tmdb",
-    "ref": "83087",
-    "name": "Muhteşem İkili",
-    "premiered": 2018,
-    "score": 3.5,
-    "evidence": [
-     "cast:1",
-     "year-ok",
-     "eps:12~13"
-    ]
-   },
-   {
-    "src": "tmdb",
-    "ref": "82007",
-    "name": "Yaşamayanlar",
-    "premiered": 2018,
-    "score": 2.3,
-    "evidence": [
-     "cast:1",
-     "year-ok",
-     "eps:8~13"
-    ]
-   }
+  "at": 1794492493573,
+  "tries": 3,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "228979",
+  "name": "Ya Çok Seversen",
+  "premiered": 2023,
+  "idscore": 11.5,
+  "evidence": [
+   "ar-exact",
+   "wikidata-ar-exact",
+   "wikidata-id-agrees",
+   "image-near:11",
+   "year-ok",
+   "eps:13~13"
   ],
-  "next": 1794751274570
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/8Yz3AFSHdftqNPw14V247GJiZXG.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1170,
+  "sharp": 69.33,
+  "ent": 6.77,
+  "score": 0.886,
+  "path": "data/posters/v3/f79695ad565c.webp",
+  "bg": {
+   "path": "data/posters/v4/f79695ad565c.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/ioMYIb9PPklLSoIWA7g8Z1HUtBL.jpg"
+  },
+  "bgAt": 1794492500565,
+  "prev": "data/posters/v2/f79695ad565c.webp"
  },
  "maral-kqvsm": {
   "at": 1794446033355,
@@ -7609,12 +7648,12 @@
   }
  },
  "emirin-yolu-kqvts": {
-  "at": 1794492083171,
-  "tries": 2,
+  "at": 1794492500567,
+  "tries": 3,
   "status": "unmatched",
   "note": "no candidates",
   "cands": [],
-  "next": 1794751288811
+  "next": 1795097304717
  },
  "bas-belasi-hqtmv": {
   "at": 1794445337569,
@@ -8542,5 +8581,135 @@
   "path": "data/posters/v3/5fd7938e5f89.webp",
   "prev": "data/posters/v2/5fd7938e5f89.webp",
   "bg": null
+ },
+ "tlcty-fmsqr": {
+  "at": 1794492407138,
+  "tries": 1,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "49159",
+  "name": "Kayıp Şehir",
+  "premiered": 2012,
+  "idscore": 7,
+  "evidence": [
+   "wikidata-id-agrees",
+   "latin-exact:hint",
+   "year-ok",
+   "eps:26~26"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/xC5kKHf1F3cWVfVr52kScDLJNj.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1169,
+  "sharp": 77.86,
+  "ent": 7.9,
+  "score": 0.901,
+  "path": "data/posters/v3/6a184e1a2540.webp",
+  "bg": {
+   "path": "data/posters/v4/6a184e1a2540.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/1Dr5sCA1pDXmusessJwPyUvJQCi.jpg"
+  },
+  "bgAt": 1794492408610,
+  "prev": "data/posters/v2/6a184e1a2540.webp"
+ },
+ "alsunduq-fqmts": {
+  "at": 1794492408613,
+  "tries": 1,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "240335",
+  "name": "Sandık Kokusu",
+  "premiered": 2023,
+  "idscore": 11.5,
+  "evidence": [
+   "ar-exact",
+   "wikidata-ar-exact",
+   "wikidata-id-agrees",
+   "image-near:11",
+   "year-ok",
+   "eps:50~50"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/aq71NZ6rlmSrAVrXEKcxxfP7BzP.jpg",
+  "lang": "ar",
+  "w": 780,
+  "h": 1170,
+  "sharp": 58.88,
+  "ent": 7.56,
+  "score": 0.901,
+  "path": "data/posters/v3/5b2178a9ecd7.webp",
+  "bg": {
+   "path": "data/posters/v4/5b2178a9ecd7.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/lkB2CrZ1JAau1vy9A6PfMITMotl.jpg"
+  },
+  "bgAt": 1794492409688,
+  "prev": "data/posters/v2/5b2178a9ecd7.webp"
+ },
+ "sayaejebak-lqmnt": {
+  "at": 1794492409691,
+  "tries": 1,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "203205",
+  "name": "Seversin",
+  "premiered": 2022,
+  "idscore": 10,
+  "evidence": [
+   "ar-exact",
+   "wikidata-ar-exact",
+   "wikidata-id-agrees",
+   "year-ok",
+   "eps:20~20"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/ua7OqjTDklcFqOS8ksIhiPUOTo2.jpg",
+  "lang": "ar",
+  "w": 780,
+  "h": 1170,
+  "sharp": 50.83,
+  "ent": 7.16,
+  "score": 0.894,
+  "path": "data/posters/v3/0f777e8c1e24.webp",
+  "bg": {
+   "path": "data/posters/v4/0f777e8c1e24.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/v7dSslNfUy2QZj0kpvc3aRdjKaf.jpg"
+  },
+  "bgAt": 1794492411106,
+  "prev": "data/posters/v2/0f777e8c1e24.webp"
+ },
+ "lvstr-bqmzn": {
+  "at": 1794492411108,
+  "tries": 1,
+  "conf": "identity",
+  "src": "tmdb",
+  "ref": "87175",
+  "name": "Bir Aşk Hikayesi",
+  "premiered": 2013,
+  "idscore": 6,
+  "evidence": [
+   "latin-exact:hint",
+   "year-ok",
+   "eps:36~36"
+  ],
+  "status": "matched",
+  "url": "https://image.tmdb.org/t/p/w780/xNWLqpcuHpSAppdaHTPOTVeMy7S.jpg",
+  "lang": "tr",
+  "w": 780,
+  "h": 1099,
+  "sharp": 75.67,
+  "ent": 7.72,
+  "score": 0.873,
+  "path": "data/posters/v3/b37be6165fc0.webp",
+  "bg": {
+   "path": "data/posters/v4/b37be6165fc0.webp",
+   "w": 1000,
+   "url": "https://image.tmdb.org/t/p/w1280/wfqIo9iRH99Q9KCc9FwoM3y73Z3.jpg"
+  },
+  "bgAt": 1794492412149,
+  "prev": "data/posters/v2/b37be6165fc0.webp"
  }
 }

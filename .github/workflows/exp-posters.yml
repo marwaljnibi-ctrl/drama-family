@@ -16,6 +16,10 @@ jobs:
         run: |
           node scripts/poster-pick.mjs --resolve --ids tlcty-fmsqr,alsunduq-fqmts,sayaejebak-lqmnt,lvstr-bqmzn 2>&1 | tail -n 20
           node scripts/poster-pick.mjs --resolve 2>&1 | tail -n 60
+      - name: live permanent testset (engine re-resolves the 24 from scratch, no writes)
+        continue-on-error: true
+        env: { TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
+        run: node scripts/poster-pick.mjs --testset 2>&1 | tail -n 40
       - name: what does the source page offer (cast/year/channel)?
         continue-on-error: true
         run: |
