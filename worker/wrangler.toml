@@ -18,5 +18,5 @@ DIZI_URL = "https://marwaljnibi-ctrl.github.io/drama-family/"
 SETTINGS_URL = "https://exp-family-accounts.dizi-preview.pages.dev/"
 GOOGLE_CLIENT_ID = "1081945666502-7qk073lrqol1jibp6mt3drs2qhtri87j.apps.googleusercontent.com"
 REQUIRE_INVITE = "1"
-ALLOWED_ORIGINS = "https://exp-whatsapp-alerts.dizi-preview.pages.dev,https://exp-family-v1.dizi-preview.pages.dev,https://exp-family-accounts.dizi-preview.pages.dev,https://marwaljnibi-ctrl.github.io"
+ALLOWED_ORIGINS = "https://exp-whatsapp-alerts.dizi-preview.pages.dev,https://exp-family-v1.dizi-preview.pages.dev,https://exp-family-accounts.dizi-preview.pages.dev,https://exp-apple-tv-design.dizi-preview.pages.dev,https://marwaljnibi-ctrl.github.io"
 # الأسرار (لا تُكتب هنا): UM_API_KEY و ADMIN_KEY عبر: npx wrangler secret put <NAME>
