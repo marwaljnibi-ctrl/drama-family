@@ -44,7 +44,7 @@ export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sha
   if (!poster) return { ident, rec: { ...base, status: 'review', note: 'identity confirmed (' + b.original + ') but no suitable vertical poster yet' } };
   let bd = null; try { bd = await chooseBackdrop(b, ctx); } catch {}
   const { path, bg } = await saveImages(show, { sharp, buf: poster.buf }, bd && { ...bd, sharp }, dry); if (bg && bd) bg.w = bd.w;
-  return { ident, rec: { ...base, status: 'matched', url: poster.url, lang: poster.lang, w: poster.a.w, h: poster.a.h, sharp: poster.a.sharp, ent: poster.a.ent, score: poster.a.score, path, bg, prev: show.img2 || show.img || null, ...(poster.a.reasons.includes('low-res') ? { lowres: true } : {}) } };
+  return { ident, rec: { ...base, status: 'matched', url: poster.url, lang: poster.lang, w: poster.a.w, h: poster.a.h, sharp: poster.a.sharp, ent: poster.a.ent, score: poster.a.score, path, bg, bgAt: Date.now(), prev: show.img2 || show.img || null, ...(poster.a.reasons.includes('low-res') ? { lowres: true } : {}) } };
 }
 // خلفية أفقية لمسلسل معتمد سابقًا (مرة واحدة؛ تُعاد بعد 30 يومًا إن لم توجد)
 export async function pickBackdropFor(show, rec, { sharp, tmdbKey = process.env.TMDB_API_KEY, http = makeHttp(), dry = false } = {}) {
