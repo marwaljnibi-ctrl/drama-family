@@ -15,9 +15,10 @@ for (const [w, h] of [[320, 568], [390, 844], [430, 932]]) {
   const rows = async () => p.evaluate(() => [...document.querySelectorAll('.sw')].map((s) => s.dataset.id));
   const r0 = await rows(); const first = r0[0];
   const box = async () => p.evaluate(() => { const r = document.querySelector('.sw .sw-row').getBoundingClientRect(); const s = document.querySelector('.sw').getBoundingClientRect(); return { x: r.left - s.left, y: r.top + r.height / 2, w: r.width, left: s.left }; });
-  let bx = await box(); const y = bx.y;
+  let bx = await box(); let y = bx.y;
+  const top0 = async () => { await p.evaluate(() => { document.getElementById('view').scrollTop = 0; }); await p.waitForTimeout(150); y = (await box()).y; };   // الصفحة قد تتمرر بالسحب العمودي: نعيد القياس
   // 1) سحب عمودي: لا يفتح الإزالة ويمرّر الصفحة
-  await swipe(w / 2, y + 30, w / 2 + 10, y - 40); T(`${w}px vertical swipe does not reveal remove`, (await box()).x === 0 && (await p.locator('.sw.open').count()) === 0);
+  await swipe(w / 2, y + 30, w / 2 + 10, y - 40); T(`${w}px vertical swipe does not reveal remove`, (await box()).x === 0 && (await p.locator('.sw.open').count()) === 0); await top0();
   // 2) سحب أفقي نحو اليمين (RTL): يظهر زر «إزالة»
   await swipe(w * 0.35, y, w * 0.85, y + 4); const open = await box(); T(`${w}px horizontal swipe reveals remove (translate ${open.x})`, open.x >= 90 && (await p.locator('.sw.open').count()) === 1, JSON.stringify(open));
   // 3) «إزالة» -> نافذة تأكيد -> إلغاء: تعود البطاقة
