@@ -9,9 +9,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
+      - run: npm i --no-save --no-audit --no-fund sharp
       - name: unit tests
-        run: node --test scripts/test.mjs
-      - run: npm i --no-save --no-audit --no-fund playwright && npx playwright install --with-deps chromium
+        run: node --test scripts/test-posters.mjs scripts/test.mjs scripts/test-family.mjs scripts/test-sync.mjs worker/spec/worker.test.mjs worker/spec/accounts.test.mjs
+      - name: "install playwright (apt update and retries)"
+        run: |
+          npm i --no-save --no-audit --no-fund playwright
+          for i in 1 2 3; do sudo apt-get update -qq || true; npx playwright install --with-deps chromium && break; echo "retry $i"; sleep 15; done
+          npx playwright --version
       - name: make test clip (H.264+AAC, 90s)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && mkdir -p test && ffmpeg -loglevel error -y -f lavfi -i testsrc=size=640x360:rate=24 -f lavfi -i sine=frequency=440 -t 90 -c:v libx264 -pix_fmt yuv420p -preset ultrafast -c:a aac -movflags +faststart test/clip.mp4
       - name: make big file (700MB = valid mp4 + padding) for the memory test
@@ -21,6 +26,7 @@ jobs:
           node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
           sleep 2
           node scripts/test-import.mjs
+          node scripts/test-home.mjs && node scripts/test-resume.mjs && node scripts/test-design.mjs && node scripts/test-type.mjs
       - name: import e2e (published preview, only if scripts/preview-url.txt exists)
         run: |
           if [ -f scripts/preview-url.txt ]; then BASE="$(cat scripts/preview-url.txt)" node scripts/test-import.mjs; else echo "no preview url"; fi

@@ -3,11 +3,18 @@
 // { updated: ISO, source: 'qesset.net', shows: [{ id, title, poster, url,
 //   eps: [{ id, n, title, url, ts?, v?: { src, type: 'mp4'|'hls' } }]  // الأحدث أولًا
 // }], latest: [{ showId, epId, ts }] }
+// المعاينة على pages.dev تقرأ الفهرس الحي وصوره من موقع GitHub Pages (يسمح بالقراءة عبر الأصول)، فتبقى محدّثة كل 5 دقائق.
+const BASE_URL = /\.pages\.dev$/.test(location.hostname) ? 'https://marwaljnibi-ctrl.github.io/drama-family/' : '';
+export const asset = (p) => (p && !/^(https?:|data:|blob:)/.test(p) ? BASE_URL + p : p);
+// أساس روابط التنزيل العامة لـ cloud.mail.ru (يحدّثه المزامن كل 30 دقيقة)
+export async function loadMailru() {
+  try { const r = await fetch(asset('data/mailru.json'), { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; }
+}
 let cache = null;
 export async function loadData(force = false) {
   if (cache && !force) return cache;
   const demo = new URLSearchParams(location.search).has('demo');
-  const url = demo ? 'data/demo.json' : 'data/shows.json';
+  const url = demo ? 'data/demo.json' : asset('data/shows.json');
   const r = await fetch(url, { cache: 'no-cache' });
   if (!r.ok) throw new Error('data ' + r.status);
   const d = await r.json();

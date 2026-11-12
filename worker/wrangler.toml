@@ -1,0 +1,22 @@
+name = "dizi-alerts"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# قاعدة D1 المجانية (متسقة فورًا). الربط اسمه DB في الكود. المخطط في schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "dizi-alerts"
+database_id = "689ab4af-a598-4706-895a-4cee430a5e8a"
+
+# كل 5 دقائق: اكتشاف الحلقات الجديدة من data/shows.json (النظام الموجود) ثم الإرسال
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+DATA_URL = "https://marwaljnibi-ctrl.github.io/drama-family/data/shows.json"
+DIZI_URL = "https://marwaljnibi-ctrl.github.io/drama-family/"
+SETTINGS_URL = "https://marwaljnibi-ctrl.github.io/drama-family/"
+GOOGLE_CLIENT_ID = "1081945666502-7qk073lrqol1jibp6mt3drs2qhtri87j.apps.googleusercontent.com"
+REQUIRE_INVITE = "1"
+ALLOWED_ORIGINS = "https://exp-whatsapp-alerts.dizi-preview.pages.dev,https://exp-family-v1.dizi-preview.pages.dev,https://exp-family-accounts.dizi-preview.pages.dev,https://exp-apple-tv-design.dizi-preview.pages.dev,https://marwaljnibi-ctrl.github.io"
+# الأسرار (لا تُكتب هنا): UM_API_KEY و ADMIN_KEY عبر: npx wrangler secret put <NAME>

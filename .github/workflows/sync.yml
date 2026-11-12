@@ -18,5 +18,5 @@ jobs:
       - run: npm i --no-save --no-audit --no-fund sharp
       - name: sync in chunks (each chunk is committed and pushed)
         timeout-minutes: 330
-        env: { SYNC_FULL: '${{ github.event.inputs.full }}', LIMIT: '${{ github.event.inputs.limit || 300 }}' }
+        env: { SYNC_FULL: '${{ github.event.inputs.full }}', LIMIT: '${{ github.event.inputs.limit || 300 }}', TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
         run: bash scripts/sync-run.sh

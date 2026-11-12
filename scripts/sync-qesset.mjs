@@ -142,7 +142,8 @@ async function main() {
     const oldTs = new Map((old?.eps || []).map((e) => [e.id, e.ts]));
     const oldSv = new Map((old?.eps || []).map((e) => [e.id, [e.sv, e.q]]));
     for (const e of eps) { e.ts = oldTs.get(e.id) || now; const o = oldSv.get(e.id); if (o && o[0]) { e.sv = o[0]; if (o[1]) e.q = o[1]; } }
-    byId.set(s.id, { ...(old || {}), ...s, poster: s.poster || ogImage(html) || old?.poster || '', img: old?.img, eps });
+    // added: وقت أول ظهور للمسلسل في الفهرس (للمسلسلات التي تظهر بعد أول مزامنة فقط؛ القديمة بلا قيمة فلا تُعدّ جديدة)
+    byId.set(s.id, { ...(old || {}), ...s, poster: s.poster || ogImage(html) || old?.poster || '', img: old?.img, added: old ? old.added : (prev.shows.length ? now : undefined), eps });
   }
   for (const s of found.values()) if (!byId.has(s.id)) byId.set(s.id, { ...s, eps: [] });
   const shows = [...byId.values()].filter((s) => s.eps.length).sort((a, b) => a.title.localeCompare(b.title, 'ar'));
@@ -150,6 +151,7 @@ async function main() {
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
   await localizePosters(shows);
+  try { await (await import('./poster-pick.mjs')).upgradePosters(shows, { max: 8 }); } catch (e) { console.log('poster upgrade skipped:', String(e).slice(0, 80)); }   // بوستر عمودي أفضل: مرة واحدة لكل مسلسل جديد فقط (سجل في data/poster-map.json)
   // كتابة ذرية (ملف مؤقت ثم إعادة تسمية): لا يُترك JSON ناقص إن انقطع التشغيل أثناء الكتابة
   const dump = () => { const tmp = OUT + '.tmp'; writeFileSync(tmp, JSON.stringify({ updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest })); renameSync(tmp, OUT); };
   await resolveServers(shows, dump);
