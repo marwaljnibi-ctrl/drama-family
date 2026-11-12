@@ -28,7 +28,7 @@ let D;
 let cleanup = null, enterT = 0;
 const LARGE = ['shows', 'favs', 'recent', 'latest', 'alerts', 'login'];
 addEventListener('scroll', () => document.body.classList.toggle('scrolled', scrollY > 48), { passive: true });
-const BUILD = 'df-v30';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
+const BUILD = 'df-v31';   // رقم النسخة (يطابق sw.js)؛ يظهر في لوحة المطوّر ?arabtest=1 فقط
 let pendingReload = false, reloaded = false;   // إعادة تحميل مؤجلة بعد وصول نسخة جديدة أثناء المشاهدة
 const isPlaying = () => [...document.querySelectorAll('video')].some((v) => !v.paused && !v.ended);
 const demoQ = () => (D && D.demo ? '?demo=1' : '');
@@ -374,10 +374,12 @@ const refresh = async () => { if (document.visibilityState !== 'visible' || !D) 
 setInterval(refresh, 5 * 60 * 1000);
 document.addEventListener('visibilitychange', refresh);
 
-// الأرقام العربية (١٢٣) في كل نص معروض، بلا المساس بالروابط أو القيم.
+// توحيد الأرقام: أرقام لاتينية 0-9 فقط في كل نص معروض (تُحوَّل الهندية ٠-٩ والفارسية ۰-۹ إن جاءت من المصدر).
+// عقد النص فقط: لا تمس الروابط ولا القيم ولا معرّفات البيانات ولا المخزَّن.
+export const latinDigits = (s) => String(s).replace(/[\u0660-\u0669\u06F0-\u06F9]/g, (d) => d.charCodeAt(0) & 15);
 {
-  const AR = '٠١٢٣٤٥٦٧٨٩';
-  const conv = (n) => { if (n.nodeType === 3) { if (/\d/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/\d/g, (d) => AR[d]); } else if (n.nodeType === 1 && !/^(SCRIPT|STYLE|IFRAME|INPUT|TEXTAREA)$/.test(n.tagName)) n.childNodes.forEach(conv); };
+  const SKIP = /^(SCRIPT|STYLE|IFRAME|INPUT|TEXTAREA)$/;
+  const conv = (n) => { if (n.nodeType === 3) { const v = n.nodeValue; if (/[\u0660-\u0669\u06F0-\u06F9]/.test(v)) n.nodeValue = latinDigits(v); } else if (n.nodeType === 1 && !SKIP.test(n.tagName)) n.childNodes.forEach(conv); };
   const mo = new MutationObserver((ms) => { mo.disconnect(); ms.forEach((m) => (m.type === 'characterData' ? conv(m.target) : m.addedNodes.forEach(conv))); mo.observe(document.body, { childList: true, subtree: true, characterData: true }); });
   conv(document.body); mo.observe(document.body, { childList: true, subtree: true, characterData: true });
 }

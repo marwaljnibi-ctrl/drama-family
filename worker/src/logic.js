@@ -30,8 +30,10 @@ export function shouldEnqueue({ member, ep, enabled }) {
 // قبل كل إرسال: نعيد التحقق (إلغاء الاشتراك أو سحب الموافقة أو تعطيل الإرسال يوقف الرسالة المعلقة فورًا)
 export const stillWanted = shouldEnqueue;
 
+// أرقام لاتينية فقط في رسائل واتساب (عنوان المصدر قد يحوي ٠-٩)
+const latin = (s) => String(s).replace(/[\u0660-\u0669\u06F0-\u06F9]/g, (d) => d.charCodeAt(0) & 15);
 export function messageText({ title, n, link }) {
-  return ['🔔 حلقة جديدة', title + (n ? ' - الحلقة ' + n : ''), 'شاهدها في Dizi:', link].join('\n');
+  return ['🔔 حلقة جديدة', latin(title + (n ? ' - الحلقة ' + n : '')), 'شاهدها في Dizi:', link].join('\n');
 }
 export const watchLink = (base, showId, epId) => base.replace(/\/?$/, '/') + '#/watch/' + encodeURIComponent(showId) + '/' + encodeURIComponent(epId);
 export const validShowId = (s) => typeof s === 'string' && s.length > 0 && s.length <= 160 && !/[\s"<>\\]/.test(s);
