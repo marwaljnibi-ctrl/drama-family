@@ -225,3 +225,14 @@ test('re-indexing old episodes (new timestamps, reordered, dropped and returning
   assert.equal(UM.length, n);
   LATEST = [ep('s1', 6), ...LATEST]; await runCron(e, 5000); assert.equal(UM.length, n + 1);                              // الحلقة الجديدة فعلًا فقط
 });
+
+// ===== التسجيل عام: بلا REQUIRE_INVITE أي حساب Google موثَّق يستطيع الدخول، والدعوة ليست شرطًا =====
+test('public sign-up (default): any verified Google account signs in without an invite; invite-only stays an explicit opt-in', async () => {
+  resetGoogleKeys(); const e = env(); delete e.REQUIRE_INVITE;
+  const ok = await call(e, '/auth/google', { body: { credential: await idt({ sub: 'pub1', email: 'anyone@example.org', name: 'Anyone' }) } });
+  assert.equal(ok.status, 200); assert.match(ok.body.session, /^[0-9a-f]{64}$/); assert.equal(await cnt(e, 'invites'), 0);
+  assert.equal((await call(e, '/api/profile', { key: ok.body.session })).status, 200);
+  assert.equal((await call(e, '/auth/google', { body: { credential: await idt({ email_verified: false }) } })).status, 401);   // الأمان نفسه: توكن غير موثَّق يُرفض
+  const strict = env(); strict.REQUIRE_INVITE = '1';
+  assert.equal((await call(strict, '/auth/google', { body: { credential: await idt({ sub: 'x', email: 'stranger@example.org' }) } })).status, 403);
+});

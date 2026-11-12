@@ -23,10 +23,18 @@ export function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidde
 // الصور: النسخة الأوضح (img2، 600px) إن وُجدت، ثم القديمة، ثم رابط المصدر
 // img3 = بوستر عمودي مُختار آليًا (TMDB/TVmaze) إن وُجد؛ وإلا الصورة الأصلية (img2 بانر أفقي، img مصغّرة). wide=true للبطاقات الأفقية (بانر المصدر يناسبها).
 // Poster = عمودي (img3 مُتحقَّق من أبعاده عند الاختيار). Backdrop = أفقي: img4 (16:9 سينمائي) ثم بانر المصدر img2. wide=true يطلب الأفقي (بطاقات المتابعة الأفقية).
-export const posterUrl = (s, wide = false) => (wide ? asset(s.img4 || s.img2 || s.img) : asset(s.img3 || s.img2 || s.img)) || s.poster || '';
+// القاعدة الدائمة: أي صورة داخل بطاقة/صف عمودي يجب أن تكون Poster عموديًا (img3 مُتحقَّق من أبعاده في نظام اختيار الصور).
+// لا تُستعمل الصور الأفقية (img2/img4/img) في الإطارات العمودية أبدًا؛ إن لم يوجد بوستر عمودي يظهر غلاف بعنوان المسلسل.
+// الأفقية (wide=true) للبطاقات الأفقية والـHero وصفحة التفاصيل فقط.
+export const posterUrl = (s, wide = false) => (wide ? asset(s.img4 || s.img2 || s.img) || s.poster || '' : asset(s.img3) || '');
 export const backdropUrl = (s) => asset(s.img4 || s.img2 || s.img) || s.poster || '';
+const hue = (id) => { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
 export const heroArt = (s) => { const a = asset(s.img4); if (a) return { mode: 'land', src: a }; const p = asset(s.img3); if (p) return { mode: 'poster', src: p }; return { mode: 'banner', src: asset(s.img2 || s.img) || s.poster || '' }; };
-export const poster = (s, cls = '', wide = false) => { const src = posterUrl(s, wide); return src ? `<span class="pw${wide ? ' pw-wide' : ''}" style="--bd:url(${esc(src)})"><img class="${cls}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt=""></span>` : `<div class="ph ${cls}"></div>`; };
+export const poster = (s, cls = '', wide = false) => {
+  const src = posterUrl(s, wide), t = `<i class="ph-t">${esc(s.title || '')}</i>`;
+  if (!src) return `<span class="pw pw-ph${wide ? ' pw-wide' : ''}" style="--h:${hue(s.id)}">${t}</span>`;   // لا بوستر عمودي: غلاف بعنوان المسلسل
+  return `<span class="pw${wide ? ' pw-wide' : ''}" style="--bd:url(${esc(src)});--h:${hue(s.id)}"><img class="${cls}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt="">${t}</span>`;
+};
 
 // قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
 export const HEART = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';

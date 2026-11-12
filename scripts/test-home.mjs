@@ -35,19 +35,34 @@ T('continue-label-is-متابعة-المشاهدة', await page.$$eval('.ccard .
 const withMin = cards.find((c) => /توقفت عند/.test(c.small)), opened = cards.find((c) => !/توقفت عند/.test(c.small));
 T('opened-never-played-not-in-continue', cards.length === 1 && withMin && withMin.bar && !opened, JSON.stringify(cards));
 
-// T2b: زر «إزالة من آخر المشاهدات» أُزيل من الواجهة؛ حالة الإخفاء القديمة (hidden) تبقى محترمة والبيانات لا تُحذف
-await page.goto(BASE + '?demo=1#/watch/demo-a/demo-a-episode-4'); await page.reload(); await page.waitForSelector('#pl');
-T('remove-from-recent-button-gone', !(await page.$('#rh')) && !/إزالة من آخر المشاهدات/.test(await page.textContent('#view')));
-await page.evaluate(async () => { const db = await import('./db.js'); await db.progress.hideShow('demo-a'); });
+// T2b: «إزالة من آخر المشاهدات» (بتأكيد): تُزيل العنصر من القائمة فقط، ولا تحذف التقدم ولا المفضلة، وتعود عند مشاهدة جديدة
+const favBefore = await page.evaluate(async () => { const db = await import('./db.js'); return await db.favs.has('demo-a'); });
+await page.goto(BASE + '?demo=1#/watch/demo-a/demo-a-episode-4'); await page.reload(); await page.waitForSelector('#rh');
+T('remove-from-recent-button-present', /إزالة من آخر المشاهدات/.test(await page.textContent('#rh')));
+await page.click('#rh'); await page.waitForSelector('.sheet');
+T('remove-asks-confirmation', /إزالة من آخر المشاهدات/.test(await page.textContent('.sheet')) && /لا يُحذف تقدمك ولا مفضلتك/.test(await page.textContent('.sheet')));
+await page.click('.sheet [data-no]'); await page.waitForTimeout(300);
+T('remove-cancel-keeps-everything', !!(await page.$('#rh')) && !(await page.$('.sheet')) && (await page.evaluate(async () => { const db = await import('./db.js'); const p = (await db.progress.all()).find((x) => x.epId === 'demo-a-episode-4'); return !p.hidden; })));
+await page.click('#rh'); await page.waitForSelector('.sheet'); await page.click('.sheet [data-ok]'); await page.waitForTimeout(800);
+T('remove-hides-button-after', !(await page.$('#rh')));
 await home();
-T('legacy-hidden-not-in-continue', (await page.$$('.ccard')).length === 0);
-const kept = await page.evaluate(async () => { const db = await import('./db.js'); const p = (await db.progress.all()).find((x) => x.epId === 'demo-a-episode-4'); return !!p && p.time === 600 && p.hidden === true; });
-T('hide-keeps-progress-data', kept);
+T('removed-not-in-continue', (await page.$$('.ccard')).length === 0);
+await page.goto(BASE + '?demo=1#/recent'); await page.reload(); await page.waitForSelector('#view');
+T('removed-not-in-recent-tab', (await page.$$eval('#view .row', (a) => a.length)) === 0);
+const kept = await page.evaluate(async () => { const db = await import('./db.js'); const p = (await db.progress.all()).find((x) => x.epId === 'demo-a-episode-4'); return { prog: !!p && p.time === 600 && p.hidden === true, fav: await db.favs.has('demo-a') }; });
+T('remove-keeps-progress-and-favorites', kept.prog && kept.fav === favBefore, JSON.stringify({ kept, favBefore }));
 await page.evaluate(async () => { const db = await import('./db.js'); const D = await (await fetch('data/demo.json')).json(); const A = D.shows[0]; await db.progress.save(A.id, A.eps.find((e) => e.n === 4), { time: 700, duration: 2700, done: false }); });
 await home();
 T('new-playback-brings-it-back', (await page.$$('.ccard')).length === 1);
+// الميزات المؤجلة (تنزيل / استيراد / cloud.mail) مخفية في كل الصفحات؛ بنيتها الداخلية باقية
+await page.goto(BASE + '?demo=1#/show/demo-a'); await page.reload(); await page.waitForSelector('#fav');
+T('deferred-hidden-show-page', !(await page.$('#dlall')) && !/تحميل الكل|تنزيل|cloud\.mail/i.test(await page.textContent('#view')));
+await page.goto(BASE + '?demo=1#/watch/demo-a/demo-a-episode-4'); await page.reload(); await page.waitForSelector('#pl'); await page.waitForTimeout(600);
+const wp = await page.textContent('#view');
+T('deferred-hidden-watch-page', !(await page.$('#imp, #impbtn, #exp, #dlall')) && !/استيراد|تنزيل|حفظ في الملفات|cloud\.mail|الملف المحفوظ/i.test(wp) && !(await page.$('a[href*="cloud.mail"]')), wp.slice(0, 80));
 
 // T3: بطاقة المتابعة تفتح الحلقة
+await home();
 await page.click('.ccard >> nth=0'); await page.waitForSelector('#pl');
 T('continue-opens-episode', /#\/watch\//.test(page.url()), page.url().split('#')[1]);
 

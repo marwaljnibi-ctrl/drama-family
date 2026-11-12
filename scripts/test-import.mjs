@@ -10,6 +10,7 @@ copyFileSync('test/clip.mp4', 'test/Show 03.mp4'); copyFileSync('test/clip.mp4',
 const out = []; const T = (name, ok, d = '') => { out.push(ok); console.log('T', name, ok ? 'PASS' : 'FAIL', d); };
 const b = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+await ctx.addInitScript(() => localStorage.setItem('df-deferred', '1'));   // الميزات المؤجلة تظهر في هذا الاختبار فقط
 const page = await ctx.newPage();
 const errors = []; page.on('pageerror', (e) => errors.push(String(e).slice(0, 100)));
 const video = () => page.evaluate(() => { const v = document.getElementById('v'); return v ? { src: v.src.slice(0, 5), dur: Math.round(v.duration || 0), t: +v.currentTime.toFixed(1), paused: v.paused, err: v.error && v.error.code } : null; });

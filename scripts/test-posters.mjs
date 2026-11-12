@@ -57,3 +57,12 @@ test('automation: a new show is matched once, recorded, and never re-evaluated; 
     assert.equal(s2[0].img3, map['yeni-dizi-bcdfg'].path);                                                                  // المعتمد يُطبَّق بلا إعادة فحص
   } finally { globalThis.fetch = realFetch; process.chdir(prev); }
 });
+
+test('permanent rule: every approved poster (img3 candidate) in the library is a real portrait image', async () => {
+  const { portraitOk, PORTRAIT_MIN, PORTRAIT_MAX } = await import('./poster-pick.mjs');
+  const map = JSON.parse(readFileSync('data/poster-map.json', 'utf8')); let n = 0;
+  for (const [id, r] of Object.entries(map)) { if (r.status !== 'matched') continue; assert.ok(portraitOk(r), id + ' not portrait by record'); const m = await sharp(r.path).metadata(); const ar = m.width / m.height; assert.ok(ar >= PORTRAIT_MIN && ar <= PORTRAIT_MAX, id + ' file ar ' + ar.toFixed(2)); n++; }
+  assert.ok(n >= 200, 'matched count ' + n);
+  assert.equal(portraitOk({ status: 'matched', w: 600, h: 326, path: 'x' }), false);   // الأفقية مرفوضة دائمًا
+  assert.equal(portraitOk({ status: 'matched', w: 640, h: 960, path: 'x' }), true);
+});

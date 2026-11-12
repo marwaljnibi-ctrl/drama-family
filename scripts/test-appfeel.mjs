@@ -76,12 +76,17 @@ const real = await (await fetch(BASE + 'data/shows.json')).json();
   await p.goto(BASE + '#/shows'); await p.waitForSelector('#g .card');
   // نمرّر القائمة لتحميل صور كثيرة ثم نفحص كل صورة محمّلة: هل القاعدة مطبّقة حسب أبعادها الفعلية؟
   for (let i = 0; i < 14; i++) { await p.evaluate((y) => { document.getElementById('view').scrollTop = y; }, i * 900); await p.waitForTimeout(250); }
-  const audit = await p.evaluate(() => { const rows = []; for (const w of document.querySelectorAll('#g .pw')) { const i = w.querySelector('img'); if (!i || !i.complete || !i.naturalWidth) continue; const r = w.getBoundingClientRect(); const ia = i.naturalWidth / i.naturalHeight, ca = r.width / r.height, loss = 1 - Math.min(ia, ca) / Math.max(ia, ca); rows.push({ ia: +ia.toFixed(2), loss: +loss.toFixed(2), fit: w.classList.contains('fit'), of: getComputedStyle(i).objectFit, w: i.naturalWidth }); } return rows; });
-  const wide = audit.filter((x) => x.ia > 1.2), port = audit.filter((x) => x.ia < 0.8);
-  T('audited-many-real-images', audit.length >= 60 && wide.length >= 10 && port.length >= 10, `all=${audit.length} landscape=${wide.length} portrait=${port.length}`);
-  T('landscape-images-never-cropped-into-portrait-frame', wide.every((x) => x.fit && x.of === 'contain'), JSON.stringify(wide.filter((x) => !x.fit).slice(0, 3)));
-  T('portrait-posters-fill-card-when-crop-is-safe', port.every((x) => (x.loss > 0.2 ? x.fit : !x.fit)), JSON.stringify(port.filter((x) => (x.loss > 0.2) !== x.fit).slice(0, 3)));
-  T('rule-is-consistent-for-all-ratios', audit.every((x) => (x.loss > 0.2) === x.fit), JSON.stringify(audit.filter((x) => (x.loss > 0.2) !== x.fit).slice(0, 3)));
+  const audit = await p.evaluate(() => { const rows = []; for (const w of document.querySelectorAll('#g .pw')) { const i = w.querySelector('img'); const ph = w.classList.contains('pw-ph'); if (ph) { rows.push({ ph: true, title: (w.querySelector('.ph-t') || {}).textContent || '' }); continue; } if (!i || !i.complete || !i.naturalWidth) continue; const r = w.getBoundingClientRect(); rows.push({ ph: false, ia: +(i.naturalWidth / i.naturalHeight).toFixed(2), bad: w.classList.contains('bad'), shown: getComputedStyle(i).display !== 'none', fit: w.classList.contains('fit'), of: getComputedStyle(i).objectFit }); } return rows; });
+  const imgs = audit.filter((x) => !x.ph), phs = audit.filter((x) => x.ph);
+  T('audited-many-real-cards', imgs.length >= 40 && phs.length >= 5, `images=${imgs.length} placeholders=${phs.length}`);
+  T('vertical-cards-show-only-portrait-images', imgs.every((x) => x.ia <= 0.9 && x.shown && !x.bad), JSON.stringify(imgs.filter((x) => !(x.ia <= 0.9 && x.shown && !x.bad)).slice(0, 3)));
+  T('no-landscape-image-inside-any-vertical-card', imgs.every((x) => !(x.ia > 1.05 && x.shown)));
+  T('shows-without-portrait-get-title-cover-not-a-landscape-crop', phs.every((x) => x.title.length > 1), JSON.stringify(phs.slice(0, 2)));
+  // حارس وقت التشغيل: لو حُمّلت صورة أفقية داخل بطاقة عمودية تُخفى ويظهر غلاف العنوان
+  const guard = await p.evaluate(async () => { const c = await import('./components.js'); const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:0;top:0;width:150px'; host.innerHTML = c.poster({ id: 'x', title: 'اختبار', img3: 'data/posters/v2/' + (document.querySelector('#g img').getAttribute('src').split('/').pop()) }); document.body.append(host); const i = host.querySelector('img'); await new Promise((r) => (i.complete ? r() : i.addEventListener('load', r))); await new Promise((r) => setTimeout(r, 100)); const w = host.querySelector('.pw'); const out = { bad: w.classList.contains('bad'), hidden: getComputedStyle(i).display === 'none', title: getComputedStyle(host.querySelector('.ph-t')).display !== 'none' }; host.remove(); return out; });
+  T('runtime-guard-hides-landscape-in-portrait-frame', guard.bad && guard.hidden && guard.title, JSON.stringify(guard));
+  const urls = await p.evaluate(async () => { const c = await import('./components.js'); return [c.posterUrl({ img2: 'a', img: 'b', img4: 'c' }), c.posterUrl({ img3: 'p', img2: 'a' }), c.posterUrl({ img2: 'a', img4: 'c' }, true)]; });
+  T('poster-url-never-falls-back-to-landscape', urls[0] === '' && /p$/.test(urls[1]) && /c$/.test(urls[2]), JSON.stringify(urls));
   // صفحة التفاصيل: مسلسل بانر فقط (مثال المستخدم) + مسلسل بخلفية سينمائية + بوستر عمودي
   const pick = (f) => real.shows.find(f);
   const banner = pick((s) => /هذا البحر سوف يفيض/.test(s.title)) || pick((s) => !s.img3 && !s.img4), land = pick((s) => s.img4), posterOnly = pick((s) => s.img3 && !s.img4);

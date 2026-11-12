@@ -7,6 +7,9 @@ import { createHash } from 'node:crypto';
 
 const UA = 'DiziPosterBot/1.0 (private family, non-commercial)';
 const MAP = 'data/poster-map.json', DIR = 'data/posters/v3';
+// القاعدة الدائمة: img3 (بوستر البطاقات والقوائم) لا يُعتمد إلا إذا كان عموديًا فعلًا (عرض/ارتفاع بين PORTRAIT_MIN و PORTRAIT_MAX). الصور الأفقية لا تدخل img3 أبدًا.
+export const PORTRAIT_MIN = 0.55, PORTRAIT_MAX = 0.9;
+export const portraitOk = (r) => !!(r && r.status === 'matched' && r.w && r.h && r.w / r.h >= PORTRAIT_MIN && r.w / r.h <= PORTRAIT_MAX && r.path);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const TR = { ı: 'i', İ: 'i', ş: 's', Ş: 's', ğ: 'g', Ğ: 'g', ç: 'c', Ç: 'c', ö: 'o', Ö: 'o', ü: 'u', Ü: 'u' };
 export const norm = (s) => String(s || '').replace(/[ıİşŞğĞçÇöÖüÜ]/g, (c) => TR[c]).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
@@ -41,6 +44,33 @@ async function candidates(v, tmdbKey) {
   for (const x of t || []) { const s = x.show; if (s.image?.original && isTR(s)) add({ src: 'tvmaze', ref: String(s.id), name: s.name, premiered: (s.premiered || '').slice(0, 4), url: s.image.original }, [s.name]); }
   return { exact, partial };
 }
+// مرحلة أخيرة للمسلسلات بلا تطابق اسمي تام: مرشحون تركيون بتشابه اسم معقول، وتُقبل فقط بتطابق عدد الحلقات الدقيق (±5%) — وإلا مراجعة.
+const bigrams = (s) => { const m = new Map(); for (let i = 0; i < s.length - 1; i++) { const g = s.slice(i, i + 2); m.set(g, (m.get(g) || 0) + 1); } return m; };
+export const dice = (a, b) => { if (a.length < 2 || b.length < 2) return 0; const A = bigrams(a), B = bigrams(b); let n = 0; for (const [g, c] of A) n += Math.min(c, B.get(g) || 0); return (2 * n) / (a.length + b.length - 2); };
+async function rawTR(q, tmdbKey) {
+  const out = [];
+  if (tmdbKey) { const j = await jget(`https://api.themoviedb.org/3/search/tv?api_key=${encodeURIComponent(tmdbKey)}&language=tr-TR&query=${encodeURIComponent(q)}`); await sleep(120); for (const r of j?.results || []) if (r.poster_path && (r.origin_country || []).includes('TR')) out.push({ src: 'tmdb', ref: String(r.id), name: r.original_name || r.name, premiered: (r.first_air_date || '').slice(0, 4), url: 'https://image.tmdb.org/t/p/w780' + r.poster_path }); }
+  const t = await jget('https://api.tvmaze.com/search/shows?q=' + encodeURIComponent(q)); await sleep(550);
+  for (const x of t || []) { const s = x.show; if (s.image?.original && isTR(s)) out.push({ src: 'tvmaze', ref: String(s.id), name: s.name, premiered: (s.premiered || '').slice(0, 4), url: s.image.original }); }
+  return out;
+}
+async function arabicTMDB(show, mine, tmdbKey) {   // TMDB يحوي ترجمات عربية لكثير من المسلسلات التركية: بحث بالعنوان العربي + بلد تركيا + تطابق عدد الحلقات
+  if (!tmdbKey) return [];
+  const q = String(show.title || '').replace(/^مسلسلs+/, '').replace(/[«»]/g, '').trim(); if (q.length < 2) return [];
+  const j = await jget(`https://api.themoviedb.org/3/search/tv?api_key=${encodeURIComponent(tmdbKey)}&language=ar&query=${encodeURIComponent(q)}`); await sleep(120);
+  const ok = []; for (const r of (j?.results || []).slice(0, 5)) { if (!r.poster_path || !(r.origin_country || []).includes('TR')) continue; const c = { src: 'tmdb', ref: String(r.id), name: r.original_name || r.name, premiered: (r.first_air_date || '').slice(0, 4), url: 'https://image.tmdb.org/t/p/w780' + r.poster_path }; const n = await epCount(c, tmdbKey); if (near(n, mine, 2)) ok.push({ ...c, n, sim: 1 }); }
+  return ok;
+}
+async function fuzzy(show, mine, tmdbKey) {
+  const ar = await arabicTMDB(show, mine, tmdbKey); if (ar.length === 1) return { pool: ar, list: [ar[0].name], cands: ar, ok: ar };
+  const vs = slugVariants(show.id); if (!vs.length) return { pool: [], list: [] };
+  const words = vs[0].q.split(' '); const qs = [...new Set([vs[0].q, words.slice(0, 2).join(' '), ...words.filter((w) => w.length >= 5)])].slice(0, 4);
+  const key = vs[0].key, seen = new Map();
+  for (const q of qs) for (const c of await rawTR(q, tmdbKey)) { const k = c.src + ':' + c.ref; if (!seen.has(k)) seen.set(k, { ...c, sim: dice(norm(c.name), key) }); }
+  const list = [...seen.values()].filter((c) => c.sim >= 0.45).sort((a, b) => b.sim - a.sim).slice(0, 3);
+  const ok = []; for (const c of list) { const n = await epCount(c, tmdbKey); if (near(n, mine, 2)) ok.push({ ...c, n }); }
+  return { pool: ok.length === 1 ? [ok[0]] : [], list: list.map((c) => c.name + ' (' + c.premiered + ')'), cands: list.map((c) => ({ src: c.src, ref: c.ref, name: c.name, premiered: c.premiered, url: c.url, sim: +c.sim.toFixed(2) })), ok };
+}
 // عدد حلقات المسلسل الأصلي (لحسم الأسماء المتشابهة وتأكيد المطابقة الجزئية)
 async function epCount(c, tmdbKey) {
   if (c.src === 'tmdb') { const j = await jget(`https://api.themoviedb.org/3/tv/${c.ref}?api_key=${encodeURIComponent(tmdbKey)}`); await sleep(120); return j?.number_of_episodes ?? null; }
@@ -56,7 +86,7 @@ export async function assess(buf, sharp, { landscape = false } = {}) {
   const full = await sharp(buf).resize({ width: 120 }).stats();
   const sharpV = +st.channels[0].stdev.toFixed(2), ent = +full.entropy.toFixed(2);
   const reasons = [];
-  if (w < (landscape ? 900 : 300)) reasons.push('low-res'); if (landscape ? (ar < 1.5 || ar > 2.1) : (ar < 0.55 || ar > 0.9)) reasons.push('aspect'); if (sharpV < 3) reasons.push('soft'); if (ent < 3.2) reasons.push('flat');
+  if (w < (landscape ? 900 : 300)) reasons.push('low-res'); if (landscape ? (ar < 1.5 || ar > 2.1) : (ar < PORTRAIT_MIN || ar > PORTRAIT_MAX)) reasons.push('aspect'); if (sharpV < 3) reasons.push('soft'); if (ent < 3.2) reasons.push('flat');
   const score = +(Math.min(w, 1000) / 1000 * 0.45 + Math.min(sharpV / 20, 1) * 0.3 + Math.min(ent / 7.5, 1) * 0.15 + (1 - Math.min(Math.abs(ar - 0.667) / 0.15, 1)) * 0.1).toFixed(3);
   return { w, h, ar: +ar.toFixed(3), sharp: sharpV, ent, score, ok: reasons.length === 0 || (!landscape && reasons.length === 1 && reasons[0] === 'low-res' && w >= 200), reasons };   // دقة 200-299 تُقبل وتُسجَّل low-res للمراجعة
 }
@@ -97,7 +127,12 @@ export async function pickPoster(show, { tmdbKey = process.env.TMDB_API_KEY, sha
     const pc = uniq(found.partial);
     if (pc.length === 1) { const n = await epCount(pc[0], tmdbKey); if (near(n, mine, 2)) { pool = pc; conf = 'medium'; rec.note = 'partial name, episodes ' + n + '≈' + mine; } else return { ...rec, status: 'review', note: 'partial name "' + pc[0].name + '" but episodes ' + n + ' vs ' + mine, name: pc[0].name, url: pc[0].url }; }
     else return { ...rec, status: 'review', note: 'partial ambiguous: ' + pc.map((c) => c.name).join(' | ') };
-  } else return { ...rec, status: 'unmatched', note: 'no Turkish-name match for ' + show.id };
+  } else {
+    const f = await fuzzy(show, mine, tmdbKey);
+    if (f.pool.length === 1) { pool = f.pool; conf = 'low'; rec.note = 'fuzzy name sim ' + f.pool[0].sim.toFixed(2) + ', episodes ' + f.pool[0].n + '≈' + mine; }
+    else if (f.list.length) return { ...rec, status: 'review', note: 'fuzzy candidates (episodes mismatch/ambiguous): ' + f.list.join(' | '), cands: f.cands };
+    else return { ...rec, status: 'unmatched', note: 'no Turkish-name match for ' + show.id };
+  }
   let best = null;
   for (const c of pool) {
     const r = await fetch(c.url, { headers: { 'user-agent': UA } }); if (!r.ok) continue;
@@ -130,7 +165,7 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
   for (const s of shows) {
     const r = map[s.id];
     if (r && r.status === 'matched') {   // معتمد سابقًا: لا إعادة فحص للبوستر؛ تُجلب الخلفية الأفقية مرة واحدة إن لم تُجرَّب بعد
-      if (r.path && !s.img3 && existsSync(r.path)) s.img3 = r.path;
+      if (portraitOk(r) && !s.img3 && existsSync(r.path)) s.img3 = r.path;
       if (r.bg === undefined && done < max) { done++; try { map[s.id] = await pickBackdrop(s, r, { sharp }); dirty = true; console.log('backdrop', s.id, map[s.id].bg ? 'ok' : 'none'); } catch (e) { console.log('backdrop error', s.id, String(e).slice(0, 60)); } }
       const m = map[s.id]; if (m.bg && m.bg.path && !s.img4 && existsSync(m.bg.path)) s.img4 = m.bg.path;
       continue;
@@ -152,7 +187,7 @@ export async function upgradePosters(shows, { max = 8, tmdbKey = process.env.TMD
 if (process.argv.includes('--apply')) {
   const f = process.argv[process.argv.indexOf('--apply') + 1]?.endsWith('.json') ? process.argv[process.argv.indexOf('--apply') + 1] : 'data/shows.json';
   const data = JSON.parse(readFileSync(f, 'utf8').replace(/^﻿/, '')), map = JSON.parse(readFileSync(MAP, 'utf8')); let n = 0;
-  for (const s of data.shows) { const r = map[s.id]; if (r && r.status === 'matched' && existsSync(r.path)) { s.img3 = r.path; n++; if (r.bg && r.bg.path && existsSync(r.bg.path)) s.img4 = r.bg.path; } }
+  for (const s of data.shows) { const r = map[s.id]; if (portraitOk(r) && existsSync(r.path)) { s.img3 = r.path; n++; if (r.bg && r.bg.path && existsSync(r.bg.path)) s.img4 = r.bg.path; } }
   writeFileSync(f, JSON.stringify(data)); console.log('applied img3 to', n, 'shows'); process.exit(0);
 }
 // node scripts/poster-pick.mjs --backdrops [--limit N]  ← يجلب الخلفيات الأفقية للمسلسلات المطابَقة التي لم تُجرَّب

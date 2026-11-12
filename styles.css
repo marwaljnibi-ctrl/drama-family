@@ -70,6 +70,13 @@ main[data-large]::before{content:attr(data-title);display:block;font:700 34px/1.
 .pw.fit img{object-fit:contain}
 .pw.fit::before{content:"";position:absolute;inset:-24px;z-index:0;background:var(--bd) center/cover no-repeat;filter:blur(22px) saturate(1.25) brightness(.75)}
 .pw-wide{aspect-ratio:16/10}
+/* غلاف بالعنوان عند غياب بوستر عمودي (أو إن كانت الصورة المحمّلة أفقية): تدرج هادئ بلون ثابت لكل مسلسل */
+.pw-ph,.pw.bad{background:linear-gradient(160deg,hsl(var(--h,0) 38% 26%),hsl(var(--h,0) 42% 11%))}
+.pw .ph-t{display:none}
+.pw-ph .ph-t,.pw.bad .ph-t{display:flex;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:14px;font:700 17px/1.45 var(--font);font-style:normal;color:rgba(255,255,255,.92);text-shadow:0 2px 12px rgba(0,0,0,.4);overflow:hidden}
+.pw.bad img{display:none}
+.row .pw .ph-t{font-size:10px;padding:5px;line-height:1.3}
+.pw-wide.pw-ph .ph-t{font-size:15px}
 .ph{width:100%;aspect-ratio:2/3;display:block;background:var(--bg-2);border-radius:var(--radius)}
 .card .t{padding:var(--sp-2) 2px 0;font:600 15px/1.4 var(--font);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em}
 .card .s{padding:2px 2px 0;font:400 13px/1.4 var(--font);color:var(--text-2)}

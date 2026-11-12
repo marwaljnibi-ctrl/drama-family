@@ -26,7 +26,7 @@ jobs:
           node scripts/dev-server.mjs 8123 > /dev/null 2>&1 &
           sleep 2
           node scripts/test-import.mjs
-          node scripts/test-home.mjs && node scripts/test-resume.mjs && node scripts/test-design.mjs && node scripts/test-type.mjs
+          node scripts/test-home.mjs && node scripts/test-resume.mjs && node scripts/test-design.mjs && node scripts/test-type.mjs && node scripts/test-appfeel.mjs && node scripts/test-resume-real.mjs
       - name: import e2e (published preview, only if scripts/preview-url.txt exists)
         run: |
           if [ -f scripts/preview-url.txt ]; then BASE="$(cat scripts/preview-url.txt)" node scripts/test-import.mjs; else echo "no preview url"; fi

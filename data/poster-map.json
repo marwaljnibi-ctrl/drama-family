@@ -84,7 +84,7 @@
   }
  },
  "kucuk-gelin-prvsm": {
-  "at": 1794453269879,
+  "at": 1794456129847,
   "tries": 1,
   "q": "kucuk gelin",
   "conf": "high",
@@ -167,13 +167,13 @@
   }
  },
  "fi-kqtmv": {
-  "at": 1794453272458,
+  "at": 1794456132323,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for fi-kqtmv"
  },
  "46-bvqms": {
-  "at": 1794453273176,
+  "at": 1794456134464,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for 46-bvqms"
@@ -248,10 +248,28 @@
   }
  },
  "ebnat-alsafir-hzqmt": {
-  "at": 1794453273880,
+  "at": 1794456136638,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ebnat-alsafir-hzqmt"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Safir (2023) | Misafir (2021)",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "70812",
+    "name": "Safir",
+    "premiered": "2023",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/474/1185427.jpg",
+    "sim": 0.53
+   },
+   {
+    "src": "tvmaze",
+    "ref": "58663",
+    "name": "Misafir",
+    "premiered": "2021",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/374/935871.jpg",
+    "sim": 0.47
+   }
+  ]
  },
  "kizim-kqvnt": {
   "at": 1794444857120,
@@ -338,13 +356,13 @@
   "bg": null
  },
  "mudeer-aamali-kvmts": {
-  "at": 1794453275284,
+  "at": 1794456142003,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for mudeer-aamali-kvmts"
  },
  "mbtyu-rqsvn": {
-  "at": 1794453276700,
+  "at": 1794456145868,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for mbtyu-rqsvn"
@@ -437,13 +455,39 @@
   }
  },
  "guzel-ask-hqvmt": {
-  "at": 1794453282809,
+  "at": 1794456148188,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for guzel-ask-hqvmt"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Yedi güzel adam (2014) | Güzel Köylü (2014) | Benim Güzel Ailem (2023)",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "56521",
+    "name": "Yedi güzel adam",
+    "premiered": "2014",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/342/856760.jpg",
+    "sim": 0.53
+   },
+   {
+    "src": "tvmaze",
+    "ref": "19000",
+    "name": "Güzel Köylü",
+    "premiered": "2014",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/65/164628.jpg",
+    "sim": 0.5
+   },
+   {
+    "src": "tvmaze",
+    "ref": "69235",
+    "name": "Benim Güzel Ailem",
+    "premiered": "2023",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/465/1163910.jpg",
+    "sim": 0.48
+   }
+  ]
  },
  "azhar-thalj-vqstm": {
-  "at": 1794453284218,
+  "at": 1794456153536,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for azhar-thalj-vqstm"
@@ -468,7 +512,7 @@
   "bg": null
  },
  "alzalimah-wqnts": {
-  "at": 1794453285646,
+  "at": 1794456157103,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alzalimah-wqnts"
@@ -518,13 +562,13 @@
   }
  },
  "ismaani-kvnts": {
-  "at": 1794453287088,
+  "at": 1794456159315,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ismaani-kvnts"
  },
  "adisevgi-ltqmp": {
-  "at": 1794453288515,
+  "at": 1794456161659,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for adisevgi-ltqmp"
@@ -572,13 +616,31 @@
   "bg": null
  },
  "ismi-farah-kmvqt": {
-  "at": 1794453290115,
+  "at": 1794455752986,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ismi-farah-kmvqt"
+  "note": "fuzzy name sim 0.50, episodes 27≈27",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "67182",
+  "name": "Adım Farah",
+  "premiered": "2023",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/449/1122977.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 90.38,
+  "ent": 7.49,
+  "score": 0.847,
+  "status": "matched",
+  "path": "data/posters/v3/79a19a2ca5e3.webp",
+  "prev": "data/posters/v2/79a19a2ca5e3.webp",
+  "bg": {
+   "path": "data/posters/v4/79a19a2ca5e3.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/449/1122976.jpg"
+  }
  },
  "fariha-lqvts": {
-  "at": 1794453291689,
+  "at": 1794456164020,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for fariha-lqvts"
@@ -632,7 +694,7 @@
   }
  },
  "hayat-sarkisi-mnbqt": {
-  "at": 1794453293139,
+  "at": 1794456166277,
   "tries": 1,
   "q": "hayat sarkisi",
   "conf": "high",
@@ -759,14 +821,14 @@
   }
  },
  "efsane-wqjtm": {
-  "at": 1794453299285,
+  "at": 1794456168734,
   "tries": 1,
   "q": "efsane",
   "status": "review",
   "note": "partial ambiguous: Adı Efsane | Efsane T"
  },
  "icimdekifirtina-pzvrl": {
-  "at": 1794453300014,
+  "at": 1794456169723,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for icimdekifirtina-pzvrl"
@@ -879,7 +941,7 @@
   }
  },
  "alp-arslan-kqvdr": {
-  "at": 1794453301447,
+  "at": 1794456171866,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alp-arslan-kqvdr"
@@ -908,26 +970,36 @@
   }
  },
  "baraa-kvnms": {
-  "at": 1794453302871,
+  "at": 1794456174883,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for baraa-kvnms"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Baraj (2020)",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "46629",
+    "name": "Baraj",
+    "premiered": "2020",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/245/613625.jpg",
+    "sim": 0.75
+   }
+  ]
  },
  "baraem-hamra-tqvns": {
-  "at": 1794453304307,
+  "at": 1794456178219,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for baraem-hamra-tqvns"
  },
  "barbaros-kqvmp": {
-  "at": 1794453305726,
+  "at": 1794456182871,
   "tries": 1,
   "q": "barbaros",
   "status": "review",
   "note": "partial ambiguous: Barbaroslar: Akdeniz'in Kılıcı | Barbaros Hayreddin: Sultanın Fermanı"
  },
  "kizilelma-vsrqm": {
-  "at": 1794453306485,
+  "at": 1794456183592,
   "tries": 1,
   "q": "kizilelma",
   "status": "review",
@@ -936,7 +1008,7 @@
   "url": "https://static.tvmaze.com/uploads/images/original_untouched/470/1177021.jpg"
  },
  "kara-dut-vqrsm": {
-  "at": 1794453307924,
+  "at": 1794456185013,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for kara-dut-vqrsm"
@@ -981,7 +1053,7 @@
   "bg": null
  },
  "ilk-ask-lpvrm": {
-  "at": 1794453309346,
+  "at": 1794456187158,
   "tries": 1,
   "q": "ilk ask",
   "status": "review",
@@ -1081,7 +1153,7 @@
   }
  },
  "hofra-kqmvt": {
-  "at": 1794453315384,
+  "at": 1794456188662,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hofra-kqmvt"
@@ -1110,14 +1182,14 @@
   }
  },
  "hayat-vqrnt": {
-  "at": 1794453316832,
+  "at": 1794456191241,
   "tries": 1,
   "q": "hayat",
   "status": "review",
   "note": "partial ambiguous: Hayat Şarkısı | Hayat Sırları | Yeni Hayat | Tatlı Hayat | Hayat Yolunda | Hayat Bilgisi | Acı Hayat | O Hayat Benim | Hayat Sevince Güzel | Hayat Bazen Tatlıdır"
  },
  "lissw-hqvnt": {
-  "at": 1794453317569,
+  "at": 1794456192088,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lissw-hqvnt"
@@ -1228,7 +1300,7 @@
   }
  },
  "sancak-vqmrs": {
-  "at": 1794453323121,
+  "at": 1794456194427,
   "tries": 1,
   "q": "sancak",
   "status": "review",
@@ -1325,7 +1397,7 @@
   }
  },
  "sadd-kpvqs": {
-  "at": 1794453324564,
+  "at": 1794456196068,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for sadd-kpvqs"
@@ -1351,7 +1423,7 @@
   "bg": null
  },
  "alsallah-vqmts": {
-  "at": 1794453329802,
+  "at": 1794456198421,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alsallah-vqmts"
@@ -1485,7 +1557,7 @@
   "bg": null
  },
  "sayf-akhir-fqvms": {
-  "at": 1794453331239,
+  "at": 1794456200680,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for sayf-akhir-fqvms"
@@ -1514,26 +1586,26 @@
   }
  },
  "altayer-alrafraf-mqvts": {
-  "at": 1794453332658,
+  "at": 1794456203848,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for altayer-alrafraf-mqvts"
  },
  "sosyete-jrqmv": {
-  "at": 1794453334255,
+  "at": 1794456207854,
   "tries": 1,
   "q": "sosyete",
   "status": "review",
   "note": "partial ambiguous: Yüksek Sosyete | Jet Sosyete"
  },
  "tabeeb-zplon": {
-  "at": 1794453335117,
+  "at": 1794456208591,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tabeeb-zplon"
  },
  "tabeeb-moejiza-kvmqs": {
-  "at": 1794453336603,
+  "at": 1794456210918,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tabeeb-moejiza-kvmqs"
@@ -1606,7 +1678,7 @@
   }
  },
  "alaila-aqvnt": {
-  "at": 1794453338188,
+  "at": 1794456214615,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alaila-aqvnt"
@@ -1633,7 +1705,7 @@
   "bg": null
  },
  "abqari-kntvs": {
-  "at": 1794453340137,
+  "at": 1794456216862,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for abqari-kntvs"
@@ -1702,7 +1774,7 @@
   "bg": null
  },
  "forbd-lqxem": {
-  "at": 1794453341772,
+  "at": 1794456219022,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for forbd-lqxem"
@@ -1808,7 +1880,7 @@
   "bg": null
  },
  "alanqaa-lqvms": {
-  "at": 1794453343212,
+  "at": 1794456221241,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alanqaa-lqvms"
@@ -1837,10 +1909,28 @@
   }
  },
  "ghaddar-fqvsm": {
-  "at": 1794453344628,
+  "at": 1794455818653,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for ghaddar-fqvsm"
+  "note": "fuzzy name sim 0.73, episodes 20≈20",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "73887",
+  "name": "Gaddar",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/499/1247966.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 83.57,
+  "ent": 7.78,
+  "score": 0.847,
+  "status": "matched",
+  "path": "data/posters/v3/7928c8501ed5.webp",
+  "prev": "data/posters/v2/7928c8501ed5.webp",
+  "bg": {
+   "path": "data/posters/v4/7928c8501ed5.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/499/1247967.jpg"
+  }
  },
  "kuzgun-vqstm": {
   "at": 1794444996308,
@@ -1862,7 +1952,7 @@
   "bg": null
  },
  "alghurfah-kvstm": {
-  "at": 1794453346049,
+  "at": 1794456223687,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alghurfah-kvstm"
@@ -1891,10 +1981,24 @@
   }
  },
  "yan-oda-vqmts": {
-  "at": 1794453347470,
+  "at": 1794455826551,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yan-oda-vqmts"
+  "note": "fuzzy name sim 0.57, episodes 4≈4",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "74745",
+  "name": "Yandaki Oda",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/506/1266002.jpg",
+  "w": 864,
+  "h": 1080,
+  "sharp": 93.57,
+  "ent": 6.95,
+  "score": 0.839,
+  "status": "matched",
+  "path": "data/posters/v3/c58f5bbaabea.webp",
+  "prev": "data/posters/v2/c58f5bbaabea.webp",
+  "bg": null
  },
  "ego-vqsmn": {
   "at": 1794445002982,
@@ -1941,7 +2045,7 @@
   "bg": null
  },
  "zengin-kqvmt": {
-  "at": 1794453348900,
+  "at": 1794456226175,
   "tries": 1,
   "q": "zengin",
   "status": "review",
@@ -2052,10 +2156,20 @@
   "bg": null
  },
  "karayazi-pwlqs": {
-  "at": 1794453349622,
+  "at": 1794456226916,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for karayazi-pwlqs"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Karadayı (2012)",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "17719",
+    "name": "Karadayı",
+    "premiered": "2012",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/59/149051.jpg",
+    "sim": 0.57
+   }
+  ]
  },
  "beyaz-karanfil-vqsmr": {
   "at": 1794445014430,
@@ -2100,7 +2214,7 @@
   "bg": null
  },
  "alqada-aqvtn": {
-  "at": 1794453351040,
+  "at": 1794456229804,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alqada-aqvtn"
@@ -2173,7 +2287,7 @@
   }
  },
  "yalanci-vqrms": {
-  "at": 1794453352473,
+  "at": 1794456232148,
   "tries": 1,
   "q": "yalanci",
   "conf": "high",
@@ -2233,7 +2347,7 @@
   }
  },
  "kathba-kqvsm": {
-  "at": 1794453355146,
+  "at": 1794456234919,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for kathba-kqvsm"
@@ -2327,7 +2441,7 @@
   }
  },
  "lahib-kqvms": {
-  "at": 1794453356589,
+  "at": 1794456237143,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lahib-kqvms"
@@ -2375,7 +2489,7 @@
   "bg": null
  },
  "motawahesh-fqnst": {
-  "at": 1794453357992,
+  "at": 1794456239276,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for motawahesh-fqnst"
@@ -2509,7 +2623,7 @@
   }
  },
  "tlcty-fmsqr": {
-  "at": 1794453369234,
+  "at": 1794456241532,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tlcty-fmsqr"
@@ -2557,7 +2671,7 @@
   }
  },
  "mashbooh-kqvns": {
-  "at": 1794453370654,
+  "at": 1794456243910,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for mashbooh-kqvns"
@@ -2587,7 +2701,7 @@
   }
  },
  "ogretmen-vqstm": {
-  "at": 1794453376598,
+  "at": 1794456246242,
   "tries": 1,
   "q": "ogretmen",
   "conf": "high",
@@ -2672,7 +2786,7 @@
   }
  },
  "yasak-mqvst": {
-  "at": 1794453378816,
+  "at": 1794456249414,
   "tries": 1,
   "q": "yasak",
   "status": "review",
@@ -2792,7 +2906,7 @@
   }
  },
  "yildizlarsahidim-bqtsv": {
-  "at": 1794453380240,
+  "at": 1794456250848,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yildizlarsahidim-bqtsv"
@@ -2859,7 +2973,7 @@
   "bg": null
  },
  "rengarenk-hvstm": {
-  "at": 1794453381665,
+  "at": 1794456252996,
   "tries": 1,
   "q": "rengarenk",
   "conf": "high",
@@ -2877,13 +2991,13 @@
   "note": "candidate rejected: aspect"
  },
  "alyaka-wqfnt": {
-  "at": 1794453383967,
+  "at": 1794456256861,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alyaka-wqfnt"
  },
  "yakoot-fqmts": {
-  "at": 1794453385401,
+  "at": 1794456259027,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yakoot-fqmts"
@@ -3040,7 +3154,7 @@
   }
  },
  "atroq-babi-fqvms": {
-  "at": 1794453394232,
+  "at": 1794456261578,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for atroq-babi-fqvms"
@@ -3139,10 +3253,28 @@
   }
  },
  "seni-bekledim-kqvts": {
-  "at": 1794453399681,
+  "at": 1794455871153,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for seni-bekledim-kqvts"
+  "note": "fuzzy name sim 0.80, episodes 13≈13",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "52597",
+  "name": "Seni Çok Bekledim",
+  "premiered": "2021",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/294/735375.jpg",
+  "w": 613,
+  "h": 915,
+  "sharp": 71.43,
+  "ent": 7.52,
+  "score": 0.824,
+  "status": "matched",
+  "path": "data/posters/v3/f0918621d3a7.webp",
+  "prev": "data/posters/v2/f0918621d3a7.webp",
+  "bg": {
+   "path": "data/posters/v4/f0918621d3a7.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/290/725956.jpg"
+  }
  },
  "intikam-zrjpw": {
   "at": 1794445092854,
@@ -3183,13 +3315,13 @@
   "bg": null
  },
  "babel-nqfds": {
-  "at": 1794453401099,
+  "at": 1794456264453,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for babel-nqfds"
  },
  "yeni-baslangiclar-kqvms": {
-  "at": 1794453402547,
+  "at": 1794456266932,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yeni-baslangiclar-kqvms"
@@ -3501,7 +3633,7 @@
   }
  },
  "uckizkardes-mplfv": {
-  "at": 1794453410070,
+  "at": 1794456269903,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for uckizkardes-mplfv"
@@ -3574,7 +3706,7 @@
   }
  },
  "cesur-ve-guzel-tmqvs": {
-  "at": 1794453411477,
+  "at": 1794456272154,
   "tries": 1,
   "q": "cesur ve guzel",
   "conf": "high",
@@ -3592,7 +3724,7 @@
   "note": "candidate rejected: aspect"
  },
  "gul-jamal-fqnts": {
-  "at": 1794453413423,
+  "at": 1794456275328,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for gul-jamal-fqnts"
@@ -3618,10 +3750,28 @@
   "bg": null
  },
  "siyah-ask-kqvmp": {
-  "at": 1794453414850,
+  "at": 1794456501971,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for siyah-ask-kqvmp"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tvmaze",
+  "ref": "32694",
+  "name": "Siyah Beyaz Aşk",
+  "premiered": "2017",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/135/339961.jpg",
+  "w": 640,
+  "h": 938,
+  "sharp": 87.33,
+  "ent": 7.42,
+  "score": 0.826,
+  "path": "data/posters/v3/798f1d484b59.webp",
+  "prev": "data/posters/v2/798f1d484b59.webp",
+  "note": "approved after visual comparison with the original banner",
+  "bg": {
+   "path": "data/posters/v4/798f1d484b59.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/225/563218.jpg"
+  }
  },
  "kara-sevda-hqvnt": {
   "at": 1794445130118,
@@ -3689,7 +3839,7 @@
   }
  },
  "hob-bila-hodood-sqvjm": {
-  "at": 1794453416256,
+  "at": 1794456283211,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hob-bila-hodood-sqvjm"
@@ -3741,7 +3891,7 @@
   }
  },
  "hob-fi-alaliyah-jqvms": {
-  "at": 1794453417663,
+  "at": 1794456287479,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hob-fi-alaliyah-jqvms"
@@ -3789,7 +3939,7 @@
   "bg": null
  },
  "hob-mantiq-fqvns": {
-  "at": 1794453419080,
+  "at": 1794456291409,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hob-mantiq-fqvns"
@@ -3881,7 +4031,7 @@
   }
  },
  "olenekadar-rmpts": {
-  "at": 1794453423521,
+  "at": 1794456294478,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for olenekadar-rmpts"
@@ -3929,7 +4079,7 @@
   "bg": null
  },
  "hijrah-waraqa-kvmqs": {
-  "at": 1794453424951,
+  "at": 1794456296613,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hijrah-waraqa-kvmqs"
@@ -3996,13 +4146,13 @@
   "bg": null
  },
  "bodrummasali-rgxne": {
-  "at": 1794453426398,
+  "at": 1794456300416,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for bodrummasali-rgxne"
  },
  "jazeera-kvmts": {
-  "at": 1794453427835,
+  "at": 1794456302661,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for jazeera-kvmts"
@@ -4031,10 +4181,36 @@
   }
  },
  "yazin-hikayesi-vqstm": {
-  "at": 1794453429259,
+  "at": 1794456304868,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yazin-hikayesi-vqstm"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Yılan Hikayesi () | Eski Hikâye (2013) | Bir Aşk Hikayesi (2013)",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "54429",
+    "name": "Yılan Hikayesi",
+    "premiered": "",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/301/754400.jpg",
+    "sim": 0.67
+   },
+   {
+    "src": "tvmaze",
+    "ref": "56523",
+    "name": "Eski Hikâye",
+    "premiered": "2013",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/342/856761.jpg",
+    "sim": 0.57
+   },
+   {
+    "src": "tvmaze",
+    "ref": "18772",
+    "name": "Bir Aşk Hikayesi",
+    "premiered": "2013",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/64/162147.jpg",
+    "sim": 0.56
+   }
+  ]
  },
  "bir-aile-hikayesi-vqstm": {
   "at": 1794445163811,
@@ -4193,10 +4369,24 @@
   }
  },
  "baskalarin-hayati": {
-  "at": 1794453437855,
+  "at": 1794455924911,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for baskalarin-hayati"
+  "note": "fuzzy name sim 0.94, episodes 7≈6",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "93892",
+  "name": "Başkalarının Hayatı",
+  "premiered": "2026",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/640/1602262.jpg",
+  "w": 1153,
+  "h": 1730,
+  "sharp": 66.71,
+  "ent": 7.87,
+  "score": 1,
+  "status": "matched",
+  "path": "data/posters/v3/4f4c91efbe6d.webp",
+  "prev": "data/posters/v2/4f4c91efbe6d.webp",
+  "bg": null
  },
  "hayat-bugun-lqsmt": {
   "at": 1794445172121,
@@ -4237,7 +4427,7 @@
   "bg": null
  },
  "hayati-alraeaah-dvmqt": {
-  "at": 1794453438660,
+  "at": 1794456311013,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hayati-alraeaah-dvmqt"
@@ -4323,7 +4513,7 @@
   "bg": null
  },
  "khabbini-vqsmr": {
-  "at": 1794453440292,
+  "at": 1794456315681,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for khabbini-vqsmr"
@@ -4372,13 +4562,13 @@
   }
  },
  "don-an-tashoor-kvmts": {
-  "at": 1794453446423,
+  "at": 1794456318129,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for don-an-tashoor-kvmts"
  },
  "deen-rooh-fqvts": {
-  "at": 1794453447836,
+  "at": 1794456321926,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for deen-rooh-fqvts"
@@ -4403,13 +4593,13 @@
   "bg": null
  },
  "ogulkokusu-fzqtm": {
-  "at": 1794453449264,
+  "at": 1794456324174,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ogulkokusu-fzqtm"
  },
  "alsunduq-fqmts": {
-  "at": 1794453450686,
+  "at": 1794456326311,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alsunduq-fqmts"
@@ -4476,7 +4666,7 @@
   "bg": null
  },
  "risalat-wadae-lmqst": {
-  "at": 1794453452107,
+  "at": 1794456328628,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for risalat-wadae-lmqst"
@@ -4554,7 +4744,7 @@
   }
  },
  "zahret-althalouth-kqvmt": {
-  "at": 1794453453539,
+  "at": 1794456332764,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for zahret-althalouth-kqvmt"
@@ -4739,13 +4929,13 @@
   "bg": null
  },
  "sayaejebak-lqmnt": {
-  "at": 1794453454982,
+  "at": 1794456336674,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for sayaejebak-lqmnt"
  },
  "shakhs-akhar-vqnts": {
-  "at": 1794453456434,
+  "at": 1794456338919,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for shakhs-akhar-vqnts"
@@ -4771,10 +4961,24 @@
   "bg": null
  },
  "masumlar-aprt-bxqvn": {
-  "at": 1794453461411,
+  "at": 1794455962083,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for masumlar-aprt-bxqvn"
+  "note": "fuzzy name sim 0.74, episodes 71≈71",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "50108",
+  "name": "Masumlar Apartmanı",
+  "premiered": "2020",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/357/892545.jpg",
+  "w": 1080,
+  "h": 1346,
+  "sharp": 60.45,
+  "ent": 7.65,
+  "score": 0.91,
+  "status": "matched",
+  "path": "data/posters/v3/487de11bbb64.webp",
+  "prev": "data/posters/v2/487de11bbb64.webp",
+  "bg": null
  },
  "kis-gunesi-rqmpv": {
   "at": 1794445228791,
@@ -4864,7 +5068,7 @@
   }
  },
  "tuyoor-annar-kqvsm": {
-  "at": 1794453462925,
+  "at": 1794456342928,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tuyoor-annar-kqvsm"
@@ -4976,10 +5180,24 @@
   "bg": null
  },
  "evimdeki-dusman-kmtvs": {
-  "at": 1794453471093,
+  "at": 1794456505103,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for evimdeki-dusman-kmtvs"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tvmaze",
+  "ref": "34574",
+  "name": "Yuvamdaki Düşman",
+  "premiered": "2018",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/143/359087.jpg",
+  "w": 497,
+  "h": 800,
+  "sharp": 70.53,
+  "ent": 7.7,
+  "score": 0.743,
+  "path": "data/posters/v3/713da1bbbd37.webp",
+  "prev": "data/posters/v2/713da1bbbd37.webp",
+  "note": "approved after visual comparison with the original banner",
+  "bg": null
  },
  "istanbullu-gelin-kqvms": {
   "at": 1794445243182,
@@ -5099,7 +5317,7 @@
   }
  },
  "evli-cgowr": {
-  "at": 1794453472510,
+  "at": 1794456352644,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for evli-cgowr"
@@ -5126,19 +5344,19 @@
   "bg": null
  },
  "banasevmeyi-kmfrs": {
-  "at": 1794453473961,
+  "at": 1794456355007,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for banasevmeyi-kmfrs"
  },
  "ali-riza-hqmnt": {
-  "at": 1794453475372,
+  "at": 1794456357351,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ali-riza-hqmnt"
  },
  "masharef-allayl-fqmts": {
-  "at": 1794453476786,
+  "at": 1794456359701,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for masharef-allayl-fqmts"
@@ -5209,7 +5427,7 @@
   }
  },
  "kalbahar-aleswad-mqvts": {
-  "at": 1794453478216,
+  "at": 1794456363985,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for kalbahar-aleswad-mqvts"
@@ -5235,7 +5453,7 @@
   "bg": null
  },
  "ghareeb-kvmtp": {
-  "at": 1794453483661,
+  "at": 1794456367891,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for ghareeb-kvmtp"
@@ -5412,7 +5630,7 @@
   "bg": null
  },
  "seer-wa-khafa-nqvts": {
-  "at": 1794453485088,
+  "at": 1794456370255,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for seer-wa-khafa-nqvts"
@@ -5479,7 +5697,7 @@
   "bg": null
  },
  "lvstr-bqmzn": {
-  "at": 1794453486867,
+  "at": 1794456374151,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for lvstr-bqmzn"
@@ -5527,7 +5745,7 @@
   }
  },
  "eskiya-kqvmt": {
-  "at": 1794453488284,
+  "at": 1794456376513,
   "tries": 1,
   "q": "eskiya",
   "status": "review",
@@ -5626,10 +5844,36 @@
   }
  },
  "adini-kalbime-yazdim-kvrts": {
-  "at": 1794453489729,
+  "at": 1794456378138,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for adini-kalbime-yazdim-kvrts"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Seni Kalbime Sakladım (2022) | Mazi Kalbimde Yaradır (2011) | Kalbimin Rotası Karadeniz ()",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "62386",
+    "name": "Seni Kalbime Sakladım",
+    "premiered": "2022",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034718.jpg",
+    "sim": 0.63
+   },
+   {
+    "src": "tvmaze",
+    "ref": "81888",
+    "name": "Mazi Kalbimde Yaradır",
+    "premiered": "2011",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/550/1376701.jpg",
+    "sim": 0.63
+   },
+   {
+    "src": "tvmaze",
+    "ref": "94002",
+    "name": "Kalbimin Rotası Karadeniz",
+    "premiered": "",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/639/1599933.jpg",
+    "sim": 0.46
+   }
+  ]
  },
  "benim-tatli-yalanim-sqvmp": {
   "at": 1794446014280,
@@ -5652,7 +5896,7 @@
   "bg": null
  },
  "aabmr-kdzvf": {
-  "at": 1794453491145,
+  "at": 1794456385417,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for aabmr-kdzvf"
@@ -5700,10 +5944,21 @@
   "bg": null
  },
  "aglma-istanbul-kqvnt": {
-  "at": 1794453492549,
+  "at": 1794456387662,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for aglma-istanbul-kqvnt"
+  "note": "candidate rejected: flat",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "81426",
+  "name": "Sen Ağlama İstanbul",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/547/1368670.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 48.22,
+  "ent": 0.82,
+  "score": 0.714,
+  "status": "review"
  },
  "aglama-anne-vstqr": {
   "at": 1794445301566,
@@ -5744,10 +5999,24 @@
   "bg": null
  },
  "korkma-yanindayim-hqvps": {
-  "at": 1794453493967,
+  "at": 1794456018761,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for korkma-yanindayim-hqvps"
+  "note": "fuzzy name sim 0.85, episodes 7≈7",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "74970",
+  "name": "Korkma Ben Yanındayım",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/508/1270029.jpg",
+  "w": 694,
+  "h": 1002,
+  "sharp": 70.71,
+  "ent": 7.75,
+  "score": 0.845,
+  "status": "matched",
+  "path": "data/posters/v3/2480dd453c94.webp",
+  "prev": "data/posters/v2/2480dd453c94.webp",
+  "bg": null
  },
  "asktan-kacilmaz-vqmts": {
   "at": 1794445305450,
@@ -5798,7 +6067,7 @@
   }
  },
  "bir-litre-gozyasi-kqvmt": {
-  "at": 1794453495388,
+  "at": 1794456394200,
   "tries": 1,
   "q": "bir litre gozyasi",
   "conf": "high",
@@ -5835,13 +6104,13 @@
   "bg": null
  },
  "alhath-vqmns": {
-  "at": 1794453498151,
+  "at": 1794456397316,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for alhath-vqmns"
  },
  "tgomd-sxpvh": {
-  "at": 1794453499611,
+  "at": 1794456399492,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tgomd-sxpvh"
@@ -5870,10 +6139,28 @@
   }
  },
  "layla-kbwet": {
-  "at": 1794453501017,
+  "at": 1794456032740,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for layla-kbwet"
+  "note": "fuzzy name sim 0.50, episodes 40≈40",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "79020",
+  "name": "Leyla",
+  "premiered": "2024",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/534/1335687.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 98.99,
+  "ent": 6.55,
+  "score": 0.828,
+  "status": "matched",
+  "path": "data/posters/v3/04f1fdbb5eaf.webp",
+  "prev": "data/posters/v2/04f1fdbb5eaf.webp",
+  "bg": {
+   "path": "data/posters/v4/04f1fdbb5eaf.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/533/1334758.jpg"
+  }
  },
  "senden-once-kvmtp": {
   "at": 1794446030296,
@@ -5896,7 +6183,7 @@
   "bg": null
  },
  "matha-law-vqstm": {
-  "at": 1794453502450,
+  "at": 1794456402090,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for matha-law-vqstm"
@@ -5965,10 +6252,28 @@
   "bg": null
  },
  "mavi-ve-ask-kqvrs": {
-  "at": 1794453503870,
+  "at": 1794456506504,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for mavi-ve-ask-kqvrs"
+  "status": "matched",
+  "conf": "manual",
+  "src": "tvmaze",
+  "ref": "22829",
+  "name": "Aşk ve Mavi",
+  "premiered": "2016",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/84/211576.jpg",
+  "w": 353,
+  "h": 530,
+  "sharp": 80.6,
+  "ent": 7.69,
+  "score": 0.708,
+  "path": "data/posters/v3/c165289ad4dc.webp",
+  "prev": "data/posters/v2/c165289ad4dc.webp",
+  "note": "approved after visual comparison with the original banner",
+  "bg": {
+   "path": "data/posters/v4/c165289ad4dc.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/222/555342.jpg"
+  }
  },
  "evli-ve-ofkeli-kvstm": {
   "at": 1794445325552,
@@ -6010,17 +6315,35 @@
   "bg": null
  },
  "mehmed-vqsmr": {
-  "at": 1794453508631,
+  "at": 1794456409267,
   "tries": 1,
   "q": "mehmed",
   "status": "review",
   "note": "partial ambiguous: Mehmed: Fetihler Sultanı | Mehmed Bir Cihan Fatihi"
  },
  "marashli-hqfns": {
-  "at": 1794453509361,
+  "at": 1794456045660,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for marashli-hqfns"
+  "note": "fuzzy name sim 0.77, episodes 26≈26",
+  "conf": "low",
+  "src": "tvmaze",
+  "ref": "52594",
+  "name": "Maraşlı",
+  "premiered": "2021",
+  "url": "https://static.tvmaze.com/uploads/images/original_untouched/290/726055.jpg",
+  "w": 680,
+  "h": 1000,
+  "sharp": 72.51,
+  "ent": 7.25,
+  "score": 0.842,
+  "status": "matched",
+  "path": "data/posters/v3/16ab97bb5320.webp",
+  "prev": "data/posters/v2/16ab97bb5320.webp",
+  "bg": {
+   "path": "data/posters/v4/16ab97bb5320.webp",
+   "w": 1000,
+   "url": "https://static.tvmaze.com/uploads/images/original_untouched/417/1042531.jpg"
+  }
  },
  "meryem-lqvts": {
   "at": 1794445331529,
@@ -6088,7 +6411,7 @@
   }
  },
  "emirin-yolu-kqvts": {
-  "at": 1794453510795,
+  "at": 1794456410046,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for emirin-yolu-kqvts"
@@ -6160,10 +6483,20 @@
   "bg": null
  },
  "oyunu-bozan-nqvst": {
-  "at": 1794453512218,
+  "at": 1794456413062,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for oyunu-bozan-nqvst"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Baht Oyunu (2021)",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "55559",
+    "name": "Baht Oyunu",
+    "premiered": "2021",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/647/1619701.jpg",
+    "sim": 0.47
+   }
+  ]
  },
  "sehrin-melekleri-kqvts": {
   "at": 1794445343968,
@@ -6232,13 +6565,13 @@
   }
  },
  "hwhfc-mzqtn": {
-  "at": 1794453513645,
+  "at": 1794456417658,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for hwhfc-mzqtn"
  },
  "manzili-kqvts": {
-  "at": 1794453515071,
+  "at": 1794456419911,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for manzili-kqvts"
@@ -6290,13 +6623,13 @@
   }
  },
  "cobanyildizi-mfrqe": {
-  "at": 1794453516529,
+  "at": 1794456422179,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for cobanyildizi-mfrqe"
  },
  "najmat-alshamal-bqvnt": {
-  "at": 1794453517956,
+  "at": 1794456424419,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for najmat-alshamal-bqvnt"
@@ -6383,7 +6716,7 @@
   "bg": null
  },
  "benbucihana-vtspq": {
-  "at": 1794453522949,
+  "at": 1794456428248,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for benbucihana-vtspq"
@@ -6435,7 +6768,7 @@
   }
  },
  "tutar-mi-tutar-lqvrs": {
-  "at": 1794453524375,
+  "at": 1794456430467,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tutar-mi-tutar-lqvrs"
@@ -6479,10 +6812,36 @@
   "bg": null
  },
  "yurek-yarasi-kqvhn": {
-  "at": 1794453525788,
+  "at": 1794456434040,
   "tries": 1,
-  "status": "unmatched",
-  "note": "no Turkish-name match for yurek-yarasi-kqvhn"
+  "status": "review",
+  "note": "fuzzy candidates (episodes mismatch/ambiguous): Aşk Yarası (2026) | Tek Yürek (2019) | Kalp Yarası (2021)",
+  "cands": [
+   {
+    "src": "tvmaze",
+    "ref": "89770",
+    "name": "Aşk Yarası",
+    "premiered": "2026",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/608/1520135.jpg",
+    "sim": 0.67
+   },
+   {
+    "src": "tvmaze",
+    "ref": "49816",
+    "name": "Tek Yürek",
+    "premiered": "2019",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/269/672546.jpg",
+    "sim": 0.59
+   },
+   {
+    "src": "tvmaze",
+    "ref": "55741",
+    "name": "Kalp Yarası",
+    "premiered": "2021",
+    "url": "https://static.tvmaze.com/uploads/images/original_untouched/327/818526.jpg",
+    "sim": 0.53
+   }
+  ]
  },
  "yuz-yuze-ltmqv": {
   "at": 1794446062101,
@@ -6687,13 +7046,13 @@
   }
  },
  "gulumseyeter-vcpam": {
-  "at": 1794453537628,
+  "at": 1794456440293,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for gulumseyeter-vcpam"
  },
  "yawm-akhar-kvqsm": {
-  "at": 1794453539409,
+  "at": 1794456442642,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for yawm-akhar-kvqsm"
@@ -6722,26 +7081,26 @@
   }
  },
  "qadari-hqmts": {
-  "at": 1794453540832,
+  "at": 1794456445727,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for qadari-hqmts"
  },
  "karadeniz-hqvms": {
-  "at": 1794453263667,
+  "at": 1794456121626,
   "tries": 1,
   "q": "karadeniz",
   "status": "review",
   "note": "partial ambiguous: Gözleri Karadeniz | Sevdam Karadeniz | Sen Anlat Karadeniz | Kalbimin Rotası Karadeniz"
  },
  "tlsth-vqgmn": {
-  "at": 1794453265035,
+  "at": 1794456123086,
   "tries": 1,
   "status": "unmatched",
   "note": "no Turkish-name match for tlsth-vqgmn"
  },
  "kimsin-sen-qvtrs": {
-  "at": 1794453266450,
+  "at": 1794456125237,
   "tries": 1,
   "q": "kimsin sen",
   "note": "candidate rejected: aspect",

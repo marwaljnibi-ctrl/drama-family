@@ -1,6 +1,6 @@
 import { loadData, asset, findEp, latestEpisodes } from './source.js';
 import { favs, progress, downloads, persistStorage, onWrite } from './db.js';
-import { $, esc, fmt, mb, toast, poster, posterUrl, backdropUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
+import { $, esc, fmt, mb, toast, confirmSheet, poster, posterUrl, backdropUrl, heartBtn, HEART, pop, heartClick, showCard, skeletonGrid, emptyState } from './components.js';
 import { continueItems, myShows, nextEp, started } from './store.js';
 import { renderHome } from './home.js';
 import { embedAdapter } from './bridge.js';
@@ -24,11 +24,15 @@ function arabTestPanel(box, pl, epId) {
   arabMsgH = (e) => { const f = pl.querySelector('iframe'); if (f && e.source === f.contentWindow) { n++; const d = e.data || {}; const t = d.type; types[t] = (types[t] || 0) + 1; last = JSON.stringify({ type: d.type, id: d.id, t: d.t && Math.round(d.t), d: d.d && Math.round(d.d), ok: d.ok, origin: e.origin }); draw(); } };
   addEventListener('message', arabMsgH); draw();
 }
+// ميزات مؤجلة (تنزيل الحلقات، الاستيراد من الملفات، زر cloud.mail.ru): مخفية من الواجهة بالكامل. البنية الداخلية باقية؛ للتطوير فقط: localStorage['df-deferred']='1'.
+const DEFERRED = (() => { try { return localStorage.getItem('df-deferred') === '1'; } catch { return false; } })();
 let D;
 let cleanup = null, enterT = 0;
 const LARGE = ['shows', 'favs', 'recent', 'latest', 'alerts', 'login'];
 // قاعدة العرض العامة لكل صورة داخل إطار (.pw): نقص (cover) فقط إن كان المفقود أقل من 20% من الصورة؛ وإلا نعرضها كاملة (contain) فوق نسخة ضبابية منها. لا قص عشوائي ولا تمديد.
-document.addEventListener('load', (e) => { const i = e.target; if (!(i instanceof HTMLImageElement) || !i.naturalWidth || !i.naturalHeight) return; const w = i.closest('.pw'); if (!w) return; const r = w.getBoundingClientRect(); if (!r.width || !r.height) return; const ia = i.naturalWidth / i.naturalHeight, ca = r.width / r.height; w.classList.toggle('fit', Math.min(ia, ca) / Math.max(ia, ca) < 0.8); }, true);
+document.addEventListener('load', (e) => { const i = e.target; if (!(i instanceof HTMLImageElement) || !i.naturalWidth || !i.naturalHeight) return; const w = i.closest('.pw'); if (!w) return;
+  if (!w.classList.contains('pw-wide') && i.naturalWidth / i.naturalHeight > 1.05) { w.classList.add('bad'); w.classList.remove('fit'); return; }   // صورة أفقية في إطار عمودي: لا تُعرض أبدًا (يظهر غلاف العنوان)
+  const r = w.getBoundingClientRect(); if (!r.width || !r.height) return; const ia = i.naturalWidth / i.naturalHeight, ca = r.width / r.height; w.classList.toggle('fit', Math.min(ia, ca) / Math.max(ia, ca) < 0.8); }, true);
 view.addEventListener('scroll', () => document.body.classList.toggle('scrolled', view.scrollTop > 48), { passive: true });
 // ارتفاع التطبيق = الإطار المرئي (يتبع لوحة المفاتيح وشريط Safari) فلا تتحرك الأشرطة ولا تقفز الصفحة
 if (window.visualViewport) { const vv = visualViewport, fit = () => { document.documentElement.style.setProperty('--app-h', Math.round(vv.height) + 'px'); if (scrollY) scrollTo(0, 0); }; vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); fit(); }
@@ -136,8 +140,8 @@ async function vShow(id) {
   view.innerHTML = `${demoBanner()}<div class="dhero" style="--bd:url(${esc(bd)})">${bd ? `<div class="dh-wrap"><img class="dh-art" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer" src="${esc(bd)}" alt=""></div>` : ''}<div class="dh-body"><h2>${esc(show.title)}</h2><small>${show.eps.length} حلقة</small>
     <div class="actions"><button id="fav" class="favbtn ${fv ? 'on' : ''}">${HEART}<span>${fv ? 'في المفضلة' : 'أضف للمفضلة'}</span></button><button id="wa" class="favbtn">🔔 <span>تنبيه واتساب</span></button></div></div></div>
     <div class="actions">${cont ? `<a style="flex:1" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(cont.id)}"><button class="pri" style="width:100%">${last.done ? 'الحلقة التالية ' + cont.n : 'متابعة المشاهدة · حلقة ' + cont.n + (last.duration ? ' (' + fmt(last.time) + ')' : '')}</button></a>` : ''}
-    ${dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
-    <h3 class="eps-h">الحلقات</h3><div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>`;
+    ${DEFERRED && dlAble.length ? '<button id="dlall">تحميل الكل</button>' : ''}</div>
+    <h3 class="eps-h">الحلقات</h3><div class="eps">${show.eps.map((e) => { const p = mine.get(e.id); return `<a class="ep ${p ? (p.done ? 'done' : 'part') : ''} ${lastEp && lastEp.id === e.id ? 'last' : ''} ${DEFERRED && dl.has(id + '|' + e.id) ? 'dl' : ''}" href="#/watch/${encodeURIComponent(id)}/${encodeURIComponent(e.id)}">${esc(e.n)}</a>`; }).join('')}</div>`;
   bindShowAlert($('#wa'), id, show.title);
   $('#fav').onclick = async () => { const b = $('#fav'); const on = await favs.toggle(id); b.classList.toggle('on', on); b.querySelector('span').textContent = on ? 'في المفضلة' : 'أضف للمفضلة'; pop(b); };
   const da = $('#dlall');
@@ -211,11 +215,11 @@ async function vWatch(showId, epId) {
   const ids = {}; for (const x of ep.sv || []) if (SERVERS[x[0]]) ids[x[0]] = x[1];   // معرّفات السيرفرات المضمّنة المعروفة لهذه الحلقة
   const exLink = ((ep.sv || []).find((x) => x[0] === 'e') || [])[1];
   const SRC = [];
-  if (meta) SRC.push({ k: 'f', name: 'الملف المحفوظ', video: true });
+  if (DEFERRED && meta) SRC.push({ k: 'f', name: 'الملف المحفوظ', video: true });
   if (ep.v) SRC.push({ k: 'v', name: 'مباشر', video: true });
   for (const k of Object.keys(SERVERS)) if (ids[k]) SRC.push({ k, name: SERVERS[k].name, video: false });
-  if (exLink) SRC.push({ k: 'e', name: 'cloud.mail.ru ↗', video: false, href: exLink });
-  const dlHref = exLink || null;
+  if (DEFERRED && exLink) SRC.push({ k: 'e', name: 'cloud.mail.ru ↗', video: false, href: exLink });
+  const dlHref = DEFERRED ? exLink || null : null;
 
   view.innerHTML = `${demoBanner()}<div class="player" id="pl"></div>
     <div class="actions" id="srv"></div>
@@ -317,9 +321,13 @@ async function vWatch(showId, epId) {
 
   act.innerHTML = `${dlHref ? `<a style="flex:1;min-width:120px" href="${esc(dlHref)}" target="_blank" rel="noopener"><button style="width:100%">⬇ تنزيل</button></a>` : ''}
     ${p0 && p0.done ? '<button id="rs">إعادة تشغيلها</button>' : ''}
-    ${meta ? `<button id="exp">حفظ في الملفات</button><button id="rm">حذف الملف المحفوظ (${mb(meta.size)})</button>` : ''}`;
+    ${DEFERRED && meta ? `<button id="exp">حفظ في الملفات</button><button id="rm">حذف الملف المحفوظ (${mb(meta.size)})</button>` : ''}`;
+  const inHistory = (await progress.all()).some((p) => p.showId === showId && started(p) && !p.hidden);
   if (stale()) return;
-  addImport(act, show, ep, () => route());
+  // «إزالة من آخر المشاهدات»: بتأكيد، وتُخفي العنصر من القائمة فقط؛ لا يُحذف التقدم ولا المفضلة، وتعود تلقائيًا عند مشاهدة جديدة
+  if (inHistory) act.insertAdjacentHTML('beforeend', '<button id="rh">إزالة من آخر المشاهدات</button>');
+  if (DEFERRED) addImport(act, show, ep, () => route());
+  const rh = $('#rh'); if (rh) rh.onclick = async () => { if (!(await confirmSheet({ title: 'إزالة من آخر المشاهدات؟', text: `«${show.title}»: يُزال من القائمة فقط. لا يُحذف تقدمك ولا مفضلتك، ويعود تلقائيًا عند مشاهدة أي حلقة منه.`, ok: 'تأكيد الإزالة', danger: true }))) return; noSave = true; stopCur(); await progress.hideShow(showId); toast('أُزيل من آخر المشاهدات'); route(); };
   const rs = $('#rs'); if (rs) rs.onclick = () => setDone(false);
   const ex = $('#exp'); if (ex) ex.onclick = exportFile;
   const rm = $('#rm'); if (rm) rm.onclick = async () => { stopCur(); await downloads.remove(key); route(); };
@@ -332,8 +340,8 @@ async function vWatch(showId, epId) {
   }
   let pref = null; try { pref = localStorage.getItem('df-sv-ok'); } catch {}
   const playable = SRC.filter((s) => !s.href);
-  if (!playable.length) { pl.innerHTML = `<a href="${esc(exLink)}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:12px;background:#000;color:#fff;font-size:18px">▶ فتح الحلقة على cloud.mail.ru</a>`; return; }
-  const first = (meta && 'f') || pickDefault(playable.map((s) => s.k), pref);
+  if (!playable.length) { pl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#000;color:#aaa;font-size:15px;padding:16px;text-align:center">لا يوجد مشغّل متاح لهذه الحلقة الآن.</div>'; return; }
+  const first = (DEFERRED && meta && 'f') || pickDefault(playable.map((s) => s.k), pref);
   select(first);
 }
 
@@ -349,7 +357,7 @@ function vLogin() {
   if (getSession()) { location.replace('#/alerts'); return; }
   titleEl.textContent = 'حسابي';
   view.innerHTML = '<div class="empty-card" id="guest-card"><p>سجّل الدخول لحفظ مفضلتك ومكان وصولك في الحلقات.<br>ويمكنك أيضًا تفعيل تنبيهات واتساب للحلقات الجديدة.</p><div id="g-btn" style="display:flex;justify-content:center;min-height:44px"></div><p id="g-err" style="margin-top:12px;color:var(--danger,#c0392b)"></p></div>';
-  const err = (c) => { document.getElementById('g-err').textContent = c === 'not_invited' ? 'هذا الحساب غير مدعو. الدخول لأفراد العائلة المدعوين فقط، اطلب دعوة من صاحب الموقع.' : c === 'network' ? 'تعذّر الاتصال، أعد المحاولة.' : 'تعذّر تسجيل الدخول، حاول مرة أخرى.'; };
+  const err = (c) => { document.getElementById('g-err').textContent = c === 'not_invited' ? 'هذا الحساب غير مسموح له بالدخول حاليًا.' : c === 'network' ? 'تعذّر الاتصال، أعد المحاولة.' : 'تعذّر تسجيل الدخول، حاول مرة أخرى.'; };
   renderLogin(document.getElementById('g-btn'), { onDone: () => { location.hash = '#/alerts'; location.reload(); }, onError: err }).catch(() => err('network'));
 }
 // إشعار لطيف مرة واحدة فقط للضيف عند أول إضافة للمفضلة (يُحفظ محليًا فلا يتكرر)؛ لا يعيق الاستخدام ويُغلق بسهولة
