@@ -3164,10 +3164,11 @@
   "prev": "data/posters/v2/b0d04b07ba02.webp"
  },
  "hob-fi-alaliyah-jqvms": {
-  "at": 1794445938875,
-  "tries": 1,
+  "at": 1794627107985,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for hob-fi-alaliyah-jqvms"
+  "note": "no Turkish-name match for hob-fi-alaliyah-jqvms",
+  "next": 1795231907984
  },
  "kiralik-ask-vqstm": {
   "at": 1794445140375,
@@ -3206,16 +3207,18 @@
   "prev": "data/posters/v2/20c6805d1c08.webp"
  },
  "hob-mantiq-fqvns": {
-  "at": 1794445940304,
-  "tries": 1,
+  "at": 1794627110070,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for hob-mantiq-fqvns"
+  "note": "no Turkish-name match for hob-mantiq-fqvns",
+  "next": 1795231907984
  },
  "ask-ve-gozyasi-qorim": {
-  "at": 1794445942013,
-  "tries": 1,
+  "at": 1794627111782,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for ask-ve-gozyasi-qorim"
+  "note": "no Turkish-name match for ask-ve-gozyasi-qorim",
+  "next": 1795231907984
  },
  "sevdan-bir-ates": {
   "at": 1794445942721,
@@ -3273,10 +3276,11 @@
   "prev": "data/posters/v2/6a17aa9e5a5b.webp"
  },
  "olenekadar-rmpts": {
-  "at": 1794445944368,
-  "tries": 1,
+  "at": 1794627112632,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for olenekadar-rmpts"
+  "note": "no Turkish-name match for olenekadar-rmpts",
+  "next": 1795231907984
  },
  "son-nefesime-kadar-hqvmt": {
   "at": 1794445151061,
@@ -3315,10 +3319,11 @@
   "prev": "data/posters/v2/edc888f2480c.webp"
  },
  "hijrah-waraqa-kvmqs": {
-  "at": 1794445945776,
-  "tries": 1,
+  "at": 1794627114337,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for hijrah-waraqa-kvmqs"
+  "note": "no Turkish-name match for hijrah-waraqa-kvmqs",
+  "next": 1795231907984
  },
  "gullerin-savasi-hxtpm": {
   "at": 1794445154736,
@@ -3375,16 +3380,18 @@
   "prev": "data/posters/v2/57aed7503dbe.webp"
  },
  "bodrummasali-rgxne": {
-  "at": 1794445947178,
-  "tries": 1,
+  "at": 1794627116038,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for bodrummasali-rgxne"
+  "note": "no Turkish-name match for bodrummasali-rgxne",
+  "next": 1795231907984
  },
  "jazeera-kvmts": {
-  "at": 1794445948644,
-  "tries": 1,
+  "at": 1794627117734,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for jazeera-kvmts"
+  "note": "no Turkish-name match for jazeera-kvmts",
+  "next": 1795231907984
  },
  "bir-peri-masali-vqtns": {
   "at": 1794445161238,
@@ -3405,10 +3412,11 @@
   "prev": "data/posters/v2/34af82f940b6.webp"
  },
  "yazin-hikayesi-vqstm": {
-  "at": 1794445950172,
-  "tries": 1,
+  "at": 1794627119440,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for yazin-hikayesi-vqstm"
+  "note": "no Turkish-name match for yazin-hikayesi-vqstm",
+  "next": 1795231907984
  },
  "bir-aile-hikayesi-vqstm": {
   "at": 1794445163811,
