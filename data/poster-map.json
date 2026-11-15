@@ -5535,10 +5535,11 @@
   "prev": "data/posters/v2/c819731ed10d.webp"
  },
  "yurek-yarasi-kqvhn": {
-  "at": 1794446060686,
-  "tries": 1,
+  "at": 1794773877395,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for yurek-yarasi-kqvhn"
+  "note": "no Turkish-name match for yurek-yarasi-kqvhn",
+  "next": 1795378677394
  },
  "yuz-yuze-ltmqv": {
   "at": 1794446062101,
@@ -5560,10 +5561,11 @@
   "prev": "data/posters/v2/460ec4d86eea.webp"
  },
  "guller-ve-gunahlar-raxil": {
-  "at": 1794446063269,
-  "tries": 1,
+  "at": 1794773879437,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for guller-ve-gunahlar-raxil"
+  "note": "no Turkish-name match for guller-ve-gunahlar-raxil",
+  "next": 1795378677394
  },
  "askin-tarifi-bqvrs": {
   "at": 1794445378958,
@@ -5638,10 +5640,11 @@
   "prev": "data/posters/v2/d7e47a01d446.webp"
  },
  "veliaht-turek": {
-  "at": 1794446063971,
-  "tries": 1,
+  "at": 1794773880293,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for veliaht-turek"
+  "note": "no Turkish-name match for veliaht-turek",
+  "next": 1795378677394
  },
  "ulan-istanbul-vqrms": {
   "at": 1794445384210,
@@ -5680,16 +5683,18 @@
   "prev": "data/posters/v2/260fc26a20c9.webp"
  },
  "gulumseyeter-vcpam": {
-  "at": 1794446064690,
-  "tries": 1,
+  "at": 1794773881146,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for gulumseyeter-vcpam"
+  "note": "no Turkish-name match for gulumseyeter-vcpam",
+  "next": 1795378677394
  },
  "yawm-akhar-kvqsm": {
-  "at": 1794446066119,
-  "tries": 1,
+  "at": 1794773882847,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for yawm-akhar-kvqsm"
+  "note": "no Turkish-name match for yawm-akhar-kvqsm",
+  "next": 1795378677394
  },
  "sifirinci-gun-kvrms": {
   "at": 1794445389826,
@@ -5710,10 +5715,11 @@
   "prev": "data/posters/v2/6c075b3e3f22.webp"
  },
  "qadari-hqmts": {
-  "at": 1794446067549,
-  "tries": 1,
+  "at": 1794773884544,
+  "tries": 2,
   "status": "unmatched",
-  "note": "no Turkish-name match for qadari-hqmts"
+  "note": "no Turkish-name match for qadari-hqmts",
+  "next": 1795378677394
  },
  "karadeniz-hqvms": {
   "at": 1794445786419,
