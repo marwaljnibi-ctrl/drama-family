@@ -3220,18 +3220,18 @@
   "prev": "data/posters/v2/20c6805d1c08.webp"
  },
  "hob-mantiq-fqvns": {
-  "at": 1794627110070,
-  "tries": 2,
+  "at": 1795264085538,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for hob-mantiq-fqvns",
-  "next": 1795231907984
+  "next": 1795868885537
  },
  "ask-ve-gozyasi-qorim": {
-  "at": 1794627111782,
-  "tries": 2,
+  "at": 1795264087530,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for ask-ve-gozyasi-qorim",
-  "next": 1795231907984
+  "next": 1795868885537
  },
  "sevdan-bir-ates": {
   "at": 1794445942721,
@@ -3289,11 +3289,11 @@
   "prev": "data/posters/v2/6a17aa9e5a5b.webp"
  },
  "olenekadar-rmpts": {
-  "at": 1794627112632,
-  "tries": 2,
+  "at": 1795264088324,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for olenekadar-rmpts",
-  "next": 1795231907984
+  "next": 1795868885537
  },
  "son-nefesime-kadar-hqvmt": {
   "at": 1794445151061,
@@ -3332,11 +3332,11 @@
   "prev": "data/posters/v2/edc888f2480c.webp"
  },
  "hijrah-waraqa-kvmqs": {
-  "at": 1794627114337,
-  "tries": 2,
+  "at": 1795264089905,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for hijrah-waraqa-kvmqs",
-  "next": 1795231907984
+  "next": 1795868885537
  },
  "gullerin-savasi-hxtpm": {
   "at": 1794445154736,
@@ -3393,18 +3393,18 @@
   "prev": "data/posters/v2/57aed7503dbe.webp"
  },
  "bodrummasali-rgxne": {
-  "at": 1794627116038,
-  "tries": 2,
+  "at": 1795264091492,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for bodrummasali-rgxne",
-  "next": 1795231907984
+  "next": 1795868885537
  },
  "jazeera-kvmts": {
-  "at": 1794627117734,
-  "tries": 2,
+  "at": 1795264093077,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for jazeera-kvmts",
-  "next": 1795231907984
+  "next": 1795868885537
  },
  "bir-peri-masali-vqtns": {
   "at": 1794445161238,
@@ -3425,11 +3425,11 @@
   "prev": "data/posters/v2/34af82f940b6.webp"
  },
  "yazin-hikayesi-vqstm": {
-  "at": 1794627119440,
-  "tries": 2,
+  "at": 1795264094678,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for yazin-hikayesi-vqstm",
-  "next": 1795231907984
+  "next": 1795868885537
  },
  "bir-aile-hikayesi-vqstm": {
   "at": 1794445163811,
@@ -3450,11 +3450,11 @@
   "prev": "data/posters/v2/a82f99ee5f5a.webp"
  },
  "bir-gece-masali-qared": {
-  "at": 1794653527964,
-  "tries": 2,
+  "at": 1795264096265,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for bir-gece-masali-qared",
-  "next": 1795258327963
+  "next": 1795868885537
  },
  "gul-masali-hqvtn": {
   "at": 1794445165871,
