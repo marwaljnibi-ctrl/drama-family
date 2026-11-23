@@ -5696,18 +5696,18 @@
   "prev": "data/posters/v2/260fc26a20c9.webp"
  },
  "gulumseyeter-vcpam": {
-  "at": 1794773881146,
-  "tries": 2,
+  "at": 1795424242946,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for gulumseyeter-vcpam",
-  "next": 1795378677394
+  "next": 1796029042946
  },
  "yawm-akhar-kvqsm": {
-  "at": 1794773882847,
-  "tries": 2,
+  "at": 1795424245204,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for yawm-akhar-kvqsm",
-  "next": 1795378677394
+  "next": 1796029042946
  },
  "sifirinci-gun-kvrms": {
   "at": 1794445389826,
@@ -5728,11 +5728,11 @@
   "prev": "data/posters/v2/6c075b3e3f22.webp"
  },
  "qadari-hqmts": {
-  "at": 1794773884544,
-  "tries": 2,
+  "at": 1795424247064,
+  "tries": 3,
   "status": "unmatched",
   "note": "no Turkish-name match for qadari-hqmts",
-  "next": 1795378677394
+  "next": 1796029042946
  },
  "karadeniz-hqvms": {
   "at": 1794445786419,
