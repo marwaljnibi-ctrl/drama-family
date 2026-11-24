@@ -1,22 +1,38 @@
-name: sync-shows
+name: sync-shows-fast
 on:
-  schedule: [{ cron: '*/5 * * * *' }]
+  schedule:
+    - cron: '*/5 * * * *'
   workflow_dispatch:
-    inputs:
-      full: { description: 'مزامنة كاملة (1)', required: false, default: '0' }
-      limit: { description: 'عدد الحلقات لفهرسة سيرفراتها في هذا التشغيل (للفهرسة الدفعية اليدوية)', required: false, default: '' }
 permissions: { contents: write }
-concurrency: sync
+concurrency:
+  group: dizi-fast-sync
+  cancel-in-progress: false
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 345
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: npm i --no-save --no-audit --no-fund sharp
-      - name: sync in chunks (each chunk is committed and pushed)
-        timeout-minutes: 330
-        env: { SYNC_FULL: '${{ github.event.inputs.full }}', LIMIT: '${{ github.event.inputs.limit || 300 }}', TMDB_API_KEY: '${{ secrets.TMDB_API_KEY }}' }
-        run: bash scripts/sync-run.sh
+      - name: Discover and publish new episodes (no heavy media indexing)
+        env:
+          SYNC_FAST: '1'
+          SYNC_PROBE_COUNT: '30'
+        run: |
+          node scripts/sync-qesset.mjs
+      - name: Publish new index
+        run: |
+          git config user.name "sync-bot"
+          git config user.email "sync-bot@users.noreply.github.com"
+          git add data/shows.json
+          if git diff --cached --quiet; then
+            echo "No data changes"
+            exit 0
+          fi
+          git commit -m "sync: fast episode updates"
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase --autostash || exit 1
+          done
+          exit 1
