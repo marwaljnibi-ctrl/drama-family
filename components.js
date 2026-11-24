@@ -6,15 +6,34 @@ export const $ = (s, r = document) => r.querySelector(s);
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const fmt = (t) => { t = Math.floor(t || 0); const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
 export const mb = (b) => (b / 1048576).toFixed(0) + ' MB';
+// نافذة تأكيد سفلية بخيارين «تأكيد» و«إلغاء» (الإلغاء هو الافتراضي والأبرز للأمان). تُحلّ true فقط عند التأكيد؛ أي إغلاق آخر = إلغاء.
+export function confirmSheet({ title, text = '', ok = 'تأكيد', danger = false }) {
+  return new Promise((resolve) => {
+    const bg = document.createElement('div'); bg.className = 'sheet-bg';
+    bg.innerHTML = `<div class="sheet" role="alertdialog" aria-modal="true" aria-label="${esc(title)}"><b>${esc(title)}</b>${text ? `<p>${esc(text)}</p>` : ''}<div class="sheet-btns"><button class="${danger ? 'danger' : 'pri'}" data-ok>${esc(ok)}</button><button data-no>إلغاء</button></div></div>`;
+    const done = (v) => { document.removeEventListener('keydown', onKey); bg.remove(); resolve(v); };
+    const onKey = (e) => { if (e.key === 'Escape') done(false); };
+    bg.onclick = (e) => { if (e.target === bg) done(false); };
+    bg.querySelector('[data-ok]').onclick = () => done(true); bg.querySelector('[data-no]').onclick = () => done(false);
+    document.addEventListener('keydown', onKey); document.body.append(bg); bg.querySelector('[data-no]').focus();
+  });
+}
 export function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 3200); }
 
-// الصور: النسخة الأوضح (img2، 600px) إن وُجدت، ثم القديمة، ثم رابط المصدر
-// img3 = بوستر عمودي مُختار آليًا (TMDB/TVmaze) إن وُجد؛ وإلا الصورة الأصلية (img2 بانر أفقي، img مصغّرة). wide=true للبطاقات الأفقية (بانر المصدر يناسبها).
-export const posterUrl = (s, wide = false) => asset((!wide && s.img3) || s.img2 || s.img) || s.poster || '';
-export const poster = (s, cls = '', wide = false) => { const src = posterUrl(s, wide); return src ? `<img class="${cls}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt="">` : `<div class="ph ${cls}"></div>`; };
+// قاعدة الصور النهائية: كل صورة مسلسل بوستر عمودي 2:3 (img3، مُتحقَّق من أبعاده في نظام اختيار الصور). لا صور أفقية ولا بانرات ولا خلفيات في أي واجهة.
+// img2/img4/img (الأفقية) لا تُقرأ هنا إطلاقًا؛ إن لم يوجد بوستر عمودي يظهر غلاف بعنوان المسلسل. يمنع scripts/test-portrait-only.mjs عودتها.
+export const posterUrl = (s) => asset(s.img3) || '';
+const hue = (id) => { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
+export const poster = (s, cls = '') => {
+  const src = posterUrl(s), t = `<i class="ph-t">${esc(s.title || '')}</i>`;
+  if (!src) return `<span class="pw pw-ph" style="--h:${hue(s.id)}">${t}</span>`;   // لا بوستر عمودي: غلاف بعنوان المسلسل
+  return `<span class="pw" style="--h:${hue(s.id)}"><img class="${cls}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(src)}" alt="">${t}</span>`;
+};
 
 // قلب المفضلة موحّد في كل الصفحات: أيقونة Lucide Heart، فارغ رمادي، ممتلئ عنابي، مع نبضة عند الضغط
 export const HEART = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+// جرس خطي مجوّف بنفس أسلوب وحجم القلب (Lucide Bell): يمتلئ عند التفعيل كالقلب
+export const BELL = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>';
 export const heartBtn = (id, on) => `<button class="heart ${on ? 'on' : ''}" data-id="${esc(id)}" aria-pressed="${on}" aria-label="مفضلة">${HEART}</button>`;
 export const pop = (el) => { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); };
 
@@ -39,11 +58,16 @@ export const showCard = (s, o = {}) => `<div class="card"><a href="${showHref(s)
 
 // بطاقة متابعة: item = { show, ep (الحلقة المستهدفة), kind: 'continue'|'next', hasMinute, time, duration, epNum }
 // الدقيقة والشريط يظهران فقط حين تكون القيم مثبتة (duration > 0)؛ لا تخمين.
+// بطل «حلقة جديدة» لمن لم يبدأ مشاهدة: it = { show, ep }
+// الوقت المتبقي: فقط حين تكون المدة معروفة بدقة من المشغّل (duration > 60ث) ولم تنتهِ الحلقة؛ لا تقدير ولا طلبات خارجية
+export const remLabel = (it) => { if (!(it && it.hasMinute && it.duration > 60 && it.time >= 0 && it.time < it.duration - 20)) return ''; const m = Math.max(1, Math.ceil((it.duration - it.time) / 60)); return 'متبقي ' + m + ' ' + (m === 1 ? 'دقيقة' : m === 2 ? 'دقيقتان' : m <= 10 ? 'دقائق' : 'دقيقة'); };
+export function newHero(it) {
+  return `<a class="hero-c hero-new" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>الحلقة ${esc(it.ep.n)}</small><span class="go">شاهد الآن</span></div></a>`;
+}
 export function continueCard(it, hero = false) {
   const pct = it.hasMinute ? Math.min(100, (it.time / it.duration) * 100) : 0;
   const line = it.kind === 'next' ? `الحلقة التالية · ${it.ep.n}` : `حلقة ${it.ep.n}${it.hasMinute ? ' · توقفت عند ' + fmt(it.time) : ''}`;
-  const pic = hero ? poster(it.show).replace('loading="lazy"', 'loading="eager" fetchpriority="high"') : poster(it.show, '', true);
-  return `<a class="ccard${hero ? ' hero-c' : ''}" href="${watchHref(it.show, it.ep)}">${pic}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
+  return `<a class="ccard${hero ? ' hero-c' : ''}" href="${watchHref(it.show, it.ep)}">${poster(it.show)}<div class="cm"><b>${esc(it.show.title)}</b><small>${esc(line)}</small>${remLabel(it) ? `<small class="rem">${remLabel(it)}</small>` : ''}${pct ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}<span class="go">${it.kind === 'next' ? 'شاهد التالية' : 'متابعة المشاهدة'}</span></div></a>`;
 }
 
 // قسم بصف أفقي: head = { title, sub?, all? (رابط عرض الكل) }
@@ -51,7 +75,7 @@ export function continueCard(it, hero = false) {
 const eager = (html) => { let n = 0; return html.replace(/loading="lazy"/g, (m) => (n++ < 6 ? 'loading="eager"' : m)); };
 export const section = (head, inner, cls = '') => `<section class="sec"><div class="sec-h"><h2>${esc(head.title)}</h2>${head.all ? `<a class="all" href="${head.all}">عرض الكل</a>` : ''}</div>${head.sub ? `<p class="sec-s">${esc(head.sub)}</p>` : ''}<div class="rail ${cls}">${eager(inner)}</div></section>`;
 
-export const skeletonHome = () => `<div class="sk"><div class="sk-h"></div><div class="rail"><div class="sk-c wide"></div><div class="sk-c wide"></div></div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div></div>`;
+export const skeletonHome = () => `<div class="sk"><div class="sk-c sk-hero"></div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(3)}</div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div><div class="sk-h"></div><div class="rail">${'<div class="sk-c"></div>'.repeat(4)}</div></div>`;
 export const skeletonGrid = (n = 9) => `<div class="grid sk">${'<div class="sk-c grid-c"></div>'.repeat(n)}</div>`;
 
 export const emptyState = (title, text, cta) => `<div class="empty-card"><b>${esc(title)}</b>${text ? `<p>${esc(text)}</p>` : ''}${cta ? `<a href="${cta.href}"><button class="pri">${esc(cta.label)}</button></a>` : ''}</div>`;
