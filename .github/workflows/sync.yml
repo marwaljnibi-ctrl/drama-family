@@ -1,5 +1,10 @@
 name: sync-shows-fast
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sync-qesset.mjs'
+      - '.github/workflows/sync.yml'
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
