@@ -18,7 +18,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 class Blocked extends Error {}
 
 async function get(path) {
-  const r = await fetch(path.startsWith('http') ? path : BASE + path, { headers: { 'user-agent': UA, 'accept-language': 'ar' }, redirect: 'follow' });
+  // روابط المسلسلات المخزنة قبل نقل النطاق يجب أن تُقرأ من النطاق الحالي.
+  const target = path.startsWith('http') ? path.replace(/^https?:\/\/(?:www\.)?qesset\.net(?=\/|$)/i, BASE) : BASE + path;
+  const r = await fetch(target, { headers: { 'user-agent': UA, 'accept-language': 'ar' }, redirect: 'follow' });
   if (r.status === 403 || r.status === 429 || r.status === 503) throw new Blocked(`${path} -> ${r.status}`);
   if (!r.ok) throw new Error(`${path} -> ${r.status}`);
   const t = await r.text();
