@@ -25,6 +25,7 @@ function arabTestPanel(box, pl, epId) {
   addEventListener('message', arabMsgH); draw();
 }
 let D;
+let lastIndexCheck = 0;
 let cleanup = null, enterT = 0;
 const LARGE = ['shows', 'favs', 'recent', 'latest', 'alerts', 'login'];
 addEventListener('scroll', () => document.body.classList.toggle('scrolled', scrollY > 48), { passive: true });
@@ -47,6 +48,12 @@ async function route() {
     view.innerHTML = name === 'home' ? '' : skeletonGrid();
     if (name === 'home') { const { skeletonHome } = await import('./components.js'); view.innerHTML = skeletonHome(); }
     try { D = await loadData(); } catch { view.innerHTML = '<div class="empty">تعذّر تحميل قائمة المسلسلات.<br>تأكد من الاتصال ثم أعد المحاولة.</div>'; return; }
+  }
+  // عند الانتقال بين الصفحات، اسحب فهرسًا حديثًا بدل إبقاء الحلقات القديمة في الذاكرة.
+  // لا يحدث هذا أثناء مشاهدة حلقة، ولا يمس بيانات المستخدم في IndexedDB.
+  if (!D.demo && name !== 'watch' && Date.now() - lastIndexCheck > 2 * 60 * 1000) {
+    lastIndexCheck = Date.now();
+    try { D = await loadData(true); } catch (e) { console.warn('index refresh deferred:', e.message); }
   }
   const R = { alerts: () => (getSession() ? renderAlerts(view) : vLogin()), login: vLogin, home: vHome, latest: vLatest, shows: vShows, favs: vFavs, recent: vRecent, show: () => vShow(decodeURIComponent(a)), watch: () => vWatch(decodeURIComponent(a), decodeURIComponent(b)) };
   titleEl.textContent = { home: 'Dizi', latest: 'الحلقات الجديدة', shows: 'المسلسلات', favs: 'المفضلة', recent: 'آخر المشاهدات', alerts: 'حسابي', login: 'تسجيل الدخول' }[name] || 'Dizi';
