@@ -9,6 +9,9 @@ const UA = 'DramaFamilyBot/1.0 (+personal family PWA; low-rate; respects robots.
 const OUT = 'data/shows.json';
 const FULL = process.env.SYNC_FULL === '1';
 const REINDEX = process.env.SYNC_REINDEX === '1';
+// وضع سريع لنشر الحلقات؛ تبقى فهرسة المشغلات والصور لمهمة مستقلة.
+const FAST = process.env.SYNC_FAST === '1';
+const PROBE_COUNT = Math.max(0, Math.min(60, Number(process.env.SYNC_PROBE_COUNT || 30)));
 const DELAY = +process.env.SYNC_DELAY_MS || 700;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 class Blocked extends Error {}
@@ -123,6 +126,15 @@ async function main() {
     const sid = resolveShowOf(x.id, keyMap, idToShowPrev, sib);
     if (sid) affected.add(sid); else unknownShow++;
   }
+  // فحص تبادلي لصفحات المسلسلات المعروفة، حتى لو لم تظهر حلقاتها في صفحة الأحدث.
+  // 30 مسلسلًا في كل دورة من 5 دقائق -> دورة كاملة خلال نحو 70 دقيقة عند انتظام الجدولة.
+  if (FAST && !FULL && PROBE_COUNT) {
+    const existing = [...byId.values()].filter((s) => s.url && s.eps?.length).sort((a, b) => a.id.localeCompare(b.id));
+    const slots = Math.max(1, Math.ceil(existing.length / PROBE_COUNT));
+    const slot = Math.floor(now / 300000) % slots;
+    for (const s of existing.slice(slot * PROBE_COUNT, (slot + 1) * PROBE_COUNT)) affected.add(s.id);
+    console.log(`probe: ${Math.min(PROBE_COUNT, Math.max(0, existing.length - slot * PROBE_COUNT))} shows, slot ${slot + 1}/${slots}`);
+  }
   // 2) اكتشاف المسلسلات: كل الصفحات في المزامنة الكاملة أو عند وجود حلقة لمسلسل غير معروف، وإلا أول صفحتين.
   let pages = 1;
   const first = await get('/discover/');
@@ -150,11 +162,13 @@ async function main() {
   // الأحدث: من صفحة «آخر الحلقات» بترتيبها، وإلا بآخر ts
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
-  await localizePosters(shows);
-  try { await (await import('./poster-pick.mjs')).upgradePosters(shows, { max: 8 }); } catch (e) { console.log('poster upgrade skipped:', String(e).slice(0, 80)); }   // بوستر عمودي أفضل: مرة واحدة لكل مسلسل جديد فقط (سجل في data/poster-map.json)
+  if (!FAST) {
+    await localizePosters(shows);
+    try { await (await import('./poster-pick.mjs')).upgradePosters(shows, { max: 8 }); } catch (e) { console.log('poster upgrade skipped:', String(e).slice(0, 80)); }
+  }   // بوستر عمودي أفضل: مرة واحدة لكل مسلسل جديد فقط (سجل في data/poster-map.json)
   // كتابة ذرية (ملف مؤقت ثم إعادة تسمية): لا يُترك JSON ناقص إن انقطع التشغيل أثناء الكتابة
   const dump = () => { const tmp = OUT + '.tmp'; writeFileSync(tmp, JSON.stringify({ updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest })); renameSync(tmp, OUT); };
-  await resolveServers(shows, dump);
+  if (!FAST) await resolveServers(shows, dump);
   const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
   const before = JSON.stringify({ s: prev.shows, l: prev.latest });
   if (before === JSON.stringify({ s: shows, l: latest })) { console.log('no changes'); return; }
