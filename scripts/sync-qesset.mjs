@@ -114,8 +114,9 @@ async function main() {
   const byId = new Map(prev.shows.map((s) => [s.id, s]));
   const now = Date.now();
   // 1) «آخر الحلقات» أولًا: نربط كل حلقة جديدة بمسلسلها (بمفتاح الحلقة، وإلا بروابط الحلقات الأخرى في صفحتها).
-  const latestHtml = await get('/son-bolumler/').catch((e) => { if (e instanceof Blocked) throw e; return ''; });
+  const latestHtml = await get('/son-bolumler/').catch((e) => { if (e instanceof Blocked) throw e; console.warn('latest page unavailable:', e.message); return ''; });
   const latestPairs = parseLatest(latestHtml, abs, slugOf);
+  if (!latestPairs.length && prev.shows.length) console.warn('latest page empty: preserve previous latest feed');
   const known = new Set(prev.shows.flatMap((s) => s.eps.map((e) => e.id)));
   const idToShowPrev = new Map(prev.shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const keyMap = buildKeyMap(prev.shows);
@@ -161,7 +162,7 @@ async function main() {
   const shows = [...byId.values()].filter((s) => s.eps.length).sort((a, b) => a.title.localeCompare(b.title, 'ar'));
   // الأحدث: من صفحة «آخر الحلقات» بترتيبها، وإلا بآخر ts
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
-  const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
+  const latest = latestPairs.length ? latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i })) : (prev.latest || []);
   if (!FAST) {
     await localizePosters(shows);
     try { await (await import('./poster-pick.mjs')).upgradePosters(shows, { max: 8 }); } catch (e) { console.log('poster upgrade skipped:', String(e).slice(0, 80)); }
@@ -175,4 +176,4 @@ async function main() {
   writeFileSync(OUT, JSON.stringify(json));
   console.log(`ok: ${shows.length} shows, ${shows.reduce((n, s) => n + s.eps.length, 0)} eps, ${latest.length} latest`);
 }
-main().catch((e) => { if (e instanceof Blocked) { console.error('BLOCKED by source, kept previous data:', e.message); process.exit(0); } console.error(e); process.exit(1); });
+main().catch((e) => { if (e instanceof Blocked) { console.error('BLOCKED by source, kept previous data:', e.message); process.exit(1); } console.error(e); process.exit(1); });
