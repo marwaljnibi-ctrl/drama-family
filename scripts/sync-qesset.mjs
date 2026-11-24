@@ -55,10 +55,10 @@ const ogImage = (h) => (h.match(/property="og:image"[^>]+content="([^"]+)"/) || 
 
 // يحلّ معرّفات السيرفرات للحلقات غير المحلولة: الأحدث أولًا في كل مسلسل، بحد أقصى لكل تشغيل.
 async function resolveServers(shows, flush) {
-  const limit = +process.env.SYNC_SERVERS_PER_RUN || 900;
+  const limit = +process.env.SYNC_SERVERS_PER_RUN || (FAST ? 8 : 900);
   const todo = [];
   shows.forEach((s) => s.eps.forEach((e, i) => { if ((!e.sv || (e.q !== SV_VERSION && (REINDEX || !e.sv.length))) && (e.qf || 0) < 3) todo.push({ s, e, rank: i }); }));   // qf: عدد مرات الفشل؛ بعد 3 نتوقف حتى يزيد SV_VERSION
-  todo.sort((a, b) => a.rank - b.rank);
+  todo.sort((a, b) => (b.e.ts || 0) - (a.e.ts || 0) || a.rank - b.rank);
   let ok = 0, empty = 0, fail = 0, n = 0;
   for (const { e } of todo.slice(0, limit)) {
     try {
@@ -169,7 +169,10 @@ async function main() {
   }   // بوستر عمودي أفضل: مرة واحدة لكل مسلسل جديد فقط (سجل في data/poster-map.json)
   // كتابة ذرية (ملف مؤقت ثم إعادة تسمية): لا يُترك JSON ناقص إن انقطع التشغيل أثناء الكتابة
   const dump = () => { const tmp = OUT + '.tmp'; writeFileSync(tmp, JSON.stringify({ updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest })); renameSync(tmp, OUT); };
-  if (!FAST) await resolveServers(shows, dump);
+  if (FAST) {
+    // لا نؤخّر نشر حلقات جديدة بسبب رفض مؤقت لصفحة أحد المشغّلات.
+    try { await resolveServers(shows, null); } catch (e) { if (!(e instanceof Blocked)) throw e; console.warn('playback enrichment blocked; episode index still publishes:', e.message); }
+  } else await resolveServers(shows, dump);
   const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
   const before = JSON.stringify({ s: prev.shows, l: prev.latest });
   if (before === JSON.stringify({ s: shows, l: latest })) { console.log('no changes'); return; }
