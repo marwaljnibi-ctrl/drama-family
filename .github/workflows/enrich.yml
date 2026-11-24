@@ -1,0 +1,33 @@
+name: sync-media-enrichment
+on:
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      full:
+        description: 'Refresh every show page'
+        required: false
+        default: '0'
+      limit:
+        description: 'Maximum media server links to index'
+        required: false
+        default: '100'
+permissions: { contents: write }
+concurrency:
+  group: dizi-media-enrichment
+  cancel-in-progress: false
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i --no-save --no-audit --no-fund sharp
+      - name: Enrich playback links and posters
+        env:
+          SYNC_FULL: ${{ github.event.inputs.full || '0' }}
+          LIMIT: ${{ github.event.inputs.limit || '100' }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: bash scripts/sync-run.sh
