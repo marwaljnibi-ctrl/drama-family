@@ -9,6 +9,9 @@ const UA = 'DramaFamilyBot/1.0 (+personal family PWA; low-rate; respects robots.
 const OUT = 'data/shows.json';
 const FULL = process.env.SYNC_FULL === '1';
 const REINDEX = process.env.SYNC_REINDEX === '1';
+// وضع سريع لنشر الحلقات؛ تبقى فهرسة المشغلات والصور لمهمة مستقلة.
+const FAST = process.env.SYNC_FAST === '1';
+const PROBE_COUNT = Math.max(0, Math.min(60, Number(process.env.SYNC_PROBE_COUNT || 30)));
 const DELAY = +process.env.SYNC_DELAY_MS || 700;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 class Blocked extends Error {}
@@ -52,10 +55,10 @@ const ogImage = (h) => (h.match(/property="og:image"[^>]+content="([^"]+)"/) || 
 
 // يحلّ معرّفات السيرفرات للحلقات غير المحلولة: الأحدث أولًا في كل مسلسل، بحد أقصى لكل تشغيل.
 async function resolveServers(shows, flush) {
-  const limit = +process.env.SYNC_SERVERS_PER_RUN || 900;
+  const limit = +process.env.SYNC_SERVERS_PER_RUN || (FAST ? 8 : 900);
   const todo = [];
   shows.forEach((s) => s.eps.forEach((e, i) => { if ((!e.sv || (e.q !== SV_VERSION && (REINDEX || !e.sv.length))) && (e.qf || 0) < 3) todo.push({ s, e, rank: i }); }));   // qf: عدد مرات الفشل؛ بعد 3 نتوقف حتى يزيد SV_VERSION
-  todo.sort((a, b) => a.rank - b.rank);
+  todo.sort((a, b) => (b.e.ts || 0) - (a.e.ts || 0) || a.rank - b.rank);
   let ok = 0, empty = 0, fail = 0, n = 0;
   for (const { e } of todo.slice(0, limit)) {
     try {
@@ -111,8 +114,9 @@ async function main() {
   const byId = new Map(prev.shows.map((s) => [s.id, s]));
   const now = Date.now();
   // 1) «آخر الحلقات» أولًا: نربط كل حلقة جديدة بمسلسلها (بمفتاح الحلقة، وإلا بروابط الحلقات الأخرى في صفحتها).
-  const latestHtml = await get('/son-bolumler/').catch((e) => { if (e instanceof Blocked) throw e; return ''; });
+  const latestHtml = await get('/son-bolumler/').catch((e) => { if (e instanceof Blocked) throw e; console.warn('latest page unavailable:', e.message); return ''; });
   const latestPairs = parseLatest(latestHtml, abs, slugOf);
+  if (!latestPairs.length && prev.shows.length) console.warn('latest page empty: preserve previous latest feed');
   const known = new Set(prev.shows.flatMap((s) => s.eps.map((e) => e.id)));
   const idToShowPrev = new Map(prev.shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
   const keyMap = buildKeyMap(prev.shows);
@@ -122,6 +126,15 @@ async function main() {
     if (!keyMap.get(slugKey(x.id))) { try { sib = [...(await get(x.url)).matchAll(/href="([^"]*\/clarus\/[^"?#]+)/g)].map((m) => slugOf(abs(m[1]))); } catch (e) { if (e instanceof Blocked) throw e; } }
     const sid = resolveShowOf(x.id, keyMap, idToShowPrev, sib);
     if (sid) affected.add(sid); else unknownShow++;
+  }
+  // فحص تبادلي لصفحات المسلسلات المعروفة، حتى لو لم تظهر حلقاتها في صفحة الأحدث.
+  // 30 مسلسلًا في كل دورة من 5 دقائق -> دورة كاملة خلال نحو 70 دقيقة عند انتظام الجدولة.
+  if (FAST && !FULL && PROBE_COUNT) {
+    const existing = [...byId.values()].filter((s) => s.url && s.eps?.length).sort((a, b) => a.id.localeCompare(b.id));
+    const slots = Math.max(1, Math.ceil(existing.length / PROBE_COUNT));
+    const slot = Math.floor(now / 300000) % slots;
+    for (const s of existing.slice(slot * PROBE_COUNT, (slot + 1) * PROBE_COUNT)) affected.add(s.id);
+    console.log(`probe: ${Math.min(PROBE_COUNT, Math.max(0, existing.length - slot * PROBE_COUNT))} shows, slot ${slot + 1}/${slots}`);
   }
   // 2) اكتشاف المسلسلات: كل الصفحات في المزامنة الكاملة أو عند وجود حلقة لمسلسل غير معروف، وإلا أول صفحتين.
   let pages = 1;
@@ -149,16 +162,21 @@ async function main() {
   const shows = [...byId.values()].filter((s) => s.eps.length).sort((a, b) => a.title.localeCompare(b.title, 'ar'));
   // الأحدث: من صفحة «آخر الحلقات» بترتيبها، وإلا بآخر ts
   const idToShow = new Map(shows.flatMap((s) => s.eps.map((e) => [e.id, s.id])));
-  const latest = latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i }));
-  await localizePosters(shows);
-  try { await (await import('./poster-pick.mjs')).upgradePosters(shows, { max: 8 }); } catch (e) { console.log('poster upgrade skipped:', String(e).slice(0, 80)); }   // بوستر عمودي أفضل: مرة واحدة لكل مسلسل جديد فقط (سجل في data/poster-map.json)
+  const latest = latestPairs.length ? latestPairs.filter((x) => idToShow.has(x.id)).map((x, i) => ({ showId: idToShow.get(x.id), epId: x.id, ts: now - i })) : (prev.latest || []);
+  if (!FAST) {
+    await localizePosters(shows);
+    try { await (await import('./poster-pick.mjs')).upgradePosters(shows, { max: 8 }); } catch (e) { console.log('poster upgrade skipped:', String(e).slice(0, 80)); }
+  }   // بوستر عمودي أفضل: مرة واحدة لكل مسلسل جديد فقط (سجل في data/poster-map.json)
   // كتابة ذرية (ملف مؤقت ثم إعادة تسمية): لا يُترك JSON ناقص إن انقطع التشغيل أثناء الكتابة
   const dump = () => { const tmp = OUT + '.tmp'; writeFileSync(tmp, JSON.stringify({ updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest })); renameSync(tmp, OUT); };
-  await resolveServers(shows, dump);
+  if (FAST) {
+    // لا نؤخّر نشر حلقات جديدة بسبب رفض مؤقت لصفحة أحد المشغّلات.
+    try { await resolveServers(shows, null); } catch (e) { if (!(e instanceof Blocked)) throw e; console.warn('playback enrichment blocked; episode index still publishes:', e.message); }
+  } else await resolveServers(shows, dump);
   const json = { updated: new Date(now).toISOString(), source: 'qesset.net', shows, latest };
   const before = JSON.stringify({ s: prev.shows, l: prev.latest });
   if (before === JSON.stringify({ s: shows, l: latest })) { console.log('no changes'); return; }
   writeFileSync(OUT, JSON.stringify(json));
   console.log(`ok: ${shows.length} shows, ${shows.reduce((n, s) => n + s.eps.length, 0)} eps, ${latest.length} latest`);
 }
-main().catch((e) => { if (e instanceof Blocked) { console.error('BLOCKED by source, kept previous data:', e.message); process.exit(0); } console.error(e); process.exit(1); });
+main().catch((e) => { if (e instanceof Blocked) { console.error('BLOCKED by source, kept previous data:', e.message); process.exit(1); } console.error(e); process.exit(1); });
