@@ -4,7 +4,8 @@
 // - ضع SYNC_FULL=1 للمزامنة الكاملة، وإلا تُفحص صفحة «آخر الحلقات» فقط ثم المسلسلات المتأثرة.
 import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from 'node:fs';
 import { parseServers, buildKeyMap, parseLatest, resolveShowOf, epKey as slugKey, SV_VERSION } from './lib/qesset.mjs';
-const BASE = 'https://qesset.net';
+// Canonical domain announced by qesset.net itself; remains the same Qesset source.
+const BASE = 'https://qeseh.net';
 const UA = 'DramaFamilyBot/1.0 (+personal family PWA; low-rate; respects robots.txt)';
 const OUT = 'data/shows.json';
 const FULL = process.env.SYNC_FULL === '1';
@@ -143,6 +144,8 @@ async function main() {
   if (pm.length) pages = Math.max(...pm);
   const maxPages = FULL || !prev.shows.length ? pages : Math.min(pages, unknownShow ? 6 : 2);
   const found = new Map(parseShows(first).map((s) => [s.id, s]));
+  // فحص المسلسلات البارزة في الصفحة الأولى في كل دورة، حتى لو تأخرت صفحة آخر الحلقات.
+  if (FAST && !FULL) for (const s of [...found.values()].slice(0, 12)) if (byId.has(s.id)) affected.add(s.id);
   for (let p = 2; p <= maxPages; p++) for (const s of parseShows(await get(`/discover/page/${p}/`))) found.set(s.id, s);
   // 3) نحدّث: الكل (كاملة)، وإلا المسلسلات الجديدة + المتأثرة بحلقات جديدة.
   const targets = FULL ? [...found.values()] : [...found.values(), ...[...affected].map((id) => byId.get(id)).filter(Boolean)].filter((s, i, arr) => (FULL || !byId.has(s.id) || affected.has(s.id)) && arr.findIndex((x) => x.id === s.id) === i);
