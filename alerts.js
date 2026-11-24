@@ -1,5 +1,5 @@
 // حسابي وتنبيهات واتساب: واجهة صغيرة فوق الـWorker. الدخول بحساب Google (جلسة)، والرقم لا يُعرض كاملًا أبدًا.
-import { $, esc, toast } from './components.js';
+import { $, esc, toast, confirmSheet } from './components.js';
 import { authApi, getSession, logout } from './auth.js';
 
 export const alertApi = authApi;
@@ -24,16 +24,16 @@ export async function renderAlerts(view) {
     else wa = `<p>أضف رقم واتساب لتصلك رسالة عند نزول حلقة جديدة. سنرسل لك رمز تحقق للتأكد أن الرقم لك.</p><input id="al-phone" type="tel" inputmode="tel" placeholder="+9715XXXXXXXX" dir="ltr" style="width:100%;box-sizing:border-box;margin-bottom:8px"><label style="display:flex;gap:8px;align-items:flex-start;text-align:right;margin-bottom:10px"><input type="checkbox" id="al-agree"><span>أوافق على استلام رسائل واتساب من Dizi عن الحلقات الجديدة، وأعرف أنني أستطيع إيقافها في أي وقت.</span></label><button class="pri" id="al-send">إرسال رمز التحقق</button>`;
     view.innerHTML = `<div class="empty-card" style="text-align:right"><b>مرحبًا ${esc(m.name)}</b><p style="margin:0">${esc(m.email)}</p></div>
       <div class="empty-card" style="text-align:right;margin-top:12px"><b>تنبيهات واتساب</b>${wa}</div>
-      ${w.verified && w.consent ? `<h3>المسلسلات التي تصلك تنبيهاتها</h3>${m.shows.length ? `<div class="list">${m.shows.map((s) => `<div class="row"><div class="m"><b>${esc(s.title)}</b></div><button data-s="${esc(s.showId)}" class="al-rm">إلغاء</button></div>`).join('')}</div>` : '<div class="hint">لم تحدد مسلسلًا بعد. افتح صفحة أي مسلسل واضغط زر الجرس 🔔.</div>'}` : ''}
+      ${w.verified && w.consent ? `<h3>المسلسلات التي تصلك تنبيهاتها</h3>${m.shows.length ? `<div class="list">${m.shows.map((s) => `<div class="row"><div class="m"><b>${esc(s.title)}</b></div><button data-s="${esc(s.showId)}" class="al-rm">إلغاء</button></div>`).join('')}</div>` : '<div class="hint">لم تحدد مسلسلًا بعد. افتح صفحة أي مسلسل واضغط زر «تنبيه واتساب».</div>'}` : ''}
       <div style="margin-top:20px;text-align:center"><button id="al-logout">تسجيل الخروج</button></div>`;
     const run = (id, fn) => { const b = $(id); if (b) b.onclick = async () => { b.disabled = true; try { await fn(); } catch (e) { toast(errMsg(e)); b.disabled = false; } }; };
     run('#al-send', async () => { const phone = $('#al-phone').value.replace(/[\s-]/g, ''); if (!$('#al-agree').checked) { toast('يلزم الموافقة أولًا'); $('#al-send').disabled = false; return; } await authApi('/api/wa/phone', { phone, agree: true }); step = 'code'; toast('أُرسل الرمز'); draw(me); });
     run('#al-verify', async () => { draw(await authApi('/api/wa/verify', { code: $('#al-code').value.trim() })); toast('تم تفعيل التنبيهات'); });
     run('#al-back', async () => { step = 'form'; draw(me); });
-    run('#al-stop', async () => { draw(await authApi('/api/wa/stop')); toast('أُوقفت جميع التنبيهات'); });
+    run('#al-stop', async () => { if (!(await confirmSheet({ title: 'إيقاف جميع تنبيهات واتساب؟', text: 'لن تصلك أي رسالة عن الحلقات الجديدة. تبقى اشتراكاتك محفوظة ويمكنك إعادة التشغيل في أي وقت.', ok: 'تأكيد الإيقاف', danger: true }))) { $('#al-stop').disabled = false; return; } draw(await authApi('/api/wa/stop')); toast('أُوقفت جميع التنبيهات'); });
     run('#al-resume', async () => { draw(await authApi('/api/wa/resume')); toast('أُعيد تشغيل التنبيهات'); });
-    run('#al-logout', async () => { await logout(); });
-    view.querySelectorAll('.al-rm').forEach((b) => (b.onclick = async () => { try { draw(await authApi('/api/shows', { showId: b.dataset.s, on: false })); } catch { toast('تعذّر الحفظ'); } }));
+    run('#al-logout', async () => { if (!(await confirmSheet({ title: 'تسجيل الخروج؟', text: 'مفضلتك وتقدّم مشاهدتك وبيانات حسابك تبقى محفوظة، ولا يُحذف منها شيء. تعود إليها بتسجيل الدخول.', ok: 'تسجيل الخروج' }))) { $('#al-logout').disabled = false; return; } await logout(); });
+    view.querySelectorAll('.al-rm').forEach((b) => (b.onclick = async () => { const t = (m.shows.find((x) => x.showId === b.dataset.s) || {}).title || ''; if (!(await confirmSheet({ title: 'إلغاء تنبيهات هذا المسلسل؟', text: t, ok: 'تأكيد الإلغاء', danger: true }))) return; try { draw(await authApi('/api/shows', { showId: b.dataset.s, on: false })); } catch { toast('تعذّر الحفظ'); } }));
   };
   draw(me);
 }
@@ -59,6 +59,7 @@ export async function bindShowAlert(btn, showId, title) {
   btn.onclick = async () => {
     if (!(me.wa.verified && me.wa.consent)) { toast('فعّل واتساب أولًا من حسابي'); location.hash = '#/alerts'; return; }
     const on = !me.shows.some((s) => s.showId === showId);
+    if (!on && !(await confirmSheet({ title: 'إيقاف تنبيهات هذا المسلسل؟', text: title, ok: 'تأكيد الإيقاف', danger: true }))) return;
     try { me = await authApi('/api/shows', { showId, title, on }); paint(); toast(on ? 'سيصلك تنبيه عند نزول حلقة جديدة' : 'أُلغي التنبيه'); } catch { toast('تعذّر الحفظ'); }
   };
 }
